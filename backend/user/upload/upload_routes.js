@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { uploadFile } from './upload_controller';
+import upload from './uploadMiddleware';
 
 const uploadRouter = Router();
 
