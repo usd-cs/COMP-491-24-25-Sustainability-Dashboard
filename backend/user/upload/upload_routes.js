@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { uploadFile } from './upload_controller';
 
-const router = Router();
+const uploadRouter = Router();
 
-router.post('/', uploadFile);
+router.post('/', upload.single('file'), uploadFile);
 
-export default router;
+export default uploadRouter;
