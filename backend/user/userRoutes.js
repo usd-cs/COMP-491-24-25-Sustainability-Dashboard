@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { uploadFile } from './userController.js';
-import { isAuthenticated } from './authMiddleware.js';
+import uploadDoc from './uplooad/upload_routes.js';
+import { isAuthenticated } from '../auth/controller.js';
 
 const userRouter = Router();
 
 // File upload route (protected)
-userRouter.post('/file-upload', isAuthenticated, uploadFile);
+userRouter.post('/file-upload', isAuthenticated, uploadDoc);
 
 export default userRouter;
