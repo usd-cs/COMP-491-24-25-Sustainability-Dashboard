@@ -1,5 +1,8 @@
 import { queryUserByUsername } from './queries.js';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
+const SECRET_KEY = 'your_secret_key'; // Placeholder for secret key
 
 export const loginUser = async (req, res) => {
   const { username, password } = req.body;
@@ -24,6 +27,9 @@ export const loginUser = async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
+
+    // Generate JWT
+    const token = jwt.sign({ user_id: user[0].user_id, username: user[0].username }, SECRET_KEY, { expiresIn: '1h' });
 
     // Successful login
     res.status(200).json({
