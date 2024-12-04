@@ -10,10 +10,12 @@ vi.mock('jsonwebtoken');
 
 vi.mock('pg', () => {
   return {
-    Client: class {
-      connect = vi.fn();
-      query = vi.fn();
-      end = vi.fn();
+    default: {
+      Pool: class {
+        connect = vi.fn();
+        query = vi.fn();
+        end = vi.fn();
+      },
     },
   };
 });
