@@ -1,5 +1,5 @@
 import { queryUserByUsername } from './queries.js';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = 'your_secret_key'; // Placeholder for secret key

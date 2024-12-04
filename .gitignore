@@ -131,3 +131,31 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Jest
+jest.config.js
+jest.config.cjs
+jest.config.mjs
+coverage/
+
+# Babel
+babel.config.js
+babel.config.cjs
+babel.config.mjs
+
+# Vite
+dist/
+.vite
+vite.config.js
+vite.config.cjs
+vite.config.mjs
+
+# macOS
+.DS_Store
+
+# Vim
+*.swp
+
+# Lock files
+yarn.lock
+pnpm-lock.yaml
