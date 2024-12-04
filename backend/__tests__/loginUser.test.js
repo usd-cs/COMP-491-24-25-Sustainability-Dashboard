@@ -1,7 +1,7 @@
 // loginUser.test.js
 import { loginUser } from '../auth/controller.js';
 import { queryUserByUsername } from '../auth/queries.js';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 jest.mock('jsonwebtoken');
 const verify = jest.spyOn(jwt, 'verify');

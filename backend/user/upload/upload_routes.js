@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { uploadFile } from './upload_controller';
-import upload from './uploadMiddleware';
+import { uploadFile } from './upload_controller.js';
+import upload from './uploadMiddleware.js';
 
-const uploadRouter = Router();
+const router = Router();
 
 router.post('/', upload.single('file'), uploadFile);
 
-export default uploadRouter;
+export default router;
