@@ -8,6 +8,16 @@ import jwt from 'jsonwebtoken';
 vi.mock('../auth/queries');
 vi.mock('jsonwebtoken');
 
+vi.mock('pg', () => {
+  return {
+    Client: class {
+      connect = vi.fn();
+      query = vi.fn();
+      end = vi.fn();
+    },
+  };
+});
+
 const bcryptCompare = vi.fn().mockRejectedValue(new Error('Random error'));
 bcrypt.compare = bcryptCompare; // Mocking bcrypt.compare with a rejected promise
 
