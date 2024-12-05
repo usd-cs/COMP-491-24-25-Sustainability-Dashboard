@@ -146,7 +146,6 @@ babel.config.mjs
 # Vite
 dist/
 .vite
-vite.config.js
 vite.config.cjs
 vite.config.mjs
 
