@@ -1,24 +1,35 @@
-// loginUser.test.js
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loginUser } from '../auth/controller.js';
 import { queryUserByUsername } from '../auth/queries.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-jest.mock('jsonwebtoken');
-const verify = jest.spyOn(jwt, 'verify');
-verify.mockImplementation(() => () => ({ verified: 'true' }));
 
 // Mock the dependencies
-jest.mock('../auth/queries');
+vi.mock('../auth/queries');
+vi.mock('jsonwebtoken');
 
-const bcryptCompare = jest.fn().mockRejectedValue(new Error('Random error'));
+vi.mock('pg', () => {
+  return {
+    default: {
+      Pool: class {
+        connect = vi.fn();
+        query = vi.fn();
+        end = vi.fn();
+      },
+    },
+  };
+});
+
+const bcryptCompare = vi.fn().mockRejectedValue(new Error('Random error'));
 bcrypt.compare = bcryptCompare; // Mocking bcrypt.compare with a rejected promise
 
 // Call method that uses bcrypt.compare with async
-
-const bcryptCompareResolved = jest.fn().mockResolvedValue(true);
+const bcryptCompareResolved = vi.fn().mockResolvedValue(true);
 bcrypt.compare = bcryptCompareResolved; // Mocking bcrypt.compare with a resolved promise
 
-
+// Mock jwt.verify
+const verify = vi.spyOn(jwt, 'verify');
+verify.mockImplementation(() => () => ({ verified: 'true' }));
 
 describe('loginUser', () => {
   let req, res;
@@ -32,8 +43,8 @@ describe('loginUser', () => {
     };
 
     res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
     };
   });
 
@@ -47,7 +58,9 @@ describe('loginUser', () => {
   });
 
   it('should return 401 if password does not match', async () => {
-    queryUserByUsername.mockResolvedValue([{ user_id: 1, username: 'testuser', password: 'hashedpassword' }]);
+    queryUserByUsername.mockResolvedValue([
+      { user_id: 1, username: 'testuser', password: 'hashedpassword' },
+    ]);
     bcrypt.compare.mockResolvedValue(false); // Simulate password mismatch
 
     await loginUser(req, res);
@@ -57,7 +70,9 @@ describe('loginUser', () => {
   });
 
   it('should return 200 and user info if login is successful', async () => {
-    queryUserByUsername.mockResolvedValue([{ user_id: 1, username: 'testuser', password: 'hashedpassword' }]);
+    queryUserByUsername.mockResolvedValue([
+      { user_id: 1, username: 'testuser', password: 'hashedpassword' },
+    ]);
     bcrypt.compare.mockResolvedValue(true); // Simulate password match
     jwt.sign.mockReturnValue('mockedJWTToken'); // Mock JWT token generation
 
