@@ -35,12 +35,29 @@
 
 <script setup>
 import { ref } from 'vue';
+import axios from 'axios';
 
 const email = ref('');
 const password = ref('');
 
-const handleSubmit = () => {
-  console.log('Login attempted with:', { email: email.value, password: password.value });
+const handleSubmit = async () => {
+  try {
+    const response = await axios.post('http://localhost:3000/api/auth/login', {
+      email: email.value, // Sending email instead of username
+      password: password.value,
+    });
+
+    if (response.status === 200) {
+      alert(response.data.message); // Display success message
+      localStorage.setItem('userId', response.data.user.user_id); // Store user ID
+    }
+  } catch (error) {
+    if (error.response) {
+      alert(error.response.data.message); // Display error message from backend
+    } else {
+      alert('Server error. Please try again later.');
+    }
+  }
 };
 </script>
 

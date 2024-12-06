@@ -1,19 +1,23 @@
-import jwt from 'jsonwebtoken';
+import { queryUserByUsername } from './queries.js';
 
-const SECRET_KEY = 'your_secret_key'; // Placeholder for secret key
+export const isAuthenticated = async (req, res, next) => {
+  const { username } = req.body;
 
-export const isAuthenticated = (req, res, next) => {
-  const token = req.headers['authorization'];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
+  if (!username) {
+    return res.status(400).json({ message: 'Username is required.' });
   }
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded; // Attach user info to request object
+    const user = await queryUserByUsername(username);
+
+    if (user.length === 0) {
+      return res.status(401).json({ message: 'Unauthorized: User not found.' });
+    }
+
+    req.user = user[0]; // Attach user info to the request object
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    console.error('Authentication error:', error);
+    return res.status(500).json({ message: 'Server error during authentication.' });
   }
 };

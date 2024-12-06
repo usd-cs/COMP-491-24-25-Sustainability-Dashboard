@@ -1,43 +1,42 @@
-import { queryUserByUsername } from './queries.js';
+import { queryUserByEmail } from './queries.js';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-
-const SECRET_KEY = 'your_secret_key'; // Placeholder for secret key
 
 export const loginUser = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body; // Expecting email and password from the request
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required.' });
+  }
 
   try {
-    // Query user by username
-    const user = await queryUserByUsername(username);
-
-    // Log the result to check if user was found and the password field
-    console.log('User from DB:', user);
+    // Query the user by email
+    const user = await queryUserByEmail(email);
 
     if (user.length === 0) {
-      return res.status(401).json({ message: 'Invalid username or password' });
+      return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    // Log the hashed password stored in the DB
-    console.log('Hashed password stored in DB:', user[0].password);
+    // Retrieve the hashed password from the database
+    const storedHashedPassword = user[0].password_hash;
 
-    // Compare provided password with hashed password stored in the database
-    const passwordMatch = await bcrypt.compare(password, user[0].password);
+    // Compare the provided password with the stored hashed password
+    const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
 
     if (!passwordMatch) {
-      return res.status(401).json({ message: 'Invalid username or password' });
+      return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    // Generate JWT
-    const token = jwt.sign({ user_id: user[0].user_id, username: user[0].username }, SECRET_KEY, { expiresIn: '1h' });
-
-    // Successful login
+    // Respond with user details if the login is successful
     res.status(200).json({
       message: 'Login successful',
-      user: { user_id: user[0].user_id, username: user[0].username },
+      user: {
+        user_id: user[0].user_id,
+        username: user[0].username,
+        email: user[0].email,
+      },
     });
   } catch (error) {
     console.error('Error during login:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error during login.' });
   }
 };

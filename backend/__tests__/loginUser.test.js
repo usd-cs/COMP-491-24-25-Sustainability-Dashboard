@@ -1,35 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loginUser } from '../auth/controller.js';
-import { queryUserByUsername } from '../auth/queries.js';
+import { queryUserByEmail } from '../auth/queries.js'; // Update to match new function
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
 // Mock the dependencies
 vi.mock('../auth/queries');
-vi.mock('jsonwebtoken');
 
-vi.mock('pg', () => {
-  return {
-    default: {
-      Pool: class {
-        connect = vi.fn();
-        query = vi.fn();
-        end = vi.fn();
-      },
-    },
-  };
-});
-
-const bcryptCompare = vi.fn().mockRejectedValue(new Error('Random error'));
-bcrypt.compare = bcryptCompare; // Mocking bcrypt.compare with a rejected promise
-
-// Call method that uses bcrypt.compare with async
 const bcryptCompareResolved = vi.fn().mockResolvedValue(true);
 bcrypt.compare = bcryptCompareResolved; // Mocking bcrypt.compare with a resolved promise
-
-// Mock jwt.verify
-const verify = vi.spyOn(jwt, 'verify');
-verify.mockImplementation(() => () => ({ verified: 'true' }));
 
 describe('loginUser', () => {
   let req, res;
@@ -37,7 +15,7 @@ describe('loginUser', () => {
   beforeEach(() => {
     req = {
       body: {
-        username: 'testuser',
+        email: 'testuser@example.com', // Updated to test email
         password: 'password123',
       },
     };
@@ -49,48 +27,61 @@ describe('loginUser', () => {
   });
 
   it('should return 401 if user is not found', async () => {
-    queryUserByUsername.mockResolvedValue([]); // Simulate no user found in DB
+    queryUserByEmail.mockResolvedValue([]); // Simulate no user found in DB
 
     await loginUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Invalid username or password' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Invalid email or password.' });
   });
 
   it('should return 401 if password does not match', async () => {
-    queryUserByUsername.mockResolvedValue([
-      { user_id: 1, username: 'testuser', password: 'hashedpassword' },
+    queryUserByEmail.mockResolvedValue([
+      {
+        user_id: 1,
+        username: 'testuser',
+        email: 'testuser@example.com',
+        password_hash: 'hashedpassword',
+      },
     ]);
     bcrypt.compare.mockResolvedValue(false); // Simulate password mismatch
 
     await loginUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Invalid username or password' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Invalid email or password.' });
   });
 
   it('should return 200 and user info if login is successful', async () => {
-    queryUserByUsername.mockResolvedValue([
-      { user_id: 1, username: 'testuser', password: 'hashedpassword' },
+    queryUserByEmail.mockResolvedValue([
+      {
+        user_id: 1,
+        username: 'testuser',
+        email: 'testuser@example.com',
+        password_hash: 'hashedpassword',
+      },
     ]);
     bcrypt.compare.mockResolvedValue(true); // Simulate password match
-    jwt.sign.mockReturnValue('mockedJWTToken'); // Mock JWT token generation
 
     await loginUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       message: 'Login successful',
-      user: { user_id: 1, username: 'testuser' },
+      user: {
+        user_id: 1,
+        username: 'testuser',
+        email: 'testuser@example.com',
+      },
     });
   });
 
   it('should return 500 if there is a server error', async () => {
-    queryUserByUsername.mockRejectedValue(new Error('Database error')); // Simulate a server error
+    queryUserByEmail.mockRejectedValue(new Error('Database error')); // Simulate a server error
 
     await loginUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Server error' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Server error during login.' });
   });
 });
