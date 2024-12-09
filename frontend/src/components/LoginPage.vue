@@ -36,9 +36,11 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
+const router = useRouter();
 
 const handleSubmit = async () => {
   try {
@@ -50,6 +52,7 @@ const handleSubmit = async () => {
     if (response.status === 200) {
       alert(response.data.message); // Display success message
       localStorage.setItem('userId', response.data.user.user_id); // Store user ID
+      router.push('/main'); // Redirect to MainPage.vue
     }
   } catch (error) {
     if (error.response) {
