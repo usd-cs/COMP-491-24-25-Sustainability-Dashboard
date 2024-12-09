@@ -30,11 +30,11 @@ app.use(bodyParser.json());
 
 // Routes
 import authRoutes from './auth/routes.js';
-import userRoutes from './user/userRoutes.js';
+import userRoutes from './auth/upload/upload_routes.js';
 
 // Updated Route Paths
 app.use('/api/auth', authRoutes); // Ensure compatibility with frontend API calls
-app.use('/api/user', userRoutes);
+
 
 // Root Route
 app.get('/', (req, res) => {
