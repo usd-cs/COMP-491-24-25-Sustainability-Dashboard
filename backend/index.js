@@ -3,6 +3,26 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
+/**
+ * @file mainServer.js
+ * @description This script sets up a main Express.js server and provides functionality to run additional servers
+ * by spawning child processes. It includes middleware for handling cross-origin requests, parsing JSON payloads, 
+ * and serving routes for authentication and user-related functionalities.
+ * 
+ * Features:
+ * - Main Express server on port 3000.
+ * - Routes for authentication and user file uploads.
+ * - Capability to run additional servers using the `runServer` function.
+ * - Logs server activity and handles errors for spawned server processes.
+ * 
+ * @requires express - Web framework for creating the main server.
+ * @requires body-parser - Middleware for parsing incoming JSON requests.
+ * @requires cors - Middleware for enabling cross-origin resource sharing.
+ * @requires child_process.spawn - To spawn additional server processes.
+ * @requires ./auth/routes.js - Routes for authentication.
+ * @requires
+ **/
+
 // Define function to run additional servers
 function runServer(filePath, port) {
     const serverProcess = spawn('node', [filePath]);
