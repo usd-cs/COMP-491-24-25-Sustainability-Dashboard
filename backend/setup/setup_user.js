@@ -1,6 +1,24 @@
 import pkg from 'pg'; // Import the CommonJS module as a default
 import bcrypt from 'bcrypt'; // Library for hashing passwords
 
+/** @description Script to set up the first user in the database. It inserts a new user into the `users` table with 
+ * hashed password storage for security. This script can later be modified to allow user registration with 
+ * an admin-provided key.
+ * 
+ * Features:
+ * - Hashes passwords using bcrypt for secure storage.
+ * - Inserts a new user into the database inside a transaction.
+ * - Rolls back the transaction in case of any errors.
+ * 
+ * @function addUser
+ * @async
+ * @param {string} username - The username of the new user.
+ * @param {string} email - The email address of the new user.
+ * @param {string} password - The plaintext password to be hashed and stored.
+ * 
+ * @returns {void} Outputs success or error messages to the console.
+ **/
+
 const { Pool } = pkg;
 
 const pool = new Pool({

@@ -1,6 +1,25 @@
 import { queryUserByEmail } from './queries.js';
 import bcrypt from 'bcrypt';
 
+/**
+ * @file loginUser.js
+ * @description Function to handle user login by validating credentials (email and password). 
+ * If the credentials match, the user is authenticated, and their details are returned.
+ * 
+ * Features:
+ * - Validates the presence of `email` and `password` fields in the request body.
+ * - Queries the database for a user by their email.
+ * - Verifies the provided password against the stored hashed password using bcrypt.
+ * - Returns appropriate HTTP status codes and messages for different scenarios.
+ * 
+ * @function loginUser
+ * @param {Object} req - Express request object.
+ * @param {Object} req.body - The request body containing `email` and `password`.
+ * @param {Object} res - Express response object.
+ * 
+ * @returns {Object} Response with appropriate HTTP status code
+ **/
+
 export const loginUser = async (req, res) => {
   const { email, password } = req.body; // Expecting email and password from the request
 

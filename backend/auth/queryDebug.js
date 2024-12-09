@@ -1,6 +1,19 @@
 // queryDebug.js
 import { queryUserByEmail } from './queries.js'; // Adjust the path if necessary
 import bcrypt from 'bcrypt';
+/*
+@description A script to debug and verify user authentication by querying the database for a user 
+ * with a specified email and comparing the provided plain text password with the stored hashed password.
+ * 
+ * This script performs the following steps:
+ * 1. Queries the database for a user with a given email.
+ * 2. Extracts the hashed password for the user from the query result.
+ * 3. Compares the provided plain text password with the hashed password using bcrypt.
+ * 4. Logs whether the password matches or not.
+ * 
+ * @requires bcrypt - For comparing hashed passwords.
+ * @requires ./queries.js - A module containing the `queryUserByEmail` function for querying the database.
+ */
 
 (async () => {
   try {
