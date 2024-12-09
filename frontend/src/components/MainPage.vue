@@ -32,7 +32,7 @@
                 <div class="nav-item" tabindex="0" role="button"></div>
                 <div class="nav-item" tabindex="0" role="button"></div>
               </nav>
-              <button class="upload-button" tabindex="0">Upload Data</button>
+              <button class="upload-button" @click="navigateToUpload" tabindex="0">Upload Data</button>
             </div>
           </aside>
           <section class="dashboard-content">
@@ -42,6 +42,16 @@
       </main>
     </div>
   </template>
+
+<script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const navigateToUpload = () => {
+  router.push('/upload');
+};
+</script>
   
   <style scoped>
   .dashboard-container {
