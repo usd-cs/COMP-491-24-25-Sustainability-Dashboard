@@ -94,9 +94,7 @@ const navigateToUpload = () => {
   
   .logout-wrapper {
     display: flex;
-    flex-direction: column;
-    position: relative;
-    aspect-ratio: 2.432;
+    align-items: center;
     gap: 15px;
     color: #000;
     white-space: nowrap;
@@ -104,21 +102,23 @@ const navigateToUpload = () => {
   }
   
   .profile-image {
-    position: absolute;
-    inset: 0;
-    height: 100%;
-    width: 100%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     object-fit: cover;
-    object-position: center;
   }
   
   .logout-button {
-    position: relative;
     background: none;
     border: none;
     cursor: pointer;
     color: inherit;
     padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+ 
   }
   
   .logout-icon {
@@ -126,8 +126,7 @@ const navigateToUpload = () => {
     object-fit: contain;
     object-position: center;
     width: 21px;
-    align-self: start;
-    margin-top: 4px;
+    align-self: auto;
   }
   
   .main-content {

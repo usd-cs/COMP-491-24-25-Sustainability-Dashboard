@@ -49,22 +49,17 @@
                 type="file" 
                 id="fileInput" 
                 class="visually-hidden"
-                accept=".xlsx,.csv"
+                accept=".xlsx"
                 @change="handleFileSelect"
               />
               <p class="file-format-info">
-                Importing requires Microsoft Excel .xlsx or .csv format
+                Importing requires Microsoft Excel .xlsx
               </p>
             </div>
           </div>
   
           <div class="action-buttons">
-            <button 
-              type="button" 
-              class="cancel-btn" 
-              @click="handleCancel">
-              Cancel
-            </button>
+             <button class="cancel-btn" @click="handleCancel" tabindex="0">Cancel</button>
             <button 
               type="submit" 
               class="import-btn">
@@ -76,29 +71,96 @@
     </div>
   </template>
   
-  <script setup>
-  const handleUpload = (event) => {
-    // Handle form submission
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+const router = useRouter();
+const selectedFile = ref(null);
+
+
+const handleUpload = async (event) => {
+  // Check if a file is selected
+  if (!selectedFile.value) {
+    alert('Please select a file to upload.');
+    return;
   }
-  
-  const handleFileDrop = (event) => {
-    // Handle file drop
+
+  const formData = new FormData();
+  formData.append('file', selectedFile.value);
+
+  // Debugging: Log the FormData content
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ': ' + pair[1].name); // Log the file name
   }
-  
-  const handleFileSelect = (event) => {
-    // Handle file selection
+
+  try {
+
+    // Debugging: Log before making the request
+    console.log('Making POST request to upload file...');
+    console.log('FormData:', formData);
+
+    // Make POST request to upload the file
+    const response = await axios.post('http://localhost:3000/api/auth/file-upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    // Debugging: Log the response
+    console.log('Response:', response);
+
+    if (response.status === 200) {
+      router.push('/upload-success'); // Navigate to UploadSuccess.vue
+    }
+  } catch (error) {
+    console.error('Error during file upload:', error);
+    alert('File upload failed. Please try again.');
   }
-  
-  const handleCancel = () => {
-    // Handle cancel action
+};
+
+
+const handleFileDrop = (event) => {
+  // Prevent default behavior
+  event.preventDefault();
+  event.stopPropagation();
+
+  // Get the dropped file
+  if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+    const file = event.dataTransfer.files[0];
+    if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      alert('Invalid file type. Please upload an .xlsx file.');
+      return;
+    }
+    selectedFile.value = file;
+    console.log('File dropped:', selectedFile.value.name);
   }
-  
-  const handleLogout = () => {
-    // Handle logout action
+};
+
+const handleFileSelect = (event) => {
+  // Get the selected file
+  const file = event.target.files[0];
+  if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+    alert('Invalid file type. Please upload an .xlsx file.');
+    return;
   }
-  </script>
+  selectedFile.value = file;
+  console.log('File selected:', selectedFile.value.name);
+};
+
+const handleCancel = () => {
+  // Handle cancel action
+  router.push('/main');
+};
+
+const handleLogout = () => {
+  // Handle logout action
+  router.push('/');
+};
+</script>
   
-  <style scoped>
+<style scoped>
   .visually-hidden {
     position: absolute;
     width: 1px;
@@ -286,4 +348,4 @@
       margin-top: 40px;
     }
   }
-  </style>
+</style>
