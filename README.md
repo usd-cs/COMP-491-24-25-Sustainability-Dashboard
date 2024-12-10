@@ -48,14 +48,37 @@ Ensure you have the following environment variables configured:
 - AE Power Solar Service: Monitors solar panel energy generation metrics.
 - Bloom Energy Fuel Cell Service: Tracks fuel cell energy creation and efficiency.
 
+# Updated Instructions
+
 ## **How to Run**
 1. Clone the repository.
-2. Install dependencies for both frontend and backend:
-   ```bash
-   # Navigate to the backend folder
-   cd backend
-   npm install
+2. Install dependencies for the entire project:
 
-   # Navigate to the frontend folder
-   cd ../frontend
+   ```bash
    npm install
+   ```
+
+3. Start the backend server:
+
+   ```bash
+   npm start
+   ```
+
+4. Start the frontend and create a local webpage URL:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Run tests:
+
+   ```bash
+   npm test
+   ```
+
+6. Run the linter:
+
+   ```bash
+   npm run lint
+   
+
