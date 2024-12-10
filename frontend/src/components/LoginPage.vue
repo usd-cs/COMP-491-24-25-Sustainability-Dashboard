@@ -2,7 +2,6 @@
   <div class="login-page">
     <header class="header">
       <h1 class="title">USD Office of <br />Sustainability</h1>
-      <button class="nav-button">Login</button>
     </header>
     <main>
       <form class="login-form" @submit.prevent="handleSubmit">
@@ -111,15 +110,6 @@ body {
   font-weight: 400;
   color: #ffffff;
   text-align: left;
-}
-
-.nav-button {
-  background: #d9d9d9;
-  font-size: 24px;
-  padding: 10px 30px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
 /* Login Form Section */

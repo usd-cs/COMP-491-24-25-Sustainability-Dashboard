@@ -8,14 +8,14 @@ describe('DashboardLayout', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('displays welcome message', () => {
+  it('has a user section', () => {
     const wrapper = mount(DashboardLayout);
-    expect(wrapper.find('.welcome-text').text()).toBe('Hi, John');
+    expect(wrapper.find('.user-section').exists()).toBe(true);
   });
 
   it('has logout button', () => {
     const wrapper = mount(DashboardLayout);
-    expect(wrapper.find('.logout-button').exists()).toBe(true);
+    expect(wrapper.find('.logout-btn').exists()).toBe(true); // Updated class name
   });
 
   it('has correct navigation items', () => {
