@@ -7,17 +7,9 @@
       <div class="user-section">
         <div class="user-controls">
           <!-- Logout button -->
-          <div class="dropdown">
-  <button class="dropdown-btn">
-    Menu
-    <span class="dropdown-icon">▼</span>
-  </button>
-  <div class="dropdown-content">
-    <a href="/home">Home</a>
-    <a href="/settings">Settings</a>
-    <a href="/logout">Logout</a>
-  </div>
-</div>
+          <button class="logout-btn" @click="handleLogout" tabindex="0">
+            Logout →
+          </button>
         </div>
       </div>
     </header>
@@ -128,14 +120,7 @@ const handleLogout = () => {
   gap: 15px;
 }
 
-/* Dropdown container */
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-/* Dropdown button styling */
-.dropdown-btn {
+.logout-btn {
   background-color: transparent;
   color: #1E1E1E;
   font: 400 18px Inter, sans-serif;
@@ -150,42 +135,9 @@ const handleLogout = () => {
   gap: 5px;
 }
 
-/* Dropdown content */
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #fff;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
-  z-index: 1;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-/* Dropdown content links */
-.dropdown-content a {
-  color: #1E1E1E;
-  padding: 10px 16px;
-  text-decoration: none;
-  display: block;
-  transition: background-color 0.3s ease;
-  font: 400 16px Inter, sans-serif;
-}
-
-/* Hover effect for dropdown links */
-.dropdown-content a:hover {
-  background-color: #f1f1f1;
-}
-
-/* Show dropdown content on hover */
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-/* Dropdown icon styling */
-.dropdown-icon {
-  font-size: 12px;
-  margin-left: 5px;
+.logout-btn:hover {
+  background-color: #1E1E1E;
+  color: #fff;
 }
 
 /* Main content styles */
