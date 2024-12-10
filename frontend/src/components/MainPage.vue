@@ -1,29 +1,39 @@
 <template>
+  <!-- Main container for the dashboard page -->
   <div class="dashboard-container">
+    <!-- Header section with the application title and logout button -->
     <header class="header">
-      <h1 class="brand-title">USD Office of Sustainability</h1>
+      <h1 class="brand-title">USD Office of <br />Sustainability</h1>
       <div class="user-section">
         <div class="user-controls">
+          <!-- Logout button -->
           <button class="logout-btn" @click="handleLogout" tabindex="0">
             Logout →
           </button>
         </div>
       </div>
     </header>
+
+    <!-- Main content area of the dashboard -->
     <main class="main-content">
       <div class="content-grid">
+        <!-- Sidebar with navigation items -->
         <aside class="sidebar">
           <div class="sidebar-content">
             <h2 class="sidebar-title">FUTURE NAVIGATION SIDEBAR</h2>
             <nav class="navigation-menu">
+              <!-- Navigation items for future use -->
               <div class="nav-item" tabindex="0" role="button"></div>
               <div class="nav-item" tabindex="0" role="button"></div>
               <div class="nav-item" tabindex="0" role="button"></div>
               <div class="nav-item" tabindex="0" role="button"></div>
             </nav>
+            <!-- Button to navigate to the upload data page -->
             <button class="upload-button" @click="navigateToUpload" tabindex="0">Upload Data</button>
           </div>
         </aside>
+
+        <!-- Placeholder for dashboard visuals -->
         <section class="dashboard-content">
           <h2 class="dashboard-title">FUTURE DASHBOARD VISUALS</h2>
         </section>
@@ -33,27 +43,46 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+/**
+ * @file MainPage.vue
+ * @description This Vue component represents the main dashboard page. It includes a header, navigation sidebar, and placeholders for dashboard visuals and data upload functionality.
+ */
 
-const router = useRouter();
+import { useRouter } from 'vue-router'; // Import Vue Router for navigation
 
+const router = useRouter(); // Vue Router instance for programmatic navigation
+
+/**
+ * Navigate to the data upload page.
+ * Triggered when the "Upload Data" button in the sidebar is clicked.
+ */
 const navigateToUpload = () => {
   router.push('/upload');
 };
 
+/**
+ * Handle user logout.
+ * Clears session and redirects the user to the login page.
+ */
 const handleLogout = () => {
   router.push('/');
 };
 </script>
 
 <style scoped>
-/* Reset */
+/**
+ * Styles for the main dashboard page.
+ * Scoped styles ensure these styles apply only to this component.
+ */
+
+/* Reset styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Main container for the dashboard page */
 .dashboard-container {
   background: #fff;
   display: flex;
@@ -62,6 +91,7 @@ const handleLogout = () => {
   overflow-y: hidden;
 }
 
+/* Header styles */
 .header {
   background: #00B1E2;
   display: flex;
@@ -77,6 +107,7 @@ const handleLogout = () => {
   margin: 0;
 }
 
+/* User section styles */
 .user-section {
   display: flex;
   align-items: center;
@@ -109,6 +140,7 @@ const handleLogout = () => {
   color: #fff;
 }
 
+/* Main content styles */
 .main-content {
   align-self: center;
   margin-top: 27px;
@@ -116,11 +148,13 @@ const handleLogout = () => {
   max-width: 1384px;
 }
 
+/* Grid layout for content */
 .content-grid {
   display: flex;
   gap: 20px;
 }
 
+/* Sidebar styles */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -163,6 +197,7 @@ const handleLogout = () => {
   cursor: pointer;
 }
 
+/* Dashboard content styles */
 .dashboard-content {
   display: flex;
   flex-direction: column;

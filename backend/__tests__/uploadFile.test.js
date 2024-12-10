@@ -1,8 +1,13 @@
+/**
+ * @file uploadFile.test.js
+ * @description Unit tests for the `uploadFile` function, which processes file uploads and inserts data into a database.
+ * Tests include cases for no file uploads, successful processing, and error handling.
+ */
+
 import { vi, expect, describe, it, beforeEach } from 'vitest';
 import XLSX from 'xlsx';
 import { uploadFile } from '../auth/upload/upload_controller.js';
-import * as db from '../database_connection.js';  // Use * to mock the entire module
-
+import * as db from '../database_connection.js'; // Use * to mock the entire module
 
 // Mock external dependencies
 vi.mock('xlsx');
@@ -10,7 +15,7 @@ vi.mock('axios');
 
 // Mock the database module using vi.fn()
 vi.mock('../database_connection.js', () => ({
-  query: vi.fn(),  // Mocking query function directly
+  query: vi.fn(), // Mocking query function directly
 }));
 
 describe('uploadFile', () => {
@@ -31,6 +36,9 @@ describe('uploadFile', () => {
     };
   });
 
+  /**
+   * Test: Should return 400 if no file is uploaded.
+   */
   it('should return 400 if no file is uploaded', async () => {
     req.file = null; // No file uploaded
 
@@ -40,6 +48,9 @@ describe('uploadFile', () => {
     expect(res.json).toHaveBeenCalledWith({ message: 'No file uploaded.' });
   });
 
+  /**
+   * Test: Should process the file and insert data into the database.
+   */
   it('should process the file and insert data into the database', async () => {
     // Mock XLSX methods
     const mockSheetData = [
@@ -56,7 +67,7 @@ describe('uploadFile', () => {
     XLSX.utils.sheet_to_json.mockReturnValue(mockSheetData);
 
     // Mock query to simulate successful DB interaction
-    db.query.mockResolvedValue({});  // Mocking query directly using db.query
+    db.query.mockResolvedValue({}); // Mocking query directly using db.query
 
     await uploadFile(req, res);
 
@@ -64,9 +75,11 @@ describe('uploadFile', () => {
     expect(res.json).toHaveBeenCalledWith({
       message: 'Data successfully uploaded and inserted into the database.',
     });
-
   });
 
+  /**
+   * Test: Should handle errors and return a 500 response.
+   */
   it('should handle errors and return a 500 response', async () => {
     // Simulate an error during the file processing
     XLSX.read.mockImplementation(() => {

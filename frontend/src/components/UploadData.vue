@@ -1,7 +1,7 @@
 <template>
   <div class="upload-portal">
     <header class="header">
-      <h1 class="title">USD Office of Sustainability</h1>
+      <h1 class="title">USD Office of <br />Sustainability</h1>
       <div class="user-section">
         <div class="user-controls">
           <button class="logout-btn" @click="handleLogout" tabindex="0">
