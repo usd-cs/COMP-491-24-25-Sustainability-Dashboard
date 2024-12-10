@@ -3,8 +3,19 @@
   <div class="login-page">
     <!-- Header section with the application title -->
     <header class="header">
-      <h1 class="title">USD Office of <br />Sustainability</h1>
+      <div class="header-content">
+        <!-- Clickable logo -->
+        <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
+        <img
+          src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png"
+          alt="University of San Diego Logo"
+          class="logo"
+        />
+        </a>
+        <h1 class="title">Office of Sustainability - Energy Dashboard</h1>
+      </div>
     </header>
+
     <!-- Main content with the login form -->
     <main>
       <form class="login-form" @submit.prevent="handleSubmit">
@@ -125,21 +136,33 @@ body {
 
 /* Header section */
 .header {
-  background: #00b1e2;
+  background: #003b70; /* Matches the dark blue in the official USD logo */
   display: flex;
+  align-items: left;
   justify-content: space-between;
-  align-items: center;
   width: 100%;
-  height: 160px; /* Matches the Figma design */
-  padding: 0 30px;
-  box-sizing: border-box;
+  padding: 20px;
+}
+
+.header-content {
+  display: flex;
+  align-items: left;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.logo {
+  height: 47px;
+  width: 266px; /* Adjust size */
+  margin-bottom: 30px;
 }
 
 .title {
-  font-size: 40px;
-  font-weight: 400;
+  font-size: 30px;
+  font-weight: 550;
   color: #ffffff;
-  text-align: left;
+  text-align: center;
+  line-height: 1.5;
 }
 
 /* Main content section */
@@ -154,50 +177,50 @@ main {
 /* Login form styles */
 .login-form {
   background: #d9d9d9;
-  width: 454px;
-  height: 578px;
-  padding: 40px;
+  width: 360px; 
+  padding: 35px; 
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
 .form-title {
-  font-size: 36px;
-  margin-bottom: 50px;
+  font-size: 20px; 
+  font-weight: 700;
+  margin-bottom: 25px; 
   color: black;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px; 
 }
 
 .form-label {
   display: block;
-  font-size: 24px;
-  margin-bottom: 10px;
+  font-size: 16px; 
+  margin-bottom: 8px; 
   color: black;
   text-align: left;
 }
 
 .form-input {
   width: 100%;
-  height: 50px;
-  padding: 10px;
-  font-size: 18px;
+  height: 40px; 
+  padding: 10px; 
+  font-size: 14px; 
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
 .submit-button {
   width: 100%;
-  padding: 15px;
-  font-size: 18px;
-  background-color: #00b1e2;
+  padding: 12px; 
+  font-size: 16px; 
+  background-color: #003b70; 
   color: #ffffff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 18px; 
 }
 </style>

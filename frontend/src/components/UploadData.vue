@@ -1,13 +1,22 @@
 <template>
   <div class="upload-portal">
     <header class="header">
-      <h1 class="title">USD Office of <br />Sustainability</h1>
+      <div class="header-content">
+        <!-- Clickable logo -->
+        <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png"
+            alt="University of San Diego Logo"
+            class="logo"
+          />
+        </a>
+        <h1 class="title">Office of Sustainability - Energy Dashboard</h1>
+      </div>
+      <!-- Logout button -->
       <div class="user-section">
-        <div class="user-controls">
-          <button class="logout-btn" @click="handleLogout" tabindex="0">
-            Logout →
-          </button>
-        </div>
+        <button class="logout-btn" @click="handleLogout" tabindex="0">
+          Logout →
+        </button>
       </div>
     </header>
 
@@ -142,193 +151,194 @@ const handleLogout = () => {
 }
 
 .upload-portal {
-  background-color: #fff;
+  background-color: #ffffff;
   display: flex;
-  padding-bottom: 152px;
   flex-direction: column;
+  align-items: center;
+  padding: 0;
   overflow: hidden;
 }
 
 .header {
-  background-color: #00B1E2;
+  background-color: #003b70; /* Official USD Dark blue background for consistency */
   display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space between title/logo and logout button */
+  padding: 20px 40px;
+  box-sizing: border-box;
   width: 100%;
-  justify-content: space-between;
-  padding: 37px 28px;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column; /* Stack logo and title vertically */
+  align-items: flex-start; /* Align content to the left */
+}
+
+.logo {
+  height: 60px;
+  margin-bottom: 10px; /* Add spacing between the logo and the title */
 }
 
 .title {
-  color: #fff;
-  font: 400 40px Inter, sans-serif;
-  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.5;
+  text-align: left;
 }
 
 .user-section {
   display: flex;
-  gap: 31px;
   align-items: center;
-}
-
-.greeting {
-  color: #fff;
-  font: 400 18px Inter, sans-serif;
-  margin: 0;
-}
-
-.user-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 11px 10px;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
 }
 
 .logout-btn {
   background-color: transparent;
-  color: #1E1E1E;
-  font: 400 18px Inter, sans-serif;
-  border: 1px solid #1E1E1E;
-  padding: 8px 20px;
+  color: #ffffff;
+  font: 400 16px Inter, sans-serif;
+  border: 1px solid #ffffff;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
 }
 
 .logout-btn:hover {
-  background-color: #1E1E1E;
-  color: #fff;
+  background-color: #ffffff;
+  color: #003b70;
 }
 
-.notification-icons {
-  display: flex;
-  gap: 5px;
-}
-
-.notification-icon {
-  width: 21px;
-  height: 18px;
-  object-fit: contain;
-}
 
 .upload-section {
-  background-color: #D9D9D9;
+  background-color: #f4f4f4; /* Light gray background for the upload section */
   width: 100%;
-  max-width: 1067px;
-  margin: 87px auto 0;
-  padding: 10px 1px 22px;
+  max-width: 700px;
+  margin: 40px auto 0;
+  padding: 30px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .upload-title {
-  color: #000;
-  font: 400 24px Inter, sans-serif;
-  margin: 0 0 16px 8px;
+  font: 700 20px Inter, sans-serif;
+  color: #003b70;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .separator {
-  background-color: #1E1E1E;
-  height: 1px;
+  background-color: #003b70;
+  height: 2px;
   width: 100%;
+  margin-bottom: 20px;
 }
 
 .upload-form {
-  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .dropzone {
-  background-color: #D9D9D9;
-  width: 963px;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 102px 80px;
-  border: 1px dashed #000;
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 500px;
+  padding: 50px 20px;
+  border: 2px dashed #003b70;
+  border-radius: 8px;
   cursor: pointer;
+  text-align: center;
 }
 
 .dropzone-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 404px;
-  margin: 0 auto;
 }
 
 .dropzone-text {
-  font: 400 20px Inter, sans-serif;
-  color: black;
-  text-align: center;
-  margin: 0;
+  font: 400 16px Inter, sans-serif;
+  color: #003b70;
+  margin-bottom: 20px;
 }
 
 .select-files-btn {
-  background-color: #fff;
-  color: #00B1E2;
-  padding: 9px;
-  margin-top: 28px;
-  width: 100px;
-  text-align: center;
+  background-color: #003b70;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 4px;
   cursor: pointer;
+  font: 400 16px Inter, sans-serif;
+  text-align: center;
+}
+
+.select-files-btn:hover {
+  background-color: #0056a4;
 }
 
 .file-format-info {
-  font: 400 16px Inter, sans-serif;
-  color: black;
-  margin-top: 48px;
+  font: 400 14px Inter, sans-serif;
+  color: #333333;
+  margin-top: 15px;
+  text-align: center;
 }
 
 .action-buttons {
   display: flex;
   justify-content: space-between;
-  max-width: 955px;
-  margin: 30px auto 0;
-  padding: 0 20px;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 30px;
 }
 
 .cancel-btn {
-  background-color: #fff;
-  color: #00B1E2;
-  font: 400 18px Inter, sans-serif;
-  padding: 9px 20px;
-  border: none;
+  background-color: #ffffff;
+  color: #003b70;
+  font: 400 16px Inter, sans-serif;
+  padding: 10px 20px;
+  border: 2px solid #003b70;
+  border-radius: 4px;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #003b70;
+  color: #ffffff;
 }
 
 .import-btn {
-  background-color: #00B1E2;
-  color: #fff;
-  font: 400 20px Inter, sans-serif;
-  padding: 11px 21px;
-  border: none;
+  background-color: #003b70;
+  color: #ffffff;
+  font: 400 16px Inter, sans-serif;
+  padding: 10px 20px;
+  border-radius: 4px;
   cursor: pointer;
+  border: none;
+}
+
+.import-btn:hover {
+  background-color: #0056a4;
 }
 
 @media (max-width: 991px) {
-  .upload-portal {
-    padding-bottom: 100px;
-  }
-
   .header {
-    padding: 0 20px;
+    padding: 10px 20px;
   }
 
   .upload-section {
-    margin-top: 40px;
+    padding: 20px;
   }
 
   .dropzone {
-    padding: 100px 20px;
+    padding: 40px 15px;
   }
 
-  .file-format-info {
-    margin-top: 40px;
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
   }
 }
+
 </style>
