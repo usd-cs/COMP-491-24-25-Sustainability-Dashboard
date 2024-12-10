@@ -1,3 +1,9 @@
+/**
+ * @file loginUser.test.js
+ * @description Unit tests for the `loginUser` function, which handles user authentication.
+ * Tests include cases for invalid email/password, successful login, and server errors.
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loginUser } from '../auth/controller.js';
 import { queryUserByEmail } from '../auth/queries.js'; // Update to match new function
@@ -26,6 +32,9 @@ describe('loginUser', () => {
     };
   });
 
+  /**
+   * Test: Should return 401 if user is not found.
+   */
   it('should return 401 if user is not found', async () => {
     queryUserByEmail.mockResolvedValue([]); // Simulate no user found in DB
 
@@ -35,6 +44,9 @@ describe('loginUser', () => {
     expect(res.json).toHaveBeenCalledWith({ message: 'Invalid email or password.' });
   });
 
+  /**
+   * Test: Should return 401 if password does not match.
+   */
   it('should return 401 if password does not match', async () => {
     queryUserByEmail.mockResolvedValue([
       {
@@ -52,6 +64,9 @@ describe('loginUser', () => {
     expect(res.json).toHaveBeenCalledWith({ message: 'Invalid email or password.' });
   });
 
+  /**
+   * Test: Should return 200 and user info if login is successful.
+   */
   it('should return 200 and user info if login is successful', async () => {
     queryUserByEmail.mockResolvedValue([
       {
@@ -76,6 +91,9 @@ describe('loginUser', () => {
     });
   });
 
+  /**
+   * Test: Should return 500 if there is a server error.
+   */
   it('should return 500 if there is a server error', async () => {
     queryUserByEmail.mockRejectedValue(new Error('Database error')); // Simulate a server error
 

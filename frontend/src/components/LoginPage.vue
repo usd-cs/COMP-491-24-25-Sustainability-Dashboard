@@ -1,12 +1,15 @@
 <template>
+  <!-- The main container for the login page -->
   <div class="login-page">
+    <!-- Header section with the application title -->
     <header class="header">
       <h1 class="title">USD Office of <br />Sustainability</h1>
-      <button class="nav-button">Login</button>
     </header>
+    <!-- Main content with the login form -->
     <main>
       <form class="login-form" @submit.prevent="handleSubmit">
         <h2 class="form-title">Login to Upload Data</h2>
+        <!-- Email input field -->
         <div class="form-group">
           <label for="email" class="form-label">Email</label>
           <input
@@ -17,6 +20,7 @@
             required
           />
         </div>
+        <!-- Password input field -->
         <div class="form-group">
           <label for="password" class="form-label">Password</label>
           <input
@@ -27,6 +31,7 @@
             required
           />
         </div>
+        <!-- Submit button -->
         <button type="submit" class="submit-button">Login</button>
       </form>
     </main>
@@ -34,37 +39,60 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
+/**
+ * @file LoginPage.vue
+ * @description A Vue component for the login page where users can authenticate themselves to access the application.
+ */
 
+import { ref } from 'vue'; // Reactive variables for form inputs
+import axios from 'axios'; // HTTP client for making API calls
+import { useRouter } from 'vue-router'; // Vue Router for navigation
+
+// Reactive variables for email and password inputs
 const email = ref('');
 const password = ref('');
-const router = useRouter();
+const router = useRouter(); // Router instance for navigation
 
+/**
+ * Handle the login form submission.
+ * Sends the user's email and password to the backend for authentication.
+ * On success, redirects the user to the main page.
+ * On failure, displays appropriate error messages.
+ * 
+ * @async
+ * @returns {Promise<void>}
+ */
 const handleSubmit = async () => {
   try {
+    // Make an API call to the login endpoint
     const response = await axios.post('http://localhost:3000/api/auth/login', {
-      email: email.value, // Sending email instead of username
-      password: password.value,
+      email: email.value, // Send email input
+      password: password.value, // Send password input
     });
 
+    // If the response is successful, navigate to the main page
     if (response.status === 200) {
-      alert(response.data.message); // Display success message
-      localStorage.setItem('userId', response.data.user.user_id); // Store user ID
+      alert(response.data.message); // Show success message
+      localStorage.setItem('userId', response.data.user.user_id); // Save user ID in localStorage
       router.push('/main'); // Redirect to MainPage.vue
     }
   } catch (error) {
+    // Handle error responses
     if (error.response) {
-      alert(error.response.data.message); // Display error message from backend
+      alert(error.response.data.message); // Show backend error message
     } else {
-      alert('Server error. Please try again later.');
+      alert('Server error. Please try again later.'); // Show generic server error
     }
   }
 };
 </script>
 
 <style scoped>
+/**
+ * Styles for the login page.
+ * Scoped styles ensure these styles apply only to this component.
+ */
+
 /* Resetting Defaults */
 * {
   margin: 0;
@@ -83,6 +111,7 @@ body {
   overflow: hidden; /* Prevent scrolling */
 }
 
+/* Main container for the login page */
 .login-page {
   display: flex;
   flex-direction: column;
@@ -94,7 +123,7 @@ body {
   overflow-y: hidden; /* Prevent vertical scrolling */
 }
 
-/* Header Section */
+/* Header section */
 .header {
   background: #00b1e2;
   display: flex;
@@ -113,16 +142,7 @@ body {
   text-align: left;
 }
 
-.nav-button {
-  background: #d9d9d9;
-  font-size: 24px;
-  padding: 10px 30px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-/* Login Form Section */
+/* Main content section */
 main {
   display: flex;
   justify-content: center;
@@ -131,6 +151,7 @@ main {
   width: 100%;
 }
 
+/* Login form styles */
 .login-form {
   background: #d9d9d9;
   width: 454px;
