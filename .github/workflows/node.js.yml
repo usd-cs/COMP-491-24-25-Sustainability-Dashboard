@@ -27,11 +27,15 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # Step 4: Run tests
+    # Step 4: Run ESLint
+    - name: Run ESLint
+      run: npm run lint
+
+    # Step 5: Run tests
     - name: Run tests
       run: npm test
 
-    # Step 5: Generate code coverage 
+    # Step 6: Generate code coverage 
     - name: Upload coverage report
       if: success()
       uses: actions/upload-artifact@v3

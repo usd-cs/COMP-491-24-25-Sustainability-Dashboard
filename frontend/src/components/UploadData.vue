@@ -61,7 +61,7 @@ import axios from 'axios';
 const router = useRouter();
 const selectedFile = ref(null);
 
-const handleUpload = async (event) => {
+const handleUpload = async (_event) => {
   if (!selectedFile.value) {
     alert('Please select a file to upload.');
     return;
