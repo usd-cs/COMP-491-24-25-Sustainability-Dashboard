@@ -10,7 +10,7 @@
             class="logo"
           />
         </a>
-        <h1 class="title">Office of Sustainability - Energy Dashboard</h1>
+        <h1 class="title">USD Office of Sustainability</h1>
       </div>
       <!-- Logout button -->
       <div class="user-section">
