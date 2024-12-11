@@ -52,6 +52,12 @@
             </p>
           </div>
         </div>
+        
+        <!-- Display selected file name -->
+        <div v-if="uploadedFileName" class="uploaded-file">
+          <p>Uploaded File: <strong>{{ uploadedFileName }}</strong></p>
+        </div>
+
 
         <div class="action-buttons">
           <button class="cancel-btn" @click="handleCancel" tabindex="0">Cancel</button>
@@ -69,6 +75,7 @@ import axios from 'axios';
 
 const router = useRouter();
 const selectedFile = ref(null);
+const uploadedFileName = ref(''); // State to store the uploaded file name
 
 const handleUpload = async (_event) => {
   if (!selectedFile.value) {
@@ -96,6 +103,7 @@ const handleUpload = async (_event) => {
     console.log('Response:', response);
 
     if (response.status === 200) {
+      uploadedFileName.value = selectedFile.value.name; // Update the uploaded file name
       router.push('/upload-success');
     }
   } catch (error) {
@@ -115,6 +123,7 @@ const handleFileDrop = (event) => {
       return;
     }
     selectedFile.value = file;
+    uploadedFileName.value = file.name; // Update the uploaded file name
     console.log('File dropped:', selectedFile.value.name);
   }
 };
@@ -126,6 +135,7 @@ const handleFileSelect = (event) => {
     return;
   }
   selectedFile.value = file;
+  uploadedFileName.value = file.name; // Update the uploaded file name
   console.log('File selected:', selectedFile.value.name);
 };
 
@@ -148,6 +158,13 @@ const handleLogout = () => {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+.uploaded-file {
+  margin-top: 20px;
+  font: 400 16px Inter, sans-serif;
+  color: #003b70;
+  text-align: center;
 }
 
 .upload-portal {
