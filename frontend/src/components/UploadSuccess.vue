@@ -1,30 +1,34 @@
 <template>
-  <!-- Main container for the Upload Success page -->
-  <div class="upload-success-container">
-    <!-- Header section with title and logout functionality -->
+  <div class="upload-success-portal">
     <header class="header">
-      <h1 class="title">USD Office of <br />Sustainability</h1>
+      <div class="header-content">
+        <!-- Clickable logo -->
+        <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png"
+            alt="University of San Diego Logo"
+            class="logo"
+          />
+        </a>
+        <h1 class="title">USD Office of Sustainability</h1>
+      </div>
+      <!-- Logout button -->
       <div class="user-section">
-        <div class="user-controls">
-          <button class="logout-btn" @click="handleLogout" tabindex="0">
-            Logout →
-          </button>
-        </div>
+        <button class="logout-btn" @click="handleLogout" tabindex="0">
+          Logout →
+        </button>
       </div>
     </header>
 
-    <!-- Main content section -->
-    <main class="main-content">
-      <h2 class="section-title">Import Files</h2>
-      <div class="divider"></div>
-      <!-- Success message container -->
+    <main class="upload-success-section">
+      <h2 class="upload-success-title">Import Files</h2>
+      <div class="separator"></div>
       <section class="success-message-container">
         <div class="success-content">
           <h3 class="success-heading">SUCCESS</h3>
           <p class="success-detail">Imported file successfully</p>
           <p class="success-prompt">Would you like to import more files?</p>
           <div class="action-buttons">
-            <!-- Cancel and Import buttons -->
             <button class="cancel-btn" @click="navigateToMainPage" tabindex="0">Cancel</button>
             <button class="import-btn" @click="navigateToImportPage" tabindex="0">Import</button>
           </div>
@@ -33,6 +37,7 @@
     </main>
   </div>
 </template>
+
 
 <script>
 /**
@@ -64,113 +69,95 @@ export default {
 </script>
 
 <style scoped>
-/* General container for the Upload Success page */
-.upload-success-container {
-  background: #fff;
+.upload-success-portal {
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 0;
   overflow: hidden;
-  padding-bottom: 152px;
 }
 
-/* Header styling */
 .header {
-  background: #00B1E2;
+  background-color: #003b70; /* Official USD Dark blue */
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 37px 28px;
+  padding: 20px 40px;
+  box-sizing: border-box;
   width: 100%;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align logo and title to the left */
+}
+
+.logo {
+  height: 60px;
+  margin-bottom: 10px;
 }
 
 .title {
-  color: #fff;
-  font: 400 40px Inter, sans-serif;
-  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.5;
 }
 
-/* User section in the header */
 .user-section {
   display: flex;
-  gap: 31px;
-  margin: auto 0;
+  align-items: center;
 }
 
-.greeting {
-  color: #fff;
-  font: 400 18px Inter, sans-serif;
-  margin: auto 0;
-}
-
-.user-controls {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  gap: 15px;
-  padding: 11px 4px 11px 10px;
-}
-
-.user-avatar {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-}
-
-/* Updated logout-btn styling from Upload Data file */
 .logout-btn {
   background-color: transparent;
-  color: #1E1E1E;
-  font: 400 18px Inter, sans-serif;
-  border: 1px solid #1E1E1E;
-  padding: 8px 20px;
+  color: #ffffff;
+  font: 400 16px Inter, sans-serif;
+  border: 1px solid #ffffff;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
 }
 
 .logout-btn:hover {
-  background-color: #1E1E1E;
-  color: #fff;
+  background-color: #ffffff;
+  color: #003b70;
 }
 
-/* Notification icons */
-.notification-icons {
-  display: flex;
-  flex-direction: column;
-  align-self: start;
-  width: 21px;
-  margin-top: 4px;
-}
-
-.notification-icon {
+.upload-success-section {
+  background-color: #f4f4f4; /* Light gray background */
   width: 100%;
-  object-fit: contain;
+  max-width: 700px;
+  margin: 40px auto 0;
+  padding: 30px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Main content styles */
-.main-content {
-  background: #D9D9D9;
-  margin: 87px auto 0;
+.upload-success-title {
+  font: 700 20px Inter, sans-serif;
+  color: #003b70;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.separator {
+  background-color: #003b70;
+  height: 2px;
   width: 100%;
-  max-width: 1067px;
-  padding: 10px 1px 62px;
-  font-family: Inter, sans-serif;
+  margin-bottom: 20px;
 }
 
-/* Success message section */
 .success-message-container {
   background: #C4E8B7;
   margin: 35px auto 0;
-  width: 730px;
-  max-width: 100%;
-  padding: 155px 80px;
+  width: 100%;
+  max-width: 500px;
+  padding: 50px 20px;
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -179,94 +166,80 @@ export default {
 .success-content {
   display: flex;
   flex-direction: column;
-  width: 269px;
-  max-width: 100%;
+  align-items: center;
+  text-align: center;
 }
 
 .success-heading {
   color: #07700C;
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 800;
-  margin: 0 18px;
+  margin-bottom: 10px;
 }
 
 .success-detail {
   color: #415E37;
   font-size: 16px;
-  margin: 0 26px;
+  margin-bottom: 10px;
 }
 
 .success-prompt {
   color: #000;
   font-size: 16px;
-  margin-top: 21px;
+  margin-bottom: 20px;
 }
 
-/* Action buttons for cancel and import */
 .action-buttons {
   display: flex;
-  gap: 19px;
-  margin-top: 16px;
-  width: 233px;
-  max-width: 100%;
-  align-self: center;
+  gap: 20px;
 }
 
 .cancel-btn {
-  background: #fff;
-  color: #00B1E2;
-  font-size: 18px;
-  padding: 14px 23px;
-  border: none;
+  background: #ffffff;
+  color: #003b70;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: 2px solid #003b70;
+  border-radius: 4px;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: #003b70;
+  color: #ffffff;
 }
 
 .import-btn {
-  background: #00B1E2;
-  color: #fff;
-  font-size: 20px;
-  padding: 11px 23px;
-  border: none;
+  background: #003b70;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 4px;
   cursor: pointer;
+  border: none;
 }
 
-.section-title {
-  color: black;
+.import-btn:hover {
+  background: #0056a4;
 }
 
-/* Responsive styles */
 @media (max-width: 991px) {
-  .upload-success-container {
-    padding-bottom: 100px;
-  }
-
   .header {
-    padding: 0 20px;
+    padding: 10px 20px;
   }
 
-  .main-content {
-    margin-top: 40px;
-  }
-
-  .section-title {
-    margin-left: 8px;
+  .upload-success-section {
+    padding: 20px;
   }
 
   .success-message-container {
-    padding: 100px 20px;
-  }
-
-  .success-heading {
-    font-size: 40px;
+    padding: 40px 15px;
   }
 
   .action-buttons {
-    white-space: initial;
-  }
-
-  .cancel-btn,
-  .import-btn {
-    padding: 0 20px;
+    flex-direction: column;
+    gap: 10px;
   }
 }
 </style>

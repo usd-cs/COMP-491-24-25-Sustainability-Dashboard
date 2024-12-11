@@ -3,14 +3,22 @@
   <div class="dashboard-container">
     <!-- Header section with the application title and logout button -->
     <header class="header">
-      <h1 class="brand-title">USD Office of <br />Sustainability</h1>
+      <div class="header-content">
+        <!-- Clickable logo -->
+        <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png"
+            alt="University of San Diego Logo"
+            class="logo"
+          />
+        </a>
+        <h1 class="title">USD Office of Sustainability</h1>
+      </div>
+      <!-- Logout button -->
       <div class="user-section">
-        <div class="user-controls">
-          <!-- Logout button -->
-          <button class="logout-btn" @click="handleLogout" tabindex="0">
-            Logout →
-          </button>
-        </div>
+        <button class="logout-btn" @click="handleLogout" tabindex="0">
+          Logout →
+        </button>
       </div>
     </header>
 
@@ -91,53 +99,55 @@ const handleLogout = () => {
   overflow-y: hidden;
 }
 
-/* Header styles */
+/* Header styling */
 .header {
-  background: #00B1E2;
+  background-color: #003b70; /* Official USD dark blue */
   display: flex;
-  width: 100%;
-  justify-content: space-between;
   align-items: center;
-  padding: 37px 28px;
+  justify-content: space-between;
+  padding: 20px 40px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.brand-title {
-  color: #fff;
-  font: 400 40px Inter, sans-serif;
-  margin: 0;
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align content to the left */
 }
 
-/* User section styles */
+.logo {
+  height: 60px;
+  margin-bottom: 10px; /* Add spacing between the logo and the title */
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.5;
+  text-align: left;
+}
+
 .user-section {
   display: flex;
   align-items: center;
-  gap: 15px;
-}
-
-.user-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
 }
 
 .logout-btn {
   background-color: transparent;
-  color: #1E1E1E;
-  font: 400 18px Inter, sans-serif;
-  border: 1px solid #1E1E1E;
-  padding: 8px 20px;
+  color: #ffffff;
+  font: 400 16px Inter, sans-serif;
+  border: 1px solid #ffffff;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
 }
 
 .logout-btn:hover {
-  background-color: #1E1E1E;
-  color: #fff;
+  background-color: #ffffff;
+  color: #003b70;
 }
 
 /* Main content styles */
