@@ -13,11 +13,11 @@ const { Pool } = pkg; // Destructure Pool from the imported package
  */
 
 const pool = new Pool({
-  user: 'postgres',
-  password: 'postgres',
-  host: 'localhost',
-  port: '5434',
-  database: 'postgres',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  host: process.env.DB_HOST || 'database',  // Change 'localhost' to 'database'
+  port: process.env.DB_PORT || 5432,        // PostgreSQL default port inside Docker
+  database: process.env.DB_NAME || 'postgres',
 });
 
 /**
