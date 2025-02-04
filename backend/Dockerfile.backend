@@ -1,0 +1,22 @@
+# Using specific version of the official Node.js image as a base
+# To comply with the version of Node.js used in the project
+FROM node:18.17.1
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the entire project into the container
+COPY . . 
+
+# Install the dependencies
+RUN npm install
+
+# Set working directory to backend
+WORKDIR /app/backend
+
+# Expose the port that the app runs on
+EXPOSE 3000
+
+# Run database schema setup and insert initial user before starting the server
+CMD ["sh", "-c", "node create_schema.js && node setup/setup_user.js && npm start"]
+
