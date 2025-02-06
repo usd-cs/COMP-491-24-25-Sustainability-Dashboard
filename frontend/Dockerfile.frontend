@@ -4,14 +4,13 @@ FROM node:18.17.1
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the entire project into the container
-COPY . .
+COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Set working directory to frontend
-WORKDIR /app/frontend
+# Copy the entire project into the container
+COPY . .
 
 # Expose the frontend port
 EXPOSE 5173
