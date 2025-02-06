@@ -1,15 +1,14 @@
-version: '3.8'
-
 services:
   backend:
+    platform: linux/amd64
     build:
       context: .
       dockerfile: backend/Dockerfile.backend
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ${COMPOSE_PROJECT_PATH:-.}:/app
+      - /app/node_modules  # Ensures node_modules is created inside the container
     environment:
       - NODE_ENV=development
       - DB_HOST=database
@@ -18,17 +17,20 @@ services:
       - DB_PASSWORD=postgres
       - DB_NAME=postgres
     depends_on:
-      - database  # Ensure database starts before backend
+      database:
+        condition: service_healthy
+
 
   frontend:
+    platform: linux/amd64
     build:
       context: .
       dockerfile: frontend/Dockerfile.frontend
     ports:
       - "5173:5173"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ${COMPOSE_PROJECT_PATH:-.}:/app
+      - /app/node_modules  # Ensures node_modules is created inside the container
     environment:
       - NODE_ENV=development
     depends_on:
@@ -45,7 +47,12 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Persist data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:  # Ensures database is ready before backend starts
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+      timeout: 3s
 
 volumes:
   postgres_data:
