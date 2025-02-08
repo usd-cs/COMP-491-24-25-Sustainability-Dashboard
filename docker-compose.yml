@@ -17,7 +17,7 @@ services:
       - DB_PASSWORD=postgres
       - DB_NAME=postgres
     depends_on:
-      database:
+      database: # Ensures database is ready before backend starts
         condition: service_healthy
 
 
