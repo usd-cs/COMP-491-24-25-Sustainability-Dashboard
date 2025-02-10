@@ -2,22 +2,30 @@
 # To comply with the version of Node.js used in the project
 FROM node:18.17.1
 
+
 # Set the working directory inside the container
 WORKDIR /app
 
+
 # Copy the package.json and package-lock.json files
-COPY package*.json ./
+COPY package.json ./
+
 
 # Install the dependencies
-RUN npm install
+RUN npm install --no-package-lock
+
 
 # Now copy everything else
 COPY . .
 
 
+
+
 # Expose the port that the app runs on
 EXPOSE 3000
 
+
 # Run database schema setup and insert initial user before starting the server
 CMD ["sh", "-c", "node backend/create_schema.js && node backend/setup/setup_user.js && npm start"]
+
 
