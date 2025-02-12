@@ -13,17 +13,17 @@ export default {
       // Mapping of headers to database columns
       headerToDbColumnMap: {
         'Date (Local)': 'date_local',
-        'Total Output Factor': 'total_output_factor_percent',
-        'AC Efficiency (LHV)': 'ac_efficiency_lhv_percent',
+        //'Total Output Factor': 'total_output_factor_percent',
+        //'AC Efficiency (LHV)': 'ac_efficiency_lhv_percent',
         'Heat Rate (HHV)': 'heat_rate_hhv_btu_per_kwh',
         'Electricity Out': 'electricity_out_kwh',
         'Gas Flow In': 'gas_flow_in_therms',
         'CO₂ Reduction': 'co2_reduction_lbs',
         'CO₂ Production': 'co2_production_lbs',
-        'NOₓ Reduction': 'nox_reduction_lbs',
-        'NOₓ Production': 'nox_production_lbs',
-        'SO₂ Reduction': 'so2_reduction_lbs',
-        'SO₂ Production': 'so2_production_lbs',
+        //'NOₓ Reduction': 'nox_reduction_lbs',
+        //'NOₓ Production': 'nox_production_lbs',
+        //'SO₂ Reduction': 'so2_reduction_lbs',
+        //'SO₂ Production': 'so2_production_lbs',
       },
       chartData: [],
       chartLabels: [],
@@ -37,7 +37,7 @@ export default {
     // Fetch the chart data from API
     async fetchChartData() {
       try {
-        const response = await axios.get('main/getenergy'); // Your API endpoint
+        const response = await axios.post('http://localhost:3000/api/tables/getenergy'); 
         const data = response.data;
 
         // Set chart labels (exclude the date)
