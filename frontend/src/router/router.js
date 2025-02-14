@@ -3,6 +3,7 @@ import LoginPage from '../components/LoginPage.vue'; // Login page component
 import MainPage from '../components/MainPage.vue'; // Main page (dashboard) component
 import UploadData from '../components/UploadData.vue'; // Upload data page component
 import UploadSuccess from '../components/UploadSuccess.vue'; // Upload success confirmation component
+import BarChart from '@/components/BarChart.vue';
 
 /**
  * @file router.js
@@ -27,6 +28,7 @@ const routes = [
   { path: '/main', component: MainPage }, // Route for the main dashboard page
   { path: '/upload', component: UploadData }, // Route for the upload data page
   { path: '/upload-success', component: UploadSuccess }, // Route for the upload success page
+  { path: '/bar-chart', component: BarChart},
 ];
 
 /**

@@ -1,20 +1,29 @@
 # Use a specific version of Node.js
 FROM node:18.17.1
 
+
 # Set the working directory inside the container
 WORKDIR /app
 
-COPY package*.json ./
+
+COPY package.json ./
+
 
 # Install dependencies
-RUN npm install
+RUN npm install --no-package-lock
+
 
 # Copy the entire project into the container
 COPY . .
 
+
 # Expose the frontend port
 EXPOSE 5173
 
+
 # Start the frontend server
 CMD ["npm", "run", "dev", "--", "--host"]
+
+
+
 

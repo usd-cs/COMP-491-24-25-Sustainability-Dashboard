@@ -31,7 +31,7 @@
             <h2 class="sidebar-title">FUTURE NAVIGATION SIDEBAR</h2>
             <nav class="navigation-menu">
               <!-- Navigation items for future use -->
-              <div class="nav-item" tabindex="0" role="button"></div>
+              <div class="nav-item" tabindex="0" role="button" @click="navigateToBarChart">Bar Chart</div>
               <div class="nav-item" tabindex="0" role="button"></div>
               <div class="nav-item" tabindex="0" role="button"></div>
               <div class="nav-item" tabindex="0" role="button"></div>
@@ -44,6 +44,9 @@
         <!-- Placeholder for dashboard visuals -->
         <section class="dashboard-content">
           <h2 class="dashboard-title">FUTURE DASHBOARD VISUALS</h2>
+          <div>
+            <BarChart/>
+          </div>
         </section>
       </div>
     </main>
@@ -57,6 +60,7 @@
  */
 
 import { useRouter } from 'vue-router'; // Import Vue Router for navigation
+import BarChart from './BarChart.vue';
 
 const router = useRouter(); // Vue Router instance for programmatic navigation
 
@@ -74,6 +78,14 @@ const navigateToUpload = () => {
  */
 const handleLogout = () => {
   router.push('/');
+};
+
+/**
+ * Navigate to the Bar Chart page.
+ * Triggered when the "Bar Chart" navigation item is clicked.
+ */
+ const navigateToBarChart = () => {
+  router.push('/bar-chart'); // Replace '/bar-chart' with your actual route for the Bar Chart page
 };
 </script>
 
