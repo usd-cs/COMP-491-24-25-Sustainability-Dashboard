@@ -19,9 +19,10 @@ export const getAllData = async (req, res) => {
  */
 export const getEnergySummary = async (req, res) => {
     try {
-        const data = await get30DayEnergyTotals();
-        res.status(200).json(data);
+      const data = await get30DayEnergyTotals();
+      res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to retrieve energy summary.' });
+      console.error('Error fetching energy summary:', error);
+      res.status(500).json({ message: 'Failed to retrieve energy summary.' });
     }
-};
+  };

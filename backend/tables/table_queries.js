@@ -1,30 +1,38 @@
 import { query } from '../database_connection.js';
 
 /**
- * Get 30-day total energy metrics with date range.
+ * Get 30-day average energy metrics for selected columns.
  * @returns {Promise<Object>}
  */
 export const get30DayEnergyTotals = async () => {
-    const sqlQuery = `
-        SELECT 
-            SUM(Heat_Rate_HHV_BTU_per_kWh) AS Total_Heat_Rate_HHV_BTU_per_kWh,
-            SUM(Electricity_Out_kWh) AS Total_Electricity_Out_kWh, 
-            SUM(CO2_Reduction_lbs) AS Total_CO2_Reduction_lbs, 
-            SUM(CO2_Production_lbs) AS Total_CO2_Production_lbs, 
-            SUM(Gas_Flow_In_Therms) AS Total_Gas_Flow_In_Therms,
-            CONCAT(
-                TO_CHAR(MIN(Date_Local), 'YYYY-MM-DD'), 
-                ' - ', 
-                TO_CHAR(MAX(Date_Local), 'YYYY-MM-DD')
-            ) AS Date_Range
-        FROM energy_30_day_totals;
-    `;
+  const sqlQuery = `
+    SELECT 
+      AVG(total_output_factor_percent) AS total_output_factor_percent,
+      AVG(ac_efficiency_lhv_percent) AS ac_efficiency_lhv_percent,
+      AVG(heat_rate_hhv_btu_per_kwh) AS heat_rate_hhv_btu_per_kwh
+    FROM energy_daily_data
+    WHERE created_at >= CURRENT_DATE - INTERVAL '30 days';
+  `;
 
-    try {
-        const result = await query(sqlQuery);
-        return result.rows[0];
-    } catch (error) {
-        console.error("Error fetching 30-day energy totals:", error);
-        throw error;
+  try {
+    const result = await query(sqlQuery);
+    console.log("Full query result:", result);
+    // Check if result has a 'rows' property; otherwise, assume result is an array of rows
+    const rows = result.rows || result;
+    
+    if (!rows || rows.length === 0) {
+      throw new Error("Query returned no rows.");
     }
+
+    const row = rows[0] || {};
+
+    return {
+      total_output_factor_percent: row.total_output_factor_percent ? parseFloat(row.total_output_factor_percent) : 0,
+      ac_efficiency_lhv_percent: row.ac_efficiency_lhv_percent ? parseFloat(row.ac_efficiency_lhv_percent) : 0,
+      heat_rate_hhv_btu_per_kwh: row.heat_rate_hhv_btu_per_kwh ? parseFloat(row.heat_rate_hhv_btu_per_kwh) : 0
+    };
+  } catch (error) {
+    console.error("Error fetching 30-day energy totals:", error);
+    throw error;
+  }
 };

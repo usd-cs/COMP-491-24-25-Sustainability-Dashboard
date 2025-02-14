@@ -1,11 +1,14 @@
 import { Router } from 'express';
 import { getEnergySummary } from './table_controller.js';
 
-
 const router = Router();
 
-// Route to get all records from the uploaded table
-router.post('/api/tables/getenergy', getEnergySummary);
+// Temporary test route to verify router mounting
+router.get('/test', (req, res) => {
+  res.send('Test route is working!');
+});
 
+// GET route for energy summary
+router.get('/getenergy', getEnergySummary);
 
 export default router;

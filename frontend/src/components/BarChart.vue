@@ -37,7 +37,7 @@ export default {
     // Fetch the chart data from API
     async fetchChartData() {
       try {
-        const response = await axios.post('http://localhost:3000/api/tables/getenergy'); 
+        const response = await axios.get('http://localhost:3000/api/tables/getenergy'); 
         const data = response.data;
 
         // Set chart labels (exclude the date)

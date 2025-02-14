@@ -1,7 +1,9 @@
-// import { spawn } from 'child_process';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+
+import authRoutes from './auth/routes.js';
+import tableRoutes from './tables/table_routes.js';
 
 /**
  * @file mainServer.js
@@ -20,7 +22,7 @@ import cors from 'cors';
  * @requires cors - Middleware for enabling cross-origin resource sharing.
  * @requires child_process.spawn - To spawn additional server processes.
  * @requires ./auth/routes.js - Routes for authentication.
- * @requires
+ * @requires ./tables/table_routes.js - Routes for table-related functionalities.
  **/
 
 // Define function to run additional servers
@@ -41,6 +43,7 @@ import cors from 'cors';
 // }
 
 // Main Express App
+
 const app = express();
 const PORT = 3000;
 
@@ -49,20 +52,15 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-import authRoutes from './auth/routes.js';
-// import userRoutes from './auth/upload/upload_routes.js';
-import tableRoutes from './tables/table_routes.js'
-
-// Updated Route Paths
-app.use('/api/auth', authRoutes); // Ensure compatibility with frontend API calls
-app.use(tableRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/tables', tableRoutes); // Mounting table routes under '/api/tables'
 
 // Root Route
 app.get('/', (req, res) => {
-    res.send('Hello, Node.js!');
+  res.send('Hello, Node.js!');
 });
 
-// Start Main Server
+// Start Server
 app.listen(PORT, () => {
-    console.log(`Main server is running on http://localhost:${PORT}`);
+  console.log(`Main server is running on http://localhost:${PORT}`);
 });
