@@ -28,10 +28,10 @@
         <!-- Sidebar with navigation items -->
         <aside class="sidebar">
           <div class="sidebar-content">
-            <h2 class="sidebar-title">FUTURE NAVIGATION SIDEBAR</h2>
+            <h2 class="sidebar-title">Navigation</h2>
             <nav class="navigation-menu">
               <!-- Navigation items for future use -->
-              <div class="nav-item" tabindex="0" role="button" @click="navigateToBarChart">Bar Chart</div>
+              <div class="nav-item" tabindex="0" role="button"></div>
               <div class="nav-item" tabindex="0" role="button"></div>
               <div class="nav-item" tabindex="0" role="button"></div>
               <div class="nav-item" tabindex="0" role="button"></div>
@@ -43,8 +43,8 @@
 
         <!-- Placeholder for dashboard visuals -->
         <section class="dashboard-content">
-          <h2 class="dashboard-title">FUTURE DASHBOARD VISUALS</h2>
-          <div>
+          <!--<h2 class="dashboard-title"></h2> -->
+          <div @click="navigateToBarChart">
             <BarChart/>
           </div>
         </section>
