@@ -29,7 +29,7 @@
         <div class="sidebar-content">
           <nav class="navigation-menu">
             <!-- Navigation items for future use -->
-            <div class="nav-item" tabindex="0" role="button" @click="navigateToBarChart">Summary</div>
+            <div class="nav-item" tabindex="0" role="button" @click="navigateToMain">Summary</div>
             <div class="nav-item" tabindex="0" role="button">Sources</div>
             <div class="nav-item" tabindex="0" role="button">Reports</div>
             <div class="nav-item" tabindex="0" role="button">Contact</div>
@@ -41,7 +41,7 @@
 
       <!-- Placeholder for dashboard visuals -->
       <div class="visual-container">
-        <div class="visual-section">
+        <div class="visual-section" role="button" @click="navigateToBarChart">
           <!-- Placeholder for the first graphic visual -->
           <BarChart/>
         </div>
@@ -76,6 +76,10 @@ const router = useRouter(); // Vue Router instance for programmatic navigation
  */
 const navigateToUpload = () => {
   router.push('/upload');
+};
+
+const navigateToMain = () => {
+  router.push('/main');
 };
 
 /**
