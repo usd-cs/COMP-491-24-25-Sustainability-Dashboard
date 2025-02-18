@@ -24,30 +24,39 @@
 
     <!-- Main content area of the dashboard -->
     <main class="main-content">
-      <div class="content-grid">
         <!-- Sidebar with navigation items -->
-        <aside class="sidebar">
-          <div class="sidebar-content">
-            <h2 class="sidebar-title">FUTURE NAVIGATION SIDEBAR</h2>
-            <nav class="navigation-menu">
-              <!-- Navigation items for future use -->
-              <div class="nav-item" tabindex="0" role="button" @click="navigateToBarChart">Bar Chart</div>
-              <div class="nav-item" tabindex="0" role="button"></div>
-              <div class="nav-item" tabindex="0" role="button"></div>
-              <div class="nav-item" tabindex="0" role="button"></div>
-            </nav>
-            <!-- Button to navigate to the upload data page -->
-            <button class="upload-button" @click="navigateToUpload" tabindex="0">Upload Data</button>
-          </div>
-        </aside>
+      <div class="sidebar">
+        <div class="sidebar-content">
+          <nav class="navigation-menu">
+            <!-- Navigation items for future use -->
+            <div class="nav-item" tabindex="0" role="button" @click="navigateToBarChart">Summary</div>
+            <div class="nav-item" tabindex="0" role="button">Sources</div>
+            <div class="nav-item" tabindex="0" role="button">Reports</div>
+            <div class="nav-item" tabindex="0" role="button">Contact</div>
+          </nav>
+          <!-- Button to navigate to the upload data page -->
+          <button class="upload-button" @click="navigateToUpload" tabindex="0">Upload Data</button>
+        </div>
+      </div>
 
-        <!-- Placeholder for dashboard visuals -->
-        <section class="dashboard-content">
-          <h2 class="dashboard-title">FUTURE DASHBOARD VISUALS</h2>
-          <div>
-            <BarChart/>
-          </div>
-        </section>
+      <!-- Placeholder for dashboard visuals -->
+      <div class="visual-container">
+        <div class="visual-section">
+          <!-- Placeholder for the first graphic visual -->
+          <BarChart/>
+        </div>
+        <div class="visual-section">
+          <!-- Placeholder for the second graphic visual -->
+          <BarChart/>
+        </div>
+        <div class="visual-section">
+          <!-- Placeholder for the third graphic visual -->
+          <BarChart/>
+        </div>
+        <div class="visual-section">
+          <!-- Placeholder for the fourth graphic visual -->
+          <BarChart/>
+        </div>
       </div>
     </main>
   </div>
@@ -106,9 +115,9 @@ const handleLogout = () => {
 .dashboard-container {
   background: #fff;
   display: flex;
-  padding-bottom: 31px;
   flex-direction: column;
-  overflow-y: hidden;
+  height: 100vh;
+  overflow-y:auto;
 }
 
 /* Header styling */
@@ -129,7 +138,7 @@ const handleLogout = () => {
 }
 
 .logo {
-  height: 60px;
+  height: 40px;
   margin-bottom: 10px; /* Add spacing between the logo and the title */
 }
 
@@ -137,7 +146,7 @@ const handleLogout = () => {
   font-size: 24px;
   font-weight: 700;
   color: #ffffff;
-  line-height: 1.5;
+  line-height: 1;
   text-align: left;
 }
 
@@ -164,16 +173,10 @@ const handleLogout = () => {
 
 /* Main content styles */
 .main-content {
-  align-self: center;
-  margin-top: 27px;
-  width: 100%;
-  max-width: 1384px;
-}
-
-/* Grid layout for content */
-.content-grid {
   display: flex;
-  gap: 20px;
+  width: 100%;
+  overflow: hidden; /* Prevent scrolling */
+  align-items: flex-start;
 }
 
 /* Sidebar styles */
@@ -181,24 +184,24 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   width: 15%;
+  padding-bottom: 3px; /* Same as dashboard-container padding-bottom */
+  box-sizing: border-box; /* Ensure padding is included in the width */
+  margin-left: 20px;
 }
 
 .sidebar-content {
-  background: #D9D9D9;
+  background: #003b70;
   display: flex;
   flex-direction: column;
-  padding: 29px 18px;
-  font: 400 16px Inter, sans-serif;
+  justify-content: space-between; 
+  padding: 15px;
+  margin-top: 20px;
+  height: 75.5vh;
   color: #000;
 }
 
-.sidebar-title {
-  font-size: 24px;
-  margin: 0;
-}
-
 .navigation-menu {
-  margin-top: 50px;
+  margin-top: 5px;
   display: flex;
   flex-direction: column;
   gap: 23px;
@@ -206,32 +209,56 @@ const handleLogout = () => {
 
 .nav-item {
   background: #fff;
-  height: 52px;
+  padding: 8px 1px;
   cursor: pointer;
+  display: flex; /* Use Flexbox */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  background: #75bee9;
+  color: #fff;
+  border-radius: 4px;
 }
 
 .upload-button {
   background: #fff;
-  margin-top: 293px;
-  font-size: 20px;
-  padding: 17px 24px;
+  margin-top: 20px;
+  font-size: 15px;
+  padding: 5px 15px;
   border: none;
   cursor: pointer;
 }
 
-/* Dashboard content styles */
-.dashboard-content {
-  display: flex;
-  flex-direction: column;
-  width: 85%;
+/* Visual container styles */
+.visual-container {
+  background: #003b70;
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 18px; /* Reduce the gap between the visual containers */
+  width: 100%; /* Adjust the width to fit within the viewport */
+  margin: 20px;
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-left: 20px; 
+  padding-bottom: 20px;
+  max-height: 800px; /* Ensures it stays within available space */
+
 }
 
-.dashboard-title {
-  background: #D9D9D9;
-  color: #000;
+.visual-section {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  padding: 181px 70px 424px;
-  font: 400 64px Inter, sans-serif;
-  margin: 0;
+  height: 230px; 
 }
 </style>
