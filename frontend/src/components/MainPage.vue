@@ -176,7 +176,7 @@ const handleLogout = () => {
 .main-content {
   display: flex;
   width: 100%;
-  overflow: hidden; /* Prevent scrolling */
+  overflow: auto; /* Prevent scrolling */
   align-items: flex-start;
 }
 
@@ -185,6 +185,7 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   width: 15%;
+  height: 100%; /* Make sidebar take full height */
   padding-bottom: 3px; /* Same as dashboard-container padding-bottom */
   box-sizing: border-box; /* Ensure padding is included in the width */
   margin-left: 20px;
@@ -197,7 +198,7 @@ const handleLogout = () => {
   justify-content: space-between; 
   padding: 15px;
   margin-top: 20px;
-  height: 75.5vh;
+  height: 80vh; /* Make sidebar content take full height */
   color: #000;
 }
 
@@ -250,7 +251,7 @@ const handleLogout = () => {
   padding-right: 20px;
   padding-left: 20px; 
   padding-bottom: 20px;
-  max-height: 800px; /* Ensures it stays within available space */
+  height: 80vh; /* Make visual container take full height */
   grid-template-areas: 
     "chart1 chart2"
     "chart3 chart4";
@@ -268,8 +269,8 @@ const handleLogout = () => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 230px;
-  overflow: hidden; /* Ensures charts do not overflow */
+  height: 100%;
+  overflow: auto; /* Ensures charts do not overflow */
   position: relative; 
 }
 .visual-section > * {
