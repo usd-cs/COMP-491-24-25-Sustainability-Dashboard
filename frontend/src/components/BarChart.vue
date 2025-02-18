@@ -1,5 +1,5 @@
 <template>
-  <div ref="chart" style="width: 100%; height: 400px;"></div>
+  <div ref="chart" class="chart-container"></div>
 </template>
 
 <script>
@@ -15,7 +15,7 @@ export default {
         'Date (Local)': 'date_local',
         //'Total Output Factor': 'total_output_factor_percent',
         //'AC Efficiency (LHV)': 'ac_efficiency_lhv_percent',
-        'Heat Rate (HHV)': 'heat_rate_hhv_btu_per_kwh',
+        'Heat Rate': 'heat_rate_hhv_btu_per_kwh',
         'Electricity Out': 'electricity_out_kwh',
         'Gas Flow In': 'gas_flow_in_therms',
         'CO₂ Reduction': 'co2_reduction_lbs',
@@ -57,7 +57,11 @@ export default {
     },
     
     renderChart() {
-      const chart = echarts.init(this.$refs.chart);
+      if (!this.$refs.chart) return;
+      this.chartInstance = echarts.init(this.$refs.chart, null, {
+        width: 550, // Set fixed width for debugging
+        height: 220, // Set fixed height for debugging
+      });
       const options = {
         title: {
           text: this.title,
@@ -88,11 +92,22 @@ export default {
           }
         ]
       };
-      chart.setOption(options);
+      this.chartInstance.setOption(options);
+      window.addEventListener('resize', () => this.chartInstance.resize());
     }
   }
 };
 </script>
 
 <style scoped>
+.chart-container {
+  width: 100%;
+  height: 100%;
+  display: flex; /* Enables centering */
+  align-items: center; /* Centers vertically */
+  justify-content: center; /* Centers horizontally */
+  overflow: hidden;
+  position: relative;
+}
+
 </style>

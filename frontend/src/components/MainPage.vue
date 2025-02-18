@@ -47,15 +47,12 @@
         </div>
         <div class="visual-section">
           <!-- Placeholder for the second graphic visual -->
-          <BarChart/>
         </div>
         <div class="visual-section">
           <!-- Placeholder for the third graphic visual -->
-          <BarChart/>
         </div>
         <div class="visual-section">
           <!-- Placeholder for the fourth graphic visual -->
-          <BarChart/>
         </div>
       </div>
     </main>
@@ -267,7 +264,9 @@ const handleLogout = () => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 230px; 
+  height: 230px;
+  overflow: hidden; /* Ensures charts do not overflow */
+  position: relative; 
 }
 .visual-section > * {
   width: 100%; /* Ensures BarChart fills the square */
