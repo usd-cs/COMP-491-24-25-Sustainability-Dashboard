@@ -250,8 +250,16 @@ const handleLogout = () => {
   padding-left: 20px; 
   padding-bottom: 20px;
   max-height: 800px; /* Ensures it stays within available space */
-
+  grid-template-areas: 
+    "chart1 chart2"
+    "chart3 chart4";
 }
+
+.visual-section:nth-child(1) { grid-area: chart1; } /* Top-left */
+.visual-section:nth-child(2) { grid-area: chart2; }
+.visual-section:nth-child(3) { grid-area: chart3; }
+.visual-section:nth-child(4) { grid-area: chart4; }
+
 
 .visual-section {
   background: #fff;
@@ -260,5 +268,9 @@ const handleLogout = () => {
   justify-content: center;
   width: 100%;
   height: 230px; 
+}
+.visual-section > * {
+  width: 100%; /* Ensures BarChart fills the square */
+  height: 100%;
 }
 </style>
