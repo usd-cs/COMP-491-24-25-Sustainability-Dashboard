@@ -1,5 +1,5 @@
 import { query } from '../database_connection.js';
-import { get30DayEnergyTotals } from './table_queries.js';
+import { get30DayEnergyTotals, getBubbleChartData } from './table_queries.js';
 
 /**
  * Fetch all data from `energy_daily_data`
@@ -25,4 +25,17 @@ export const getEnergySummary = async (req, res) => {
       console.error('Error fetching energy summary:', error);
       res.status(500).json({ message: 'Failed to retrieve energy summary.' });
     }
-  };
+};
+
+/**
+ * Fetch data for bubble chart
+ */
+export const getBubbleChart = async (req, res) => {
+    try {
+        const data = await getBubbleChartData();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Error fetching bubble chart data:', error);
+        res.status(500).json({ message: 'Failed to retrieve bubble chart data.' });
+    }
+};

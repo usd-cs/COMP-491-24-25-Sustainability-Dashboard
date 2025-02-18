@@ -46,6 +46,7 @@
           <h2 class="dashboard-title">FUTURE DASHBOARD VISUALS</h2>
           <div>
             <BarChart/>
+            <BubbleChart/>
           </div>
         </section>
       </div>
@@ -61,6 +62,7 @@
 
 import { useRouter } from 'vue-router'; // Import Vue Router for navigation
 import BarChart from './BarChart.vue';
+import BubbleChart from './BubbleChart.vue';
 
 const router = useRouter(); // Vue Router instance for programmatic navigation
 
