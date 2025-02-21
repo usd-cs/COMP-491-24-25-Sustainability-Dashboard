@@ -1,5 +1,7 @@
 <template>
-  <div ref="chart" style="width: 100%; height: 400px;"></div>
+  <div class="full-page">
+    <div ref="chart" class="chart-container"></div>
+  </div>
 </template>
 
 <script>
@@ -15,15 +17,15 @@ export default {
         'Date (Local)': 'date_local',
         //'Total Output Factor': 'total_output_factor_percent',
         //'AC Efficiency (LHV)': 'ac_efficiency_lhv_percent',
-        //'Heat Rate (HHV)': 'heat_rate_hhv_btu_per_kwh',
-        //'Electricity Out': 'electricity_out_kwh',
-        //'Gas Flow In': 'gas_flow_in_therms',
-        'CO₂ Reduction (lbs)': 'co2_reduction_lbs',
-        'CO₂ Production (lbs)': 'co2_production_lbs',
-        'NOₓ Reduction (lbs)': 'nox_reduction_lbs',
-        'NOₓ Production (lbs)': 'nox_production_lbs',
-        'SO₂ Reduction (lbs)': 'so2_reduction_lbs',
-        'SO₂ Production (lbs)': 'so2_production_lbs',
+        'Heat Rate': 'heat_rate_hhv_btu_per_kwh',
+        'Electricity Out': 'electricity_out_kwh',
+        'Gas Flow In': 'gas_flow_in_therms',
+        'CO₂ Reduction': 'co2_reduction_lbs',
+        'CO₂ Production': 'co2_production_lbs',
+        //'NOₓ Reduction': 'nox_reduction_lbs',
+        //'NOₓ Production': 'nox_production_lbs',
+        //'SO₂ Reduction': 'so2_reduction_lbs',
+        //'SO₂ Production': 'so2_production_lbs',
       },
       chartData: [],
       chartLabels: [],
@@ -31,7 +33,7 @@ export default {
     };
   },
   mounted() {
-    this.fetchChartData();  // Fetch data on mount
+    this.fetchChartData(); // Fetch data on mount
   },
   methods: {
     // Fetch the chart data from API
@@ -41,12 +43,14 @@ export default {
         const data = response.data;
 
         // Set chart labels (exclude the date)
-        this.chartLabels = Object.keys(this.headerToDbColumnMap).filter(label => label !== 'Date (Local)');
+        this.chartLabels = Object.keys(this.headerToDbColumnMap).filter(
+          label => label !== 'Date (Local)'
+        );
 
         // Map the fetched data to the chart data
         this.chartData = this.chartLabels.map(label => {
           const dbColumn = this.headerToDbColumnMap[label];
-          return data[dbColumn] || 0;  // If value not found, default to 0
+          return data[dbColumn] || 0; // If value not found, default to 0
         });
 
         // Render the chart with fetched data
@@ -58,6 +62,8 @@ export default {
     
     renderChart() {
       const chart = echarts.init(this.$refs.chart);
+      // Store the instance so we can use it in the resize event
+      this.chartInstance = chart;
       const options = {
         title: {
           text: this.title,
@@ -88,11 +94,31 @@ export default {
           }
         ]
       };
-      chart.setOption(options);
+      this.chartInstance.setOption(options);
+      window.addEventListener('resize', () => this.chartInstance.resize());
     }
   }
 };
 </script>
 
 <style scoped>
+:global(body) {
+  background-color: #ffffff; /* Global background color */
+}
+.full-page {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+.chart-container {
+  width: 100%;
+  height: 100%; /* Fill the full-page container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  /* border: 1px solid red; For debugging */
+}
 </style>

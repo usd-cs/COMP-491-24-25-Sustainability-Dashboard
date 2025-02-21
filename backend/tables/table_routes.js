@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getEnergySummary } from './table_controller.js';
+import { getEnergySummary, getBubbleChart } from './table_controller.js';
 
 const router = Router();
 
@@ -10,5 +10,8 @@ router.get('/test', (req, res) => {
 
 // GET route for energy summary
 router.get('/getenergy', getEnergySummary);
+
+// GET route for bubble chart data
+router.get('/getbubblechart', getBubbleChart);
 
 export default router;
