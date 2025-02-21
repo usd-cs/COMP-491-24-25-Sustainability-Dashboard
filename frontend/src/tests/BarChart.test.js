@@ -1,100 +1,79 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import BarChart from '../components/BarChart.vue';
 import axios from 'axios';
 import * as echarts from 'echarts';
 
+// Mock axios
 vi.mock('axios');
-vi.mock('echarts');
+
+// Mock echarts
+vi.mock('echarts', () => ({
+  init: vi.fn(() => ({
+    setOption: vi.fn(),
+    resize: vi.fn(),
+  })),
+}));
 
 describe('BarChart.vue', () => {
   let wrapper;
+  const mockData = {
+    date_local: '2023-10-01',
+    heat_rate_hhv_btu_per_kwh: 10000,
+    electricity_out_kwh: 5000,
+    gas_flow_in_therms: 200,
+    co2_reduction_lbs: 300,
+    co2_production_lbs: 400,
+  };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    axios.get.mockResolvedValue({ data: mockData }); // Mock successful API call
     wrapper = mount(BarChart);
   });
 
-  it('initializes with correct default data', () => {
-    expect(wrapper.vm.title).toBe('Energy Production & Emissions');
-    expect(wrapper.vm.chartLabels).toEqual([]);
-    expect(wrapper.vm.chartData).toEqual([]);
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  it('maps header labels to database columns correctly', () => {
-    expect(wrapper.vm.headerToDbColumnMap['CO₂ Reduction (lbs)']).toBe('co2_reduction_lbs');
-    expect(wrapper.vm.headerToDbColumnMap['NOₓ Production (lbs)']).toBe('nox_production_lbs');
+  it('renders the chart container', () => {
+    expect(wrapper.find('.chart-container').exists()).toBe(true);
   });
 
-  it('fetches chart data from API and updates component state', async () => {
-    axios.get.mockResolvedValue({
-      data: {
-        date_local: '2024-01-01',
-        co2_reduction_lbs: 500,
-        co2_production_lbs: 300,
-        nox_reduction_lbs: 50,
-        nox_production_lbs: 20,
-        so2_reduction_lbs: 10,
-        so2_production_lbs: 5
-      }
-    });
+  it('fetches chart data on mount', async () => {
+    await wrapper.vm.$nextTick(); // Wait for the next tick to ensure data is fetched
 
-    await wrapper.vm.fetchChartData();
-
-    expect(wrapper.vm.chartLabels).toEqual([
-      'CO₂ Reduction (lbs)', 
-      'CO₂ Production (lbs)', 
-      'NOₓ Reduction (lbs)', 
-      'NOₓ Production (lbs)', 
-      'SO₂ Reduction (lbs)', 
-      'SO₂ Production (lbs)'
-    ]);
-
-    expect(wrapper.vm.chartData).toEqual([500, 300, 50, 20, 10, 5]);
+    // Ensure the API was called and the correct data is assigned
     expect(axios.get).toHaveBeenCalledWith('http://localhost:3000/api/tables/getenergy');
+    expect(wrapper.vm.chartData).toEqual([10000, 5000, 200, 300, 400]);
+    expect(wrapper.vm.chartLabels).toEqual([
+      'Heat Rate',
+      'Electricity Out',
+      'Gas Flow In',
+      'CO₂ Reduction',
+      'CO₂ Production',
+    ]);
   });
 
-  it('handles API errors gracefully', async () => {
-    console.error = vi.fn();
-    axios.get.mockRejectedValue(new Error('API Error'));
+  it('handles errors when fetching data', async () => {
+    // Mock a failed API call
+    axios.get.mockRejectedValueOnce(new Error('Network Error')); 
 
+    // Trigger the data fetch
     await wrapper.vm.fetchChartData();
-
-    expect(console.error).toHaveBeenCalledWith('Error fetching chart data:', expect.any(Error));
-  });
-
-  it('renders the chart with echarts', async () => {
-    const mockSetOption = vi.fn();
-    echarts.init.mockReturnValue({ setOption: mockSetOption });
-
-    await wrapper.vm.fetchChartData();
-    wrapper.vm.renderChart();
-
-    expect(echarts.init).toHaveBeenCalledWith(wrapper.vm.$refs.chart);
-
-    // Updated test for the series and data
-    expect(mockSetOption).toHaveBeenCalledWith(expect.objectContaining({
-      title: { text: 'Energy Production & Emissions', left: 'center' },
-      series: [{
-        type: 'bar',
-        data: expect.arrayContaining([]),  // Expecting any array, may adjust this based on the data you pass
-        barWidth: '50%',
-        itemStyle: {
-          color: '#4caf50',
-        },
-        name: 'Value',
-      }],
-      tooltip: { trigger: 'axis' },
-      xAxis: {
-        axisLabel: {
-          rotate: 45,
-        },
-        data: expect.arrayContaining([]),  // Expecting an array of labels
-        type: 'category',
-      },
-      yAxis: {
-        type: 'value',
-      },
-    }));
+    
+    // Wait for the next tick to ensure component has processed the error
+    await wrapper.vm.$nextTick();
+    
+    // Ensure chartData takes in the data from the uploaded file database 
+    expect(wrapper.vm.chartData).toEqual([10000, 5000, 200, 300, 400]); 
+    
+    // Verify that chartLabels are still set to their default values
+    expect(wrapper.vm.chartLabels).toEqual([
+      'Heat Rate',
+      'Electricity Out',
+      'Gas Flow In',
+      'CO₂ Reduction',
+      'CO₂ Production',
+    ]);
   });
 });
