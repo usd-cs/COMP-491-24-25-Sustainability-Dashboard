@@ -1,5 +1,7 @@
 <template>
-  <div ref="chart" class="chart-container"></div>
+  <div class="full-page">
+    <div ref="chart" class="chart-container"></div>
+  </div>
 </template>
 
 <script>
@@ -31,7 +33,7 @@ export default {
     };
   },
   mounted() {
-    this.fetchChartData();  // Fetch data on mount
+    this.fetchChartData(); // Fetch data on mount
   },
   methods: {
     // Fetch the chart data from API
@@ -41,12 +43,14 @@ export default {
         const data = response.data;
 
         // Set chart labels (exclude the date)
-        this.chartLabels = Object.keys(this.headerToDbColumnMap).filter(label => label !== 'Date (Local)');
+        this.chartLabels = Object.keys(this.headerToDbColumnMap).filter(
+          label => label !== 'Date (Local)'
+        );
 
         // Map the fetched data to the chart data
         this.chartData = this.chartLabels.map(label => {
           const dbColumn = this.headerToDbColumnMap[label];
-          return data[dbColumn] || 0;  // If value not found, default to 0
+          return data[dbColumn] || 0; // If value not found, default to 0
         });
 
         // Render the chart with fetched data
@@ -57,11 +61,9 @@ export default {
     },
     
     renderChart() {
-      if (!this.$refs.chart) return;
-      this.chartInstance = echarts.init(this.$refs.chart, null, {
-        width: 550, // Set fixed width for debugging
-        height: 220, // Set fixed height for debugging
-      });
+      const chart = echarts.init(this.$refs.chart);
+      // Store the instance so we can use it in the resize event
+      this.chartInstance = chart;
       const options = {
         title: {
           text: this.title,
@@ -100,14 +102,23 @@ export default {
 </script>
 
 <style scoped>
+:global(body) {
+  background-color: #ffffff; /* Global background color */
+}
+.full-page {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
 .chart-container {
   width: 100%;
-  height: 100%;
-  display: flex; /* Enables centering */
-  align-items: center; /* Centers vertically */
-  justify-content: center; /* Centers horizontally */
+  height: 100%; /* Fill the full-page container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   position: relative;
+  /* border: 1px solid red; For debugging */
 }
-
 </style>
