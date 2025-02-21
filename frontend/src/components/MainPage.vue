@@ -45,8 +45,9 @@
           <!-- Placeholder for the first graphic visual -->
           <BarChart/>
         </div>
-        <div class="visual-section">
+        <div class="visual-section" role="button" @click="navigateToBubbleChart">
           <!-- Placeholder for the second graphic visual -->
+          <BubbleChart/>
         </div>
         <div class="visual-section">
           <!-- Placeholder for the third graphic visual -->
@@ -67,6 +68,7 @@
 
 import { useRouter } from 'vue-router'; // Import Vue Router for navigation
 import BarChart from './BarChart.vue';
+import BubbleChart from './BubbleChart.vue';
 
 const router = useRouter(); // Vue Router instance for programmatic navigation
 
@@ -94,8 +96,16 @@ const handleLogout = () => {
  * Navigate to the Bar Chart page.
  * Triggered when the "Bar Chart" navigation item is clicked.
  */
- const navigateToBarChart = () => {
-  router.push('/bar-chart'); // Replace '/bar-chart' with your actual route for the Bar Chart page
+const navigateToBarChart = () => {
+  router.push('/bar-chart'); 
+};
+
+/**
+ * Navigate to the Bubble Chart page.
+ * Triggered when the "Bubble Chart" navigation item is clicked.
+ */
+const navigateToBubbleChart = () => {
+  router.push('/bubble-chart'); // Replace '/bubble-chart' with your actual route for the Bubble Chart page
 };
 </script>
 
@@ -270,11 +280,12 @@ const handleLogout = () => {
   justify-content: center;
   width: 100%;
   height: 100%;
-  overflow: auto; /* Ensures charts do not overflow */
-  position: relative; 
+  overflow: auto;
+  position: relative;
 }
 .visual-section > * {
-  width: 100%; /* Ensures BarChart fills the square */
+  width: 100%;
   height: 100%;
+  /* border: 1px solid red; For debugging */
 }
 </style>
