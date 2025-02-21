@@ -44,10 +44,10 @@ export const get30DayEnergyTotals = async () => {
 export const getBubbleChartData = async () => {
   const sqlQuery = `
     SELECT 
-      electricity_out_kwh,
-      heat_rate_hhv_btu_per_kwh,
-      gas_flow_in_therms,
-      co2_production_lbs
+      co2_production_lbs,
+      co2_reduction_lbs,
+      ac_efficiency_lhv_percent,
+      total_output_factor_percent
     FROM energy_daily_data;
   `;
 

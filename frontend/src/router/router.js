@@ -4,6 +4,7 @@ import MainPage from '../components/MainPage.vue'; // Main page (dashboard) comp
 import UploadData from '../components/UploadData.vue'; // Upload data page component
 import UploadSuccess from '../components/UploadSuccess.vue'; // Upload success confirmation component
 import BarChart from '@/components/BarChart.vue';
+import BubbleChart from '@/components/BubbleChart.vue';
 
 /**
  * @file router.js
@@ -28,7 +29,8 @@ const routes = [
   { path: '/main', component: MainPage }, // Route for the main dashboard page
   { path: '/upload', component: UploadData }, // Route for the upload data page
   { path: '/upload-success', component: UploadSuccess }, // Route for the upload success page
-  { path: '/bar-chart', component: BarChart},
+  { path: '/bar-chart', component: BarChart}, // Route for the bar chart page
+  { path: '/bubble-chart', component: BubbleChart, props: { fullPage: true } }
 ];
 
 /**
