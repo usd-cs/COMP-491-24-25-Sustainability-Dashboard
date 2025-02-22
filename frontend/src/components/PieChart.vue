@@ -1,75 +1,94 @@
 <template>
-  <div>
-    <h2>Energy Sources Distribution</h2>
-    <v-chart class="chart" :option="chartOptions" />
+  <div class="full-page">
+    <div ref="chart" class="chart-container"></div>
   </div>
 </template>
 
 <script>
 import { defineComponent, ref, onMounted } from 'vue';
-import { use } from 'echarts/core';
-import VChart from 'vue-echarts';
-import { PieChart } from 'echarts/charts';
-import { TitleComponent, TooltipComponent, LegendComponent } from 'echarts/components';
-import { CanvasRenderer } from 'echarts/renderers';
-import Papa from 'papaparse';
-
-use([PieChart, TitleComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
+import * as echarts from 'echarts';
 
 export default defineComponent({
-  components: {
-    VChart
-  },
+  name: 'PieChart',
   setup() {
-    const chartOptions = ref({});
+    const chart = ref(null); // Reference for the chart div
 
-    const loadCSVData = async () => {
-      const response = await fetch('/mnt/data/sources-of-electricity (1).csv');
-      const csvText = await response.text();
-      Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (result) => {
-          const data = result.data.map(row => ({
-            name: row['Category'],
-            value: parseFloat(row['MWh'])
-          }));
+    const hardcodedData = [
+      { name: 'Calpine Energy', value: 15035 },
+      { name: 'Bloom Energy Fuel Cell', value: 7281 },
+      { name: 'Solar Panels', value: 1593 },
+      { name: 'SDG&E', value: 552 }
+    ];
 
-          chartOptions.value = {
-            title: {
-              text: 'Energy Sources Distribution',
-              left: 'center'
-            },
-            tooltip: {
-              trigger: 'item'
-            },
-            legend: {
-              orient: 'vertical',
-              left: 'left'
-            },
-            series: [
-              {
-                name: 'Energy Sources',
-                type: 'pie',
-                radius: '50%',
-                data
+    const renderChart = () => {
+      if (chart.value) {
+        const myChart = echarts.init(chart.value);
+        myChart.setOption({
+          title: {
+            text: 'Energy Sources Distribution',
+            left: 'center',
+            textStyle: {
+              fontSize: 14,
+              fontWeight: 'bold'
+            }
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b}: {c} MWh ({d}%)'
+          },
+          legend: {
+            orient: 'horizontal',
+            bottom: '0%',
+            textStyle: {
+              fontSize: 10
+            }
+          },
+          series: [
+            {
+              name: 'Energy Sources',
+              type: 'pie',
+              radius: '40%', 
+              label: {
+                show: true,
+                position: 'outside',
+                fontSize: 12,
+                fontWeight: 'bold',
+                formatter: '{b}'
+              },
+              labelLine: {
+                show: true
+              },
+              data: hardcodedData,
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 5,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.3)'
+                }
               }
-            ]
-          };
-        }
-      });
+            }
+          ]
+        });
+      }
     };
 
-    onMounted(loadCSVData);
+    onMounted(renderChart);
 
-    return { chartOptions };
+    return { chart };
   }
 });
 </script>
 
 <style scoped>
-.chart {
+.full-page {
   width: 100%;
-  height: 400px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.chart-container {
+  width: 80%; 
+  height: 400px; 
 }
 </style>
