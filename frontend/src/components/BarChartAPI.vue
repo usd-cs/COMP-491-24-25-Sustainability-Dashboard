@@ -7,13 +7,12 @@
 <script>
 import * as echarts from 'echarts';
 import axios from 'axios';
-import qs from 'qs';
 
 const BLOOM_API_URL = 'https://portal-api.bloomenergy.com/api/v1/data/site';
 let token = localStorage.getItem('authtoken'); // Fetch the token from localStorage
 
 // Helper function to fetch data
-const fetchData = async (siteID) => {
+const fetchData = async (siteID, fromDate) => {
   if (!token) {
     await getAuthToken(); // If token is not available, get a new one
   }
@@ -23,13 +22,20 @@ const fetchData = async (siteID) => {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
-    }
+    },
+    body: JSON.stringify({
+      metrics: ["total_output_factor", "efficiency", "energy", "fuel"],
+      timeinterval: "daily",
+      timeframe: "custom",
+      from: fromDate,  // Pass fromDate here
+      to: fromDate     // You can adjust 'to' if needed
+    })
   });
 
   if (response.status === 401) {
     // If unauthorized, refresh the token and retry the request
     await getAuthToken();
-    return fetchData(siteID); // Retry after refreshing the token
+    return fetchData(siteID, fromDate); // Retry after refreshing the token
   }
 
   if (!response.ok) {
@@ -114,6 +120,15 @@ export default {
     await this.fetchChartData();
   },
   methods: {
+    // Function to get the current date in YYYY-MM-DD format
+    getCurrentDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Get month and pad to 2 digits
+      const day = today.getDate().toString().padStart(2, '0'); // Get day and pad to 2 digits
+      return `${year}-${month}-${day}`; // Format the date as YYYY-MM-DD
+    },
+
     async fetchSiteID() {
       try {
         this.siteID = await fetchSiteID(); // Fetch the site ID
@@ -130,7 +145,8 @@ export default {
       }
 
       try {
-        const response = await fetchData(this.siteID); // Use the fetched site ID
+        const fromDate = this.getCurrentDate(); // Get the current date
+        const response = await fetchData(this.siteID, fromDate); // Use the fetched site ID and current date
         const data = response?.data?.[0]; // Use only the first index
 
         if (!data) {
