@@ -6,40 +6,91 @@
   
   <script>
   import * as echarts from 'echarts';
+  import axios from 'axios';
   
-  const SITE_ID = "81cf1b35a25c3452b54467f32639c00f"; 
+  const BLOOM_API_URL = 'https://portal-api.bloomenergy.com/api/v1/data/site';
+  let token = localStorage.getItem('authtoken'); // Fetch the token from localStorage
+  
+  // Helper function to fetch data
+  const fetchData = async (siteID) => {
+    if (!token) {
+      await getAuthToken(); // If token is not available, get a new one
+    }
+  
+    const response = await fetch(`${BLOOM_API_URL}/${siteID}/data-extract`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  
+    if (response.status === 401) {
+      // If unauthorized, refresh the token and retry the request
+      await getAuthToken();
+      return fetchData(siteID); // Retry after refreshing the token
+    }
+  
+    if (!response.ok) {
+      throw new Error(`API request failed with status: ${response.status}`);
+    }
+  
+    return response.json();
+  };
+  
+  // Function to get a new token
+  const getAuthToken = async () => {
+    try {
+      const response = await axios.post('https://portal-api.bloomenergy.com/auth', {
+        username: process.env.VITE_BLOOMUSERNAME,
+        password: process.env.VITE_BLOOMPASSWORD,
+      });
+  
+      token = response.data.token;
+      console.log('New token obtained:', token);
+      localStorage.setItem('authtoken', token);
+    } catch (error) {
+      console.error('Error getting token:', error.message);
+      throw new Error('Authentication failed');
+    }
+  };
   
   export default {
     name: 'BarChart',
     data() {
       return {
         headerToDbColumnMap: {
-          'Date (Local)': 'date_local',
-          'Heat Rate': 'heat_rate_hhv_btu_per_kwh',
-          'Electricity Out': 'electricity_out_kwh',
-          'Gas Flow In': 'gas_flow_in_therms',
-          'CO₂ Reduction': 'co2_reduction_lbs',
-          'CO₂ Production': 'co2_production_lbs',
+          'Date (Local)': 'recordedat',
+          'Total Output Factor': 'total_output_factor',
+          'Efficiency': 'efficiency',
+          'Energy': 'energy',
+          'Fuel': 'fuel',
+          'CO₂ Reduction': 'co2_reduction',
+          'NOₓ Reduction': 'nox_reduction',
+          'SO₂ Reduction': 'so2_reduction',
+          'Battery Charge': 'battery_charge',
+          'Battery Discharge': 'battery_discharge',
+          'Critical Load Energy': 'critical_load_energy'
         },
         chartData: [],
         chartLabels: [],
         title: 'Energy Production & Emissions'
       };
     },
-    mounted() {
-      this.fetchChartData(); // Fetch data when component mounts
+    async mounted() {
+      await this.fetchChartData();
     },
     methods: {
       async fetchChartData() {
         try {
-          const data = await fetchEnergyData(SITE_ID);
+          const response = await fetchData('81cf1b35a25c3452b54467f32639c00f'); // Call the imported fetchData function
+          const data = response?.data?.[0]; // Use only the first index
   
           if (!data) {
             console.error('No data received from API.');
             return;
           }
   
-          // Extract relevant fields from API response
           this.chartLabels = Object.keys(this.headerToDbColumnMap).filter(
             label => label !== 'Date (Local)'
           );
