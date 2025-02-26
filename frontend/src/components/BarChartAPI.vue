@@ -41,14 +41,26 @@
   // Function to get a new token
   const getAuthToken = async () => {
     try {
-      const response = await axios.post('https://portal-api.bloomenergy.com/auth', {
-        username: process.env.VITE_BLOOMUSERNAME,
-        password: process.env.VITE_BLOOMPASSWORD,
-      });
+      const response = await axios.post(
+        'https://portal-api.bloomenergy.com/auth',
+        {
+            username: "kaelananderson",
+            password: "Bloom!Senior1"
+          //username: import.meta.env.VITE_BLOOMUSERNAME,
+          //password: import.meta.env.VITE_BLOOMPASSWORD
+        },
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
+      );
   
       token = response.data.token;
       console.log('New token obtained:', token);
-      localStorage.setItem('authtoken', token);
+      localStorage.setItem('authtoken', token); // Store the token in localStorage
+  
     } catch (error) {
       console.error('Error getting token:', error.message);
       throw new Error('Authentication failed');
