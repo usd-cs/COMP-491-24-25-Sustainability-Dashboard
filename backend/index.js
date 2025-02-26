@@ -51,6 +51,8 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tables', tableRoutes); // Mounting table routes under '/api/tables'

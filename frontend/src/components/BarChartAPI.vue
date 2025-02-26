@@ -7,9 +7,11 @@
   <script>
   import * as echarts from 'echarts';
   import axios from 'axios';
+  import qs from 'qs';
   
   const BLOOM_API_URL = 'https://portal-api.bloomenergy.com/api/v1/data/site';
   let token = localStorage.getItem('authtoken'); // Fetch the token from localStorage
+
   
   // Helper function to fetch data
   const fetchData = async (siteID) => {
@@ -41,11 +43,17 @@
   // Function to get a new token
   const getAuthToken = async () => {
     try {
-      const response = await axios.post('https://portal-api.bloomenergy.com/auth', {
-        username: process.env.VITE_BLOOMUSERNAME,
-        password: process.env.VITE_BLOOMPASSWORD,
-      });
-  
+      const response = await axios.post('https://portal-api.bloomenergy.com/auth', 
+      {
+        "username": import.meta.env.VITE_BLOOMUSERNAME,
+        "password": import.meta.env.VITE_BLOOMPASSWORD,
+      },
+        {
+        headers: {
+      "Content-Type": "application/json",
+    }
+    });
+
       token = response.data.token;
       console.log('New token obtained:', token);
       localStorage.setItem('authtoken', token);
