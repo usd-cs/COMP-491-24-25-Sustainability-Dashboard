@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import BubbleChart from '../components/BubbleChart.vue'; 
+import BubbleChart from '../components/BubbleChart.vue';
 import axios from 'axios';
 import * as echarts from 'echarts';
 
@@ -10,6 +10,7 @@ vi.mock('echarts', () => ({
   init: vi.fn(() => ({
     setOption: vi.fn(),
     resize: vi.fn(),
+    dispose: vi.fn(),
   })),
 }));
 
@@ -27,7 +28,7 @@ describe('BubbleChart.vue', () => {
       total_output_factor_percent: '80.3456',
     },
     {
-    // note that "200.9999".toFixed(3) produces "201.000"
+      // note that "200.9999".toFixed(3) produces "201.000"
       co2_production_lbs: '200.9999',
       co2_reduction_lbs: '100.1234',
       ac_efficiency_lhv_percent: '60.0001',

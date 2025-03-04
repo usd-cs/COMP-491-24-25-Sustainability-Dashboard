@@ -4,8 +4,19 @@
  */
 
 import { mount } from '@vue/test-utils';
+
+import { createRouter, createWebHistory } from 'vue-router';
+import { createTestingPinia } from '@pinia/testing';
+
 import { describe, it, expect } from 'vitest';
 import DashboardLayout from '../components/MainPage.vue';
+
+//Mock Vue Router
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [],
+});
+
 
 /**
  * @description Test suite for the `DashboardLayout` component.

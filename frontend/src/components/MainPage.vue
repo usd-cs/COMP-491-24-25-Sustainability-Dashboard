@@ -49,8 +49,9 @@
           <!-- Placeholder for the second graphic visual -->
           <BubbleChart/>
         </div>
-        <div class="visual-section">
+        <div class="visual-section" role="button" @click="navigateToPieChart"> 
           <!-- Placeholder for the third graphic visual -->
+          <PieChart/>
         </div>
         <div class="visual-section">
           <!-- Placeholder for the fourth graphic visual -->
@@ -69,6 +70,7 @@
 import { useRouter } from 'vue-router'; // Import Vue Router for navigation
 import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
+import PieChart from './PieChart.vue';
 
 const router = useRouter(); // Vue Router instance for programmatic navigation
 
@@ -106,6 +108,14 @@ const navigateToBarChart = () => {
  */
 const navigateToBubbleChart = () => {
   router.push('/bubble-chart'); // Replace '/bubble-chart' with your actual route for the Bubble Chart page
+};
+
+/**
+ * Navigate to the Pie Chart page.
+ * Triggered when the "Pie Chart" navigation item is clicked.
+ */
+const navigateToPieChart = () => {
+  router.push('/pie-chart'); // Replace '/bubble-chart' with your actual route for the Bubble Chart page
 };
 </script>
 

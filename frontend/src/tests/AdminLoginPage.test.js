@@ -4,6 +4,10 @@
  */
 
 import { mount } from '@vue/test-utils';
+
+import { createRouter, createWebHistory } from 'vue-router';
+import { createTestingPinia } from '@pinia/testing';
+
 import { describe, it, expect } from 'vitest';
 import AdminLoginPage from '../components/LoginPage.vue';
 
@@ -13,6 +17,12 @@ vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
   height: '100vh',
 }));
 
+// Mock Vue Router
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [],
+});
+
 /**
  * @description Test suite for the `AdminLoginPage` component.
  */
@@ -21,7 +31,11 @@ describe('AdminLoginPage', () => {
    * @description Tests if the component renders correctly.
    */
   it('renders correctly', () => {
-    const wrapper = mount(AdminLoginPage);
+    const wrapper = mount(AdminLoginPage, {
+      global: {
+        plugins: [createTestingPinia(), router], // ✅ Injects Vuex/Pinia and Router
+      },
+    });
     expect(wrapper.exists()).toBe(true); // Check if the component mounts correctly
     expect(wrapper.find('.login-page').exists()).toBe(true); // Ensure root class exists
     expect(wrapper.find('.title').text()).toContain('USD Office of Sustainability'); // Check header title
