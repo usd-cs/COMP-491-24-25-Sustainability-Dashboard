@@ -5,12 +5,12 @@
  */
 
 import cron from 'node-cron';
-import { jest } from '@jest/globals';
+import { describe, expect, it, vi } from "vitest";
 import { fetchAndStoreEnergyData } from '../auth/upload/fetchApiData.js';
 import '../auth/upload/schedulers/autoDB_refresh.js';
 
-jest.mock('node-cron');
-jest.mock('../auth/upload/fetchApiData.js');
+vi.mock('node-cron');
+vi.mock('../auth/upload/fetchApiData.js');
 
 describe('autoDB_refresh', () => {
     it('should schedule a cron job to run every day at midnight', () => {
@@ -24,7 +24,7 @@ describe('autoDB_refresh', () => {
     });
 
     it('should log a message when the scheduled task starts and completes successfully', async () => {
-        console.log = jest.fn();
+        vi.spyOn(console, 'log').mockImplementation(() => {});
         const scheduledTask = cron.schedule.mock.calls[0][1];
         await scheduledTask();
         expect(console.log).toHaveBeenCalledWith('Running scheduled task: fetchAndStoreEnergyData');
@@ -32,7 +32,7 @@ describe('autoDB_refresh', () => {
     });
 
     it('should log an error message if the scheduled task fails', async () => {
-        console.error = jest.fn();
+        vi.spyOn(console, 'error').mockImplementation(() => {});
         fetchAndStoreEnergyData.mockImplementationOnce(() => {
             throw new Error('Test error');
         });
