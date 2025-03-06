@@ -2,6 +2,8 @@ import { fetchAndStoreEnergyData } from "../auth/upload/fetchApiData.js";
 import axios from 'axios';
 import { query } from '../../database_connection.js';
 import dotenv from 'dotenv';
+import { beforeEach, describe, it, vi, expect } from 'vitest';
+
 
 dotenv.config();
 
