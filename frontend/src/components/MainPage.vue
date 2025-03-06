@@ -70,6 +70,7 @@ import { useRouter } from 'vue-router'; // Import Vue Router for navigation
 import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
 
+
 const router = useRouter(); // Vue Router instance for programmatic navigation
 
 /**
