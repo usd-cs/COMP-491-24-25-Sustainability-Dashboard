@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { query } from '../../database_connection.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const BLOOM_API_URL = 'https://portal-api.bloomenergy.com/api/v1/data/site';
+
 let token = null; // Store token globally
+let siteID = null; // Store site ID globally
 
 /**
  * Retrieves an authentication token from the Bloom Energy API.
@@ -10,7 +13,7 @@ let token = null; // Store token globally
  */
 const getAuthToken = async () => {
   try {
-    const response = await axios.post('https://portal-api.bloomenergy.com/auth', {
+    const response = await axios.post(process.env.TOKEN_URL, {
       username: process.env.BLOOM_USERNAME,
       password: process.env.BLOOM_PASSWORD,
     }, {
@@ -33,12 +36,14 @@ const fetchSiteID = async () => {
   if (!token) await getAuthToken();
 
   try {
-    const response = await axios.get(`${BLOOM_API_URL}/v1/user/sites`, {
+    const response = await axios.get(process.env.BLOOM_SITE_ID, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (!response.data || !response.data[0]) throw new Error('No site found');
-    return response.data[0].id;
+
+    siteID = response.data[0].id; // Set the global siteID variable
+    return siteID;
   } catch (error) {
     console.error('Error fetching site ID:', error.message);
     throw new Error('Failed to fetch site ID');
@@ -55,7 +60,7 @@ const fetchSiteData = async (siteID, fromDate) => {
   if (!token) await getAuthToken();
 
   try {
-    const response = await axios.post(`${BLOOM_API_URL}/${siteID}/data-extract`, {
+    const response = await axios.post(`${process.env.BLOOM_SITE_DATA}/${siteID}/data-extract`, {
       metrics: ["total_output_factor", "efficiency", "energy", "fuel"],
       timeinterval: "daily",
       timeframe: "custom",
