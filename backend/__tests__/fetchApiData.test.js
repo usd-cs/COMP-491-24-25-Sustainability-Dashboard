@@ -1,3 +1,9 @@
+/**
+ * @file fetchApiData.test.js
+ * @description Unit tests for fetching energy data from the Bloom Energy API and store it in the database.
+ * Tests include cases for successful data fetching and storage, error handling, and API request failures.
+ */
+
 import axios from 'axios';
 import { query } from '../database_connection.js';
 import dotenv from 'dotenv';

@@ -6,7 +6,7 @@
  */
 
 import cron from 'node-cron';
-import { fetchAndStoreEnergyData } from '../upload/fetchApiData.js';
+import { fetchAndStoreEnergyData } from '../fetchApiData.js';
 
 // Schedule a cron job to run every day at midnight
 cron.schedule('0 0 * * *', async () => {

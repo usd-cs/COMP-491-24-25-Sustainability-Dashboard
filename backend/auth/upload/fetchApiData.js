@@ -1,3 +1,9 @@
+/**
+ * @file fetchApiData.js
+ * @description Module for fetching energy data from the Bloom Energy API and storing it in the database.
+ * This module exports a function that fetches energy data for the previous day and stores it in the database.
+ */
+
 import axios from 'axios';
 import { query } from '../../database_connection.js';
 import dotenv from 'dotenv';
