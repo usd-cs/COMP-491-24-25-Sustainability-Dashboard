@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { query } from '../../database_connection.js';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 
@@ -61,7 +62,18 @@ const fetchSiteData = async (siteID, fromDate) => {
 
   try {
     const response = await axios.post(`${process.env.BLOOM_SITE_DATA}/${siteID}/data-extract`, {
-      metrics: ["total_output_factor", "efficiency", "energy", "fuel"],
+      metrics: [
+        "total_output_factor", // Maps to total_output_factor_percent
+        "efficiency", // Maps to ac_efficiency_lhv_percent
+        "energy", // Maps to electricity_out_kwh
+        "fuel", // Maps to gas_flow_in_therms
+        "co2_reduction", // Maps to co2_reduction_lbs
+        "co2_production", // Maps to co2_production_lbs
+        "nox_reduction", // Maps to nox_reduction_lbs
+        "nox_production", // Maps to nox_production_lbs
+        "so2_reduction", // Maps to so2_reduction_lbs
+        "so2_production" // Maps to so2_production_lbs
+    ],
       timeinterval: "daily",
       timeframe: "custom",
       from: fromDate,
@@ -92,22 +104,39 @@ const storeDataInDB = async (data) => {
   }
 
   const insertQuery = `
-    INSERT INTO public.energy_daily_data (date_local, total_output_factor_percent, ac_efficiency_lhv_percent, electricity_out_kwh, gas_flow_in_therms)
-    VALUES ($1, $2, $3, $4, $5)
-    ON CONFLICT (date_local) DO UPDATE
-    SET total_output_factor_percent = EXCLUDED.total_output_factor_percent,
-        ac_efficiency_lhv_percent = EXCLUDED.ac_efficiency_lhv_percent,
-        electricity_out_kwh = EXCLUDED.electricity_out_kwh,
-        gas_flow_in_therms = EXCLUDED.gas_flow_in_therms;
-  `;
+    INSERT INTO public.energy_daily_data (
+      date_local, 
+      total_output_factor_percent, 
+      ac_efficiency_lhv_percent, 
+      heat_rate_hhv_btu_per_kwh, 
+      electricity_out_kwh, 
+      gas_flow_in_therms, 
+      co2_reduction_lbs, 
+      co2_production_lbs, 
+      nox_reduction_lbs, 
+      nox_production_lbs, 
+      so2_reduction_lbs, 
+      so2_production_lbs, 
+      user_id
+    ) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);
+`;
 
-  const values = [
-    new Date().toISOString().split('T')[0], // Today's date
-    data.total_output_factor || 0,
-    data.efficiency || 0,
-    data.energy || 0,
-    data.fuel || 0
-  ];
+const values = [
+  data.recordedat.split('T')[0], // Convert '2025-03-05T...' to '2025-03-05'
+  data.total_output_factor || 0,
+  data.efficiency || 0,
+  null, // Placeholder for heat_rate_hhv_btu_per_kWh (Not in API response)
+  data.energy || 0,
+  data.fuel || 0,
+  data.co2_reduction || 0,
+  data.co2_production || 0,
+  data.nox_reduction || 0,
+  data.nox_production || 0,
+  data.so2_reduction || 0,
+  data.so2_production || 0,
+  1 // Default user_id (update dynamically if needed)
+];
 
   try {
     await query(insertQuery, values);
@@ -119,22 +148,35 @@ const storeDataInDB = async (data) => {
 
 /**
  * Fetches energy data from the Bloom Energy API and stores it in the database.
- * This function is designed to be triggered via an API route or scheduled job.
- * @param {Object} req - Express request object (not used, but required for API route).
- * @param {Object} res - Express response object to return success or failure message.
+ * Designed to be used as a scheduled job or standalone function.
+ * 
+ * @returns {Promise<boolean>} - Returns `true` if data was stored successfully, `false` otherwise.
  */
-export const fetchAndStoreEnergyData = async (req, res) => {
+export const fetchAndStoreEnergyData = async () => {
   try {
+    // Fetch site ID dynamically
     const siteID = await fetchSiteID();
-    const fromDate = new Date().toISOString().split('T')[0]; // Fetch today's data
-    const siteData = await fetchSiteData(siteID, fromDate);
-    
-    console.log('Fetched Data:', siteData); // Debugging log
+
+    // Set date to yesterday
+    const fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - 1);
+    const formattedDate = fromDate.toISOString().split('T')[0];
+
+    // Fetch energy data from API
+    const siteData = await fetchSiteData(siteID, formattedDate);
+
+    if (!siteData) {
+      console.warn(`No data available for Site ID on ${formattedDate}`);
+      return false;
+    }
+
+    // Store data in the database
     await storeDataInDB(siteData);
 
-    res.status(200).json({ message: 'Energy data successfully fetched and stored.' });
+    console.log('Energy data successfully fetched and stored.');
+    return true;
   } catch (error) {
     console.error('Error fetching and storing energy data:', error.message);
-    res.status(500).json({ message: 'Failed to fetch and store energy data.' });
+    return false;
   }
 };

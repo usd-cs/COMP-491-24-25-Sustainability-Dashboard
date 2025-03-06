@@ -18,6 +18,3 @@ cron.schedule('0 0 * * *', async () => {
     console.error('Error running scheduled task:', error.message);
   }
 });
-
-// Keep the process running
-console.log('Cron job scheduled. Waiting for tasks...');
