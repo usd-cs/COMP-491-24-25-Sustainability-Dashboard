@@ -51,7 +51,6 @@
         </div>
         <div class="visual-section">
           <!-- Placeholder for the third graphic visual -->
-           <BarChartAPI/>
         </div>
         <div class="visual-section">
           <!-- Placeholder for the fourth graphic visual -->
@@ -70,7 +69,7 @@
 import { useRouter } from 'vue-router'; // Import Vue Router for navigation
 import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
-import BarChartAPI from './BarChartAPI.vue';
+
 
 const router = useRouter(); // Vue Router instance for programmatic navigation
 
