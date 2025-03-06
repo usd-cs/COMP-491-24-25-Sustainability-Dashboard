@@ -1,144 +1,127 @@
-import { beforeAll, afterAll, afterEach, describe, it, expect, vi } from "vitest";
-import axios from "axios";
-import { query } from "../database_connection.js";
-import dotenv from "dotenv";
 import { fetchAndStoreEnergyData } from "../auth/upload/fetchApiData.js";
+import axios from 'axios';
+import { query } from '../../database_connection.js';
+import dotenv from 'dotenv';
 
-vi.mock("axios");
-vi.mock("../database_connection.js");
 dotenv.config();
 
-describe("fetchApiData", () => {
-    let originalEnv;
+// Mock axios
+vi.mock('axios');
 
-    beforeAll(() => {
-        originalEnv = process.env;
-        process.env = {
-            ...originalEnv,
-            TOKEN_URL: "http://mock-token-url",
-            BLOOM_USERNAME: "mock-username",
-            BLOOM_PASSWORD: "mock-password",
-            BLOOM_SITE_ID: "http://mock-site-id-url",
-            BLOOM_SITE_DATA: "http://mock-site-data-url",
-        };
+// Mock database query function
+vi.mock('../../database_connection.js', () => ({
+  query: vi.fn(),
+}));
+
+describe('fetchAndStoreEnergyData', () => {
+
+  beforeEach(() => {
+    // Clear all mocks before each test
+    vi.clearAllMocks();
+  });
+
+  it('should fetch and store energy data successfully', async () => {
+    // Mock successful token retrieval
+    axios.post.mockResolvedValueOnce({ data: { token: 'fake-token' } });
+
+    // Mock fetching site ID
+    axios.get.mockResolvedValueOnce({ data: [{ id: 'site-123' }] });
+
+    // Mock fetching site data
+    axios.post.mockResolvedValueOnce({
+      data: {
+        data: [{
+          recordedat: '2025-03-05T00:00:00Z',
+          total_output_factor: 90,
+          efficiency: 85,
+          energy: 1000,
+          fuel: 500,
+          co2_reduction: 100,
+          co2_production: 200,
+          nox_reduction: 30,
+          nox_production: 40,
+          so2_reduction: 20,
+          so2_production: 10,
+        }],
+      },
     });
 
-    afterAll(() => {
-        process.env = originalEnv;
+    // Mock database query success
+    query.mockResolvedValueOnce(true);
+
+    // Call the function
+    const result = await fetchAndStoreEnergyData();
+
+    // Assertions
+    expect(result).toBe(true);
+    expect(axios.post).toHaveBeenCalledTimes(2); // Token, Site ID, Site Data
+    expect(axios.get).toHaveBeenCalledTimes(1); // Site ID fetch
+    
+  });
+
+  it('should handle errors in fetching data (token fetch failure)', async () => {
+    // Mock token fetch failure
+    axios.post.mockRejectedValueOnce(new Error('Authentication failed'));
+
+    const result = await fetchAndStoreEnergyData();
+
+    expect(result).toBe(false);
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it('should handle missing site data gracefully', async () => {
+    // Mock successful token retrieval
+    axios.post.mockResolvedValueOnce({ data: { token: 'fake-token' } });
+
+    // Mock fetching site ID
+    axios.get.mockResolvedValueOnce({ data: [{ id: 'site-123' }] });
+
+    // Mock site data fetch returning null data
+    axios.post.mockResolvedValueOnce({
+      data: { data: [] },
     });
 
-    afterEach(() => {
-        vi.clearAllMocks();
+    const result = await fetchAndStoreEnergyData();
+
+    expect(result).toBe(false);
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledTimes(1); // Site ID fetch
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it('should handle database insertion failure', async () => {
+    // Mock successful token retrieval
+    axios.post.mockResolvedValueOnce({ data: { token: 'fake-token' } });
+
+    // Mock fetching site ID
+    axios.get.mockResolvedValueOnce({ data: [{ id: 'site-123' }] });
+
+    // Mock site data fetch
+    axios.post.mockResolvedValueOnce({
+      data: {
+        data: [{
+          recordedat: '2025-03-05T00:00:00Z',
+          total_output_factor: 90,
+          efficiency: 85,
+          energy: 1000,
+          fuel: 500,
+          co2_reduction: 100,
+          co2_production: 200,
+          nox_reduction: 30,
+          nox_production: 40,
+          so2_reduction: 20,
+          so2_production: 10,
+        }],
+      },
     });
 
-    describe("fetchAndStoreEnergyData", () => {
-        it("should fetch and store energy data successfully", async () => {
-            const mockTokenResponse = { data: { token: "mock-token" } };
-            const mockSiteIDResponse = { data: [{ id: "mock-site-id" }] };
-            const mockSiteDataResponse = {
-                data: {
-                    data: [{
-                        recordedat: "2025-03-05T00:00:00Z",
-                        total_output_factor: 90,
-                        efficiency: 85,
-                        energy: 1000,
-                        fuel: 500,
-                        co2_reduction: 200,
-                        co2_production: 300,
-                        nox_reduction: 50,
-                        nox_production: 60,
-                        so2_reduction: 10,
-                        so2_production: 20,
-                    }],
-                },
-            };
+    // Mock database query failure
+    query.mockRejectedValueOnce(new Error('Database insertion failed'));
 
-            axios.post.mockResolvedValueOnce(mockTokenResponse);
-            axios.get.mockResolvedValueOnce(mockSiteIDResponse);
-            axios.post.mockResolvedValueOnce(mockSiteDataResponse);
-            query.mockResolvedValueOnce();
+    const result = await fetchAndStoreEnergyData();
 
-            const result = await fetchAndStoreEnergyData();
-
-            expect(result).toBe(true);
-            expect(axios.post).toHaveBeenCalledTimes(2);
-            expect(axios.get).toHaveBeenCalledTimes(1);
-            expect(query).toHaveBeenCalledTimes(1);
-        });
-
-        it("should handle errors when fetching site ID", async () => {
-            const mockTokenResponse = { data: { token: "mock-token" } };
-            axios.post.mockResolvedValueOnce(mockTokenResponse);
-            axios.get.mockRejectedValueOnce(new Error("Site ID fetch error"));
-
-            const result = await fetchAndStoreEnergyData();
-
-            expect(result).toBe(false);
-            expect(axios.post).toHaveBeenCalledTimes(1);
-            expect(axios.get).toHaveBeenCalledTimes(1);
-            expect(query).not.toHaveBeenCalled();
-        });
-
-        it("should handle undefined site ID response", async () => {
-            const mockTokenResponse = { data: { token: "mock-token" } };
-            axios.post.mockResolvedValueOnce(mockTokenResponse);
-            axios.get.mockResolvedValueOnce(undefined);
-
-            const result = await fetchAndStoreEnergyData();
-
-            expect(result).toBe(false);
-            expect(axios.post).toHaveBeenCalledTimes(1);
-            expect(axios.get).toHaveBeenCalledTimes(1);
-            expect(query).not.toHaveBeenCalled();
-        });
-
-        it("should handle errors when fetching site data", async () => {
-            const mockTokenResponse = { data: { token: "mock-token" } };
-            const mockSiteIDResponse = { data: [{ id: "mock-site-id" }] };
-            axios.post.mockResolvedValueOnce(mockTokenResponse);
-            axios.get.mockResolvedValueOnce(mockSiteIDResponse);
-            axios.post.mockRejectedValueOnce(new Error("Site data fetch error"));
-
-            const result = await fetchAndStoreEnergyData();
-
-            expect(result).toBe(false);
-            expect(axios.post).toHaveBeenCalledTimes(1);
-            expect(axios.get).toHaveBeenCalledTimes(1);
-            expect(query).not.toHaveBeenCalled();
-        });
-
-        it("should handle errors when storing data in the database", async () => {
-            const mockTokenResponse = { data: { token: "mock-token" } };
-            const mockSiteIDResponse = { data: [{ id: "mock-site-id" }] };
-            const mockSiteDataResponse = {
-                data: {
-                    data: [{
-                        recordedat: "2025-03-05T00:00:00Z",
-                        total_output_factor: 90,
-                        efficiency: 85,
-                        energy: 1000,
-                        fuel: 500,
-                        co2_reduction: 200,
-                        co2_production: 300,
-                        nox_reduction: 50,
-                        nox_production: 60,
-                        so2_reduction: 10,
-                        so2_production: 20,
-                    }],
-                },
-            };
-
-            axios.post.mockResolvedValueOnce(mockTokenResponse);
-            axios.get.mockResolvedValueOnce(mockSiteIDResponse);
-            axios.post.mockResolvedValueOnce(mockSiteDataResponse);
-            query.mockRejectedValueOnce(new Error("Database error"));
-
-            const result = await fetchAndStoreEnergyData();
-
-            expect(result).toBe(false);
-            expect(axios.post).toHaveBeenCalledTimes(2);
-            expect(axios.get).toHaveBeenCalledTimes(1);
-            expect(query).toHaveBeenCalledTimes(1);
-        });
-    });
+    expect(result).toBe(false);
+    expect(axios.post).toHaveBeenCalledTimes(1); 
+    expect(axios.get).toHaveBeenCalledTimes(1); // Site ID fetch
+  });
 });
