@@ -4,6 +4,7 @@
  * Tests include cases for successful data fetching and storage, error handling, and API request failures.
  */
 
+const { beforeAll, afterAll, afterEach } = require('@jest/globals');
 import { jest } from '@jest/globals';
 import axios from 'axios';
 import { query } from '../database_connection.js';
