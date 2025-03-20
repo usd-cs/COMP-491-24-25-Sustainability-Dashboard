@@ -115,6 +115,18 @@ const createSchema = async () => {
     `);
     console.log("Table 'bloom_meta_data' created successfully.");
 
+    // Create `athena_hourly_output` table to store hourly energy data from Athena.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS athena_hourly_output (
+        id SERIAL PRIMARY KEY,              -- Unique identifier for the record
+        timestamp TIMESTAMP NOT NULL,        -- The timestamp of the hourly data
+        total_kwh DECIMAL(10, 5) NOT NULL,     -- Summed kWh value for that timestamp
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Record creation timestamp
+      );
+    `);
+    console.log("Table 'athena_hourly_output' created successfully.");
+
+
     // Commit the transaction
     await client.query('COMMIT');
     console.log("Schema created successfully!");
