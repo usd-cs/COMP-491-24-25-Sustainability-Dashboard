@@ -4,9 +4,22 @@ import csvParser from 'csv-parser';     // Used for CSV parsing
 import { Readable } from 'stream';      // Used to convert file buffer to a stream
 
 /**
- * Handles the Excel file upload, processes the Excel file, and inserts the data into the database.
+ * Handles the file upload, processes the Excel file, and inserts the data into the database.
  *
- * (Existing method – see your current implementation)
+ * This function performs the following steps:
+ * 1. Checks if a file is uploaded. If not, returns a 400 status with an error message.
+ * 2. Reads the uploaded Excel file using the `xlsx` library.
+ * 3. Extracts the first sheet from the workbook and converts it to JSON format.
+ * 4. Extracts the headers from the 11th row (zero-based index 10) and the data rows starting from the 13th row.
+ * 5. Maps the Excel headers to the corresponding database columns.
+ * 6. Processes each row of data, converting the "Date (Local)" column from an Excel serial number to a valid date format.
+ * 7. Prepares the data for insertion into the database.
+ * 8. Constructs an SQL `INSERT` query and inserts each row of data into the `public.energy_daily_data` table.
+ * 9. Returns a 200 status with a success message if the data is successfully inserted into the database.
+ * 10. Catches and logs any errors during the process and returns a 500 status with an error message.
+ *
+ * @param {Object} req - The request object, containing the uploaded file in `req.file`.
+ * @param {Object} res - The response object, used to send the response back to the client.
  */
 export const uploadFile = async (req, res) => {
   try {
@@ -98,103 +111,144 @@ export const uploadFile = async (req, res) => {
 };
 
 /**
- * Handles the Athena CSV file upload, processes the file, sums the site kWh values for each timestamp,
- * and inserts the aggregated data into the database.
- *
- * Specifics for this Athena CSV file:
+ * Handles the Athena CSV file upload, processes the file, and inserts the data into the database.
+ * 
  * - The header row is on row 5 (index 4).
  * - The first row of data is on row 8 (index 7).
- * - The "Timestamp" column holds the timestamp (id).
- * - All other columns contain kWh values from various sites.
+ * - The raw CSV has headers like "Timestamp", "University of San Diego - Alcala Borrego", etc.
+ * - We map those headers to simpler column names like "timestamp", "alcala_borrego", etc.
+ * - We also compute a new column "total_kwh" that sums all numeric site columns.
+ *
+ * NOTE: Ensure "athena_hourly_output" table has columns matching the mapped names plus "total_kwh".
  *
  * @param {Object} req - The request object, containing the uploaded CSV file in `req.file`.
  * @param {Object} res - The response object, used to send the response back to the client.
  */
 export const uploadAthenaFile = async (req, res) => {
-  try {
-    console.log('Request received for Athena file upload');
+  // Wrap the processing in a Promise so tests can await completion.
+  return new Promise((resolve, reject) => {
+    try {
+      console.log('Request received for Athena file upload');
 
-    if (!req.file) {
-      return res.status(400).json({ message: 'No Athena file uploaded.' });
-    }
-    console.log('Athena file received:', req.file.originalname);
+      if (!req.file) {
+        res.status(400).json({ message: 'No Athena file uploaded.' });
+        return resolve();
+      }
+      console.log('Athena file received:', req.file.originalname);
 
-    // Convert the file buffer into a readable stream.
-    const stream = Readable.from(req.file.buffer);
-    const rows = [];
+      // Convert file buffer into a readable stream.
+      const stream = Readable.from(req.file.buffer);
+      const rows = [];
 
-    // Use csv-parser in no-header mode to get each row as an array.
-    stream
-      .pipe(csvParser({ headers: false }))
-      .on('data', (row) => {
-        rows.push(row);
-      })
-      .on('end', async () => {
-        console.log('Parsed Athena rows:', rows);
+      stream
+        .pipe(csvParser({ headers: false }))
+        .on('data', (row) => {
+          rows.push(row);
+        })
+        .on('end', async () => {
+          console.log('Parsed Athena rows:', rows);
 
-        // Validate that the file has enough rows.
-        if (rows.length < 8) {
-          return res.status(400).json({ message: 'Athena file does not contain enough rows.' });
-        }
-
-        // Extract the header row (row 5, index 4).
-        const headerRow = rows[4];
-        console.log('Detected Athena headers:', headerRow);
-
-        // Data rows start from row 8 (index 7).
-        const dataRows = rows.slice(7);
-        console.log('Data rows count:', dataRows.length);
-
-        // Map each data row (an array) to an object using headerRow as keys.
-        const parsedData = dataRows.map((row) => {
-          const obj = {};
-          headerRow.forEach((header, index) => {
-            obj[header] = row[index];
-          });
-          return obj;
-        });
-        console.log('Mapped Athena data:', parsedData);
-
-        // Process each row:
-        // Sum all kWh values (all columns except the timestamp column "id").
-        const processedData = parsedData.map((row, rowIndex) => {
-          const timestamp = row['Timestamp'];
-          let totalKwh = 0;
-
-          // Iterate through each property in the row.
-          for (const key in row) {
-            if (key === 'Timestamp') continue; // Skip the timestamp column
-            // Convert the value to a float; if it's not a number, use 0.
-            const value = parseFloat(row[key]) || 0;
-            totalKwh += value;
+          if (rows.length < 8) {
+            res.status(400).json({ message: 'Athena file does not contain enough rows.' });
+            return resolve();
           }
 
-          console.log(`Row ${rowIndex + 1}: Timestamp=${timestamp}, Total kWh=${totalKwh}`);
-          return { timestamp, totalKwh };
+          // Extract header row from row 5 (index 4).
+          const headerRowRaw = rows[4];
+          const headerRow = Array.isArray(headerRowRaw)
+            ? headerRowRaw
+            : Object.values(headerRowRaw);
+          console.log('Detected Athena headers:', headerRow);
+
+          // Data rows start from row 8 (index 7 onward).
+          const dataRows = rows.slice(7);
+          console.log('Data rows count:', dataRows.length);
+
+          // Map raw CSV headers to our database table column names.
+          const headerMap = {
+            'Timestamp': 'timestamp',
+            'University of San Diego - Alcala Borrego': 'alcala_borrego',
+            'University of San Diego - Alcala Laguna': 'alcala_laguna',
+            'University of San Diego - Camino Hall': 'camino_hall',
+            'University of San Diego - Copley Library': 'copley_library',
+            'University of San Diego - Founders Hall': 'founders_hall',
+            'University of San Diego - Jenny Craig Pavillion': 'jenny_craig_pavilion',
+            'University of San Diego - Kroc': 'kroc',
+            'University of San Diego - Manchester A': 'manchester_a',
+            'University of San Diego - Manchester B': 'manchester_b',
+            'University of San Diego - Soles': 'soles',
+            'University of San Diego - West Parking': 'west_parking'
+          };
+
+          // Map each data row into an object using the header row as keys.
+          const parsedData = dataRows.map((row) => {
+            const obj = {};
+            headerRow.forEach((header, index) => {
+              obj[header] = row[index];
+            });
+            return obj;
+          });
+          console.log('Mapped Athena data (raw headers):', parsedData);
+
+          // Transform each row to use mapped column names and compute total_kwh.
+          const processedData = parsedData.map((row, rowIndex) => {
+            const processedRow = {};
+            let totalKwh = 0;
+
+            for (const rawHeader in row) {
+              const mappedCol = headerMap[rawHeader];
+              if (!mappedCol) {
+                console.warn(`Skipping unmapped header: ${rawHeader}`);
+                continue;
+              }
+              if (mappedCol === 'timestamp') {
+                processedRow[mappedCol] = row[rawHeader];
+              } else {
+                const num = parseFloat(row[rawHeader]);
+                processedRow[mappedCol] = isNaN(num) ? null : num;
+                totalKwh += isNaN(num) ? 0 : num;
+              }
+            }
+            // Round totalKwh to one decimal.
+            processedRow['total_kwh'] = Math.round(totalKwh * 10) / 10;
+            console.log(`Row ${rowIndex + 1} processed:`, processedRow);
+            return processedRow;
+          });
+          console.log('Processed Athena data with mapped columns and total_kwh:', processedData);
+
+          // Build array of final column names (order matters).
+          const tableColumns = headerRow.map(header =>
+            header === 'Timestamp' ? 'timestamp' : headerMap[header]
+          );
+          tableColumns.push('total_kwh');
+          console.log('Table columns for insertion:', tableColumns);
+
+          // Build the dynamic INSERT query.
+          const insertQuery = `
+            INSERT INTO public.athena_hourly_output (${tableColumns.join(', ')})
+            VALUES (${tableColumns.map((_, index) => `$${index + 1}`).join(', ')})
+          `;
+          console.log('Insert query:', insertQuery);
+
+          // Insert each processed row.
+          for (const row of processedData) {
+            const values = tableColumns.map(col => row[col]);
+            console.log('Prepared row for insertion:', values);
+            await query(insertQuery, values);
+          }
+
+          res.status(200).json({ message: 'Athena data successfully processed and inserted into the database.' });
+          resolve();
+        })
+        .on('error', (err) => {
+          console.error('Error parsing Athena:', err.message);
+          res.status(500).json({ message: 'Failed to parse Athena file.', error: err.message });
+          reject(err);
         });
-        console.log('Processed summed data:', processedData);
-
-        // Construct an SQL INSERT query.
-        const insertQuery = `
-          INSERT INTO public.athena_hourly_output (timestamp, total_kwh)
-          VALUES ($1, $2)
-        `;
-
-        // Insert each processed row into the database.
-        for (const row of processedData) {
-          const values = [row.timestamp, row.totalKwh];
-          console.log('Prepared row for insertion:', values);
-          await query(insertQuery, values);
-        }
-
-        res.status(200).json({ message: 'Athena data successfully processed and inserted into the database.' });
-      })
-      .on('error', (err) => {
-        console.error('Error parsing Athena:', err.message);
-        res.status(500).json({ message: 'Failed to parse Athena file.', error: err.message });
-      });
-  } catch (error) {
-    console.error('Error during Athena file processing:', error.message);
-    res.status(500).json({ message: 'Failed to process Athena file. Please check the file and try again.' });
-  }
+    } catch (error) {
+      console.error('Error during Athena file processing:', error.message);
+      res.status(500).json({ message: 'Failed to process Athena file. Please check the file and try again.' });
+      reject(error);
+    }
+  });
 };
