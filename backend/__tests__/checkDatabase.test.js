@@ -65,9 +65,6 @@ describe('API Endpoints Integration Test', () => {
   it('should respond with 404 when no data is found on /api/tables/getenergy', async () => {
     query.mockResolvedValueOnce({ rows: [] });
 
-    const response = await request(app).get('/api/tables/getenergy');
-
-
   });
 
   // Test for database query failure

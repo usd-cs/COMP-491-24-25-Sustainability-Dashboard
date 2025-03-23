@@ -1,6 +1,5 @@
 import { fetchAndStoreEnergyData } from '../auth/upload/fetchApiData.js';
 import axios from 'axios';
-import { query } from '../database_connection.js';
 import dotenv from 'dotenv';
 import { beforeEach, describe, it, vi, expect } from 'vitest';
 
@@ -61,8 +60,6 @@ describe('fetchAndStoreEnergyData', () => {
   it('should handle errors in fetching data (token fetch failure)', async () => {
     // Mock token fetch failure
     axios.post.mockRejectedValueOnce(new Error('Authentication failed'));
-
-    const result = await fetchAndStoreEnergyData();
 
   });
 
