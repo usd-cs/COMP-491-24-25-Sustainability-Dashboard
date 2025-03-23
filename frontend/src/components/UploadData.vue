@@ -61,6 +61,7 @@
 
         <div class="action-buttons">
           <button class="cancel-btn" @click="handleCancel" tabindex="0">Cancel</button>
+          <button class="cancel-btn" @click="handleBack">Back</button>
           <button type="submit" class="import-btn">Import</button>
         </div>
       </form>
@@ -141,6 +142,10 @@ const handleFileSelect = (event) => {
 
 const handleCancel = () => {
   router.push('/main');
+};
+
+const handleBack = () => {
+  router.push('/select');
 };
 
 const handleLogout = () => {
