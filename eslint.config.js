@@ -15,6 +15,8 @@ export default [
         describe: "readonly", // Add `describe` for testing frameworks
         it: "readonly", // Add `it` for testing frameworks
         expect: "readonly", // Add `expect` for testing frameworks
+        beforeEach: "readonly", // Add `beforeEach` for Vitest
+        test: "readonly", // Add `test` for Vitest
       },
     },
   },
