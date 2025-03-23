@@ -1,8 +1,8 @@
-import { mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';  
 import axios from 'axios';
 import { vi } from 'vitest';
-import UploadData from '../components/UploadData.vue';
 import { nextTick } from 'vue';
+import UploadData from '../components/UploadData.vue'; 
 
 // Mock axios
 vi.mock('axios');
@@ -19,9 +19,9 @@ function createFileList(file) {
 describe('UploadData.vue', () => {
   let wrapper;
 
+  // Before each test, mount the component
   beforeEach(() => {
     wrapper = mount(UploadData);
-    vi.clearAllMocks();
   });
 
   test('file selection updates uploaded file name and triggers backend upload', async () => {
