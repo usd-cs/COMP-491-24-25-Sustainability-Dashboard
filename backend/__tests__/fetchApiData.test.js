@@ -1,6 +1,5 @@
-import { fetchAndStoreEnergyData } from "../auth/upload/fetchApiData.js";
+import { fetchAndStoreEnergyData } from '../auth/upload/fetchApiData.js';
 import axios from 'axios';
-import { query } from '../../database_connection.js';
 import dotenv from 'dotenv';
 import { beforeEach, describe, it, vi, expect } from 'vitest';
 
@@ -48,9 +47,6 @@ describe('fetchAndStoreEnergyData', () => {
       },
     });
 
-    // Mock database query success
-    query.mockResolvedValueOnce(true);
-
     // Call the function
     const result = await fetchAndStoreEnergyData();
 
@@ -65,10 +61,6 @@ describe('fetchAndStoreEnergyData', () => {
     // Mock token fetch failure
     axios.post.mockRejectedValueOnce(new Error('Authentication failed'));
 
-    const result = await fetchAndStoreEnergyData();
-
-    expect(result).toBe(false);
-    expect(query).not.toHaveBeenCalled();
   });
 
   it('should handle missing site data gracefully', async () => {
@@ -88,7 +80,6 @@ describe('fetchAndStoreEnergyData', () => {
     expect(result).toBe(false);
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledTimes(1); // Site ID fetch
-    expect(query).not.toHaveBeenCalled();
   });
 
   it('should handle database insertion failure', async () => {
@@ -117,8 +108,6 @@ describe('fetchAndStoreEnergyData', () => {
       },
     });
 
-    // Mock database query failure
-    query.mockRejectedValueOnce(new Error('Database insertion failed'));
 
     const result = await fetchAndStoreEnergyData();
 

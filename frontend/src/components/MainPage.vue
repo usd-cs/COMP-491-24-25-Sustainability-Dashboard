@@ -78,7 +78,7 @@ const router = useRouter(); // Vue Router instance for programmatic navigation
  * Triggered when the "Upload Data" button in the sidebar is clicked.
  */
 const navigateToUpload = () => {
-  router.push('/upload');
+  router.push('/select');
 };
 
 const navigateToMain = () => {
