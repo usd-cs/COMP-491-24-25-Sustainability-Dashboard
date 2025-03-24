@@ -66,3 +66,6 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Main server is running on http://localhost:${PORT}`);
 });
+
+// Export app for testing
+export default app;
