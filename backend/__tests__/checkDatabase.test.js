@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';  
 import app from '../index.js';  
 
@@ -7,6 +7,17 @@ import { query } from '../database_connection.js';
 vi.mock('../database_connection.js', () => ({
   query: vi.fn()
 }));
+
+let server;
+
+beforeAll(() => {
+  // Use a different port for testing
+  server = app.listen(3001);
+});
+
+afterAll((done) => {
+  server.close(done);
+});
 
 describe('API Endpoints Integration Test', () => {
 

@@ -115,6 +115,32 @@ const createSchema = async () => {
     `);
     console.log("Table 'bloom_meta_data' created successfully.");
 
+
+    // Create `athena_hourly_output` table to store hourly energy data from Athena.
+    // Stores individual site summary data and then the total kWh of all sites for each hoursly timestamp. 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS athena_hourly_output (
+        id SERIAL PRIMARY KEY,              -- Unique identifier for the record
+        timestamp TIMESTAMP NOT NULL,       -- The timestamp of the hourly data
+        alcala_borrego DECIMAL(10, 5),   -- Energy output for Alcala Borrego
+        alcala_laguna DECIMAL(10, 5),   -- Energy output for Alcala Laguna
+        camino_hall DECIMAL(10, 5),         -- Energy output for Camino Hall
+        copley_library DECIMAL(10, 5),      -- Energy output for Copley Library
+        founders_hall DECIMAL(10, 5),     -- Energy output for Founders Hall
+        jenny_craig_pavilion DECIMAL(10, 5),      -- Energy output for Jenny Craig Pavilion
+        kroc DECIMAL(10, 5),            -- Energy output for Kroc Center
+        manchester_a DECIMAL(10, 5),    -- Energy output for Manchester A
+        manchester_b DECIMAL(10, 5),    -- Energy output for Manchester B
+        soles DECIMAL(10, 5),        -- Energy output for Soles Hall
+        west_parking DECIMAL(10, 5),  -- Energy output for West Parking
+        total_kwh DECIMAL(10, 5),          -- Summed kWh of all site columns
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Timestamp for when the record was created
+      );
+    `);
+    console.log("Table 'athena_hourly_output' created successfully.");
+
+
+
     // Commit the transaction
     await client.query('COMMIT');
     console.log("Schema created successfully!");
