@@ -35,7 +35,6 @@
                 <span class="source-option__radio" v-html="selectedSource === 'Bloom' ? selectedRadioSvg : unselectedRadioSvg"></span>
               </label>
             </div>
-
           </div>
         </div>
       </section>
@@ -48,7 +47,6 @@
     </main>
   </div>
 </template>
-
 
 <script setup>
 import { ref } from "vue";
@@ -83,7 +81,6 @@ const selectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill="
 const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="9.5" cy="9.5" r="5.5" stroke="#003B70" stroke-width="2" fill="white" />
 </svg>`;
-
 </script>
 
 <style scoped>
@@ -154,7 +151,6 @@ const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill
   padding: 30px 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
 }
 
 .import-panel__title {

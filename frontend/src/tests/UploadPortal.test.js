@@ -19,45 +19,57 @@ function createFileList(file) {
 describe('UploadData.vue', () => {
   let wrapper;
 
-  // Before each test, mount the component
   beforeEach(() => {
-    wrapper = mount(UploadData);
+    // Clear any previous mock implementations
+    vi.clearAllMocks();
+    
+    // Reset the wrapper
+    wrapper = null;
   });
 
-  test('file selection updates uploaded file name and triggers backend upload', async () => {
-    // Create a mock file
-    const file = new File(['dummy content'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-    // Find the file input element
-    const fileInput = wrapper.find('input[type="file"]');
-
-    // Use the helper to create a valid FileList
-    const fileList = createFileList(file);
-
-    // Mock setting the files property using Object.defineProperty
-    const inputElement = fileInput.element;
-    Object.defineProperty(inputElement, 'files', {
-      value: fileList,
+  test.each([
+    ['Excel', 'test.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'file-upload'],
+    ['Athena', 'test.csv', 'text/csv', 'athena-upload']
+  ])('handles %s file upload correctly', async (sourceType, filename, mimeType, endpoint) => {
+    // Set up localStorage mock before mounting
+    const getItemMock = vi.fn((key) => {
+      if (key === 'selectedSource') return sourceType;
+      return null;
     });
+    Storage.prototype.getItem = getItemMock;
 
-    // Trigger the change event to simulate file selection
-    await fileInput.trigger('change');
-
-    // Wait for Vue to process the file selection
+    // Mount component after setting up localStorage
+    wrapper = mount(UploadData);
     await nextTick();
 
-    // Ensure the file name has been updated in the component's data
-    expect(wrapper.vm.uploadedFileName).toBe('test.xlsx');
+    // Create a mock file
+    const file = new File(['dummy content'], filename, { type: mimeType });
+    const fileList = createFileList(file);
 
-    // Mock the backend API call
+    // Find and trigger file input
+    const fileInput = wrapper.find('input[type="file"]');
+    Object.defineProperty(fileInput.element, 'files', {
+      value: fileList
+    });
+    await fileInput.trigger('change');
+    await nextTick();
+
+    // Check filename update
+    expect(wrapper.vm.uploadedFileName).toBe(filename);
+
+    // Mock successful API response
     axios.post.mockResolvedValue({ status: 200 });
 
-    // Trigger the upload function
+    // Trigger upload
     await wrapper.vm.handleUpload();
 
-    // Ensure that the backend upload was triggered
-    expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/api/auth/file-upload', expect.any(FormData), {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    // Verify correct endpoint was called
+    expect(axios.post).toHaveBeenCalledWith(
+      `http://localhost:3000/api/auth/${endpoint}`,
+      expect.any(FormData),
+      {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }
+    );
   });
 });

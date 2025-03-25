@@ -118,6 +118,7 @@ export const uploadFile = async (req, res) => {
  * - The raw CSV has headers like "Timestamp", "University of San Diego - Alcala Borrego", etc.
  * - We map those headers to simpler column names like "timestamp", "alcala_borrego", etc.
  * - We also compute a new column "total_kwh" that sums all numeric site columns.
+ * - If a row has a valid timestamp but all kWh site columns are empty, we skip that row entirely.
  *
  * NOTE: Ensure "athena_hourly_output" table has columns matching the mapped names plus "total_kwh".
  *
@@ -164,7 +165,7 @@ export const uploadAthenaFile = async (req, res) => {
           const dataRows = rows.slice(7);
           console.log('Data rows count:', dataRows.length);
 
-          // Map raw CSV headers to our database table column names.
+          // Define a map from raw CSV headers to our database table column names.
           const headerMap = {
             'Timestamp': 'timestamp',
             'University of San Diego - Alcala Borrego': 'alcala_borrego',
@@ -180,8 +181,8 @@ export const uploadAthenaFile = async (req, res) => {
             'University of San Diego - West Parking': 'west_parking'
           };
 
-          // Map each data row into an object using the header row as keys.
-          const parsedData = dataRows.map((row) => {
+          // Map each data row (array) into an object using the header row as keys.
+          let parsedData = dataRows.map((row) => {
             const obj = {};
             headerRow.forEach((header, index) => {
               obj[header] = row[index];
@@ -190,11 +191,39 @@ export const uploadAthenaFile = async (req, res) => {
           });
           console.log('Mapped Athena data (raw headers):', parsedData);
 
-          // Transform each row to use mapped column names and compute total_kwh.
+          // Filter out any rows with an empty or missing Timestamp.
+          parsedData = parsedData.filter((row) => {
+            const ts = row['Timestamp'];
+            return ts !== undefined && ts !== null && ts.toString().trim() !== '';
+          });
+          console.log('Filtered Athena data (non-empty Timestamp):', parsedData);
+
+          // Next, filter out rows where Timestamp is present,
+          // but all site columns are empty.
+          const siteHeaders = Object.keys(headerMap).filter(h => h !== 'Timestamp');
+          parsedData = parsedData.filter((row) => {
+            // If *every* site header is empty, skip the row.
+            // "Empty" means undefined, null, or empty string (once trimmed).
+            const allEmpty = siteHeaders.every((h) => {
+              const val = row[h];
+              return val === undefined || val === null || val.toString().trim() === '';
+            });
+            return !allEmpty;
+          });
+          console.log('Filtered Athena data (non-empty site columns):', parsedData);
+
+          // Transform each row to use the mapped column names and compute total_kwh.
           const processedData = parsedData.map((row, rowIndex) => {
             const processedRow = {};
             let totalKwh = 0;
 
+            // Helper function to trim trailing zeros
+            const trimTrailingZeros = (num) => {
+              if (num === null || isNaN(num)) return null;
+              return Number(parseFloat(num).toString());
+            };
+
+            // Iterate over each raw header in the row
             for (const rawHeader in row) {
               const mappedCol = headerMap[rawHeader];
               if (!mappedCol) {
@@ -204,33 +233,34 @@ export const uploadAthenaFile = async (req, res) => {
               if (mappedCol === 'timestamp') {
                 processedRow[mappedCol] = row[rawHeader];
               } else {
+                // Parse float and trim trailing zeros
                 const num = parseFloat(row[rawHeader]);
-                processedRow[mappedCol] = isNaN(num) ? null : num;
+                processedRow[mappedCol] = trimTrailingZeros(num);
                 totalKwh += isNaN(num) ? 0 : num;
               }
             }
-            // Round totalKwh to one decimal.
-            processedRow['total_kwh'] = Math.round(totalKwh * 10) / 10;
+            // Trim trailing zeros from total while maintaining precision
+            processedRow['total_kwh'] = trimTrailingZeros(totalKwh);
             console.log(`Row ${rowIndex + 1} processed:`, processedRow);
             return processedRow;
           });
           console.log('Processed Athena data with mapped columns and total_kwh:', processedData);
 
-          // Build array of final column names (order matters).
+          // Build an array of final column names (order matters).
           const tableColumns = headerRow.map(header =>
             header === 'Timestamp' ? 'timestamp' : headerMap[header]
           );
           tableColumns.push('total_kwh');
           console.log('Table columns for insertion:', tableColumns);
 
-          // Build the dynamic INSERT query.
+          // Construct the dynamic INSERT query.
           const insertQuery = `
             INSERT INTO public.athena_hourly_output (${tableColumns.join(', ')})
             VALUES (${tableColumns.map((_, index) => `$${index + 1}`).join(', ')})
           `;
           console.log('Insert query:', insertQuery);
 
-          // Insert each processed row.
+          // Insert each processed row into the database.
           for (const row of processedData) {
             const values = tableColumns.map(col => row[col]);
             console.log('Prepared row for insertion:', values);
