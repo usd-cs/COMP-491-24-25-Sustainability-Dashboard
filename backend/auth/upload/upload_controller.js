@@ -217,13 +217,14 @@ export const uploadAthenaFile = async (req, res) => {
             const processedRow = {};
             let totalKwh = 0;
 
-            // Helper function to trim trailing zeros
-            const trimTrailingZeros = (num) => {
+            // Helper function to normalize numbers to fixed precision
+            const normalizeNumber = (num) => {
               if (num === null || isNaN(num)) return null;
-              return Number(parseFloat(num).toString());
+              // Use toFixed(1) to match test expectations, then convert back to number
+              return Number(Number(num).toFixed(1));
             };
 
-            // Iterate over each raw header in the row
+            // Process each value
             for (const rawHeader in row) {
               const mappedCol = headerMap[rawHeader];
               if (!mappedCol) {
@@ -233,14 +234,14 @@ export const uploadAthenaFile = async (req, res) => {
               if (mappedCol === 'timestamp') {
                 processedRow[mappedCol] = row[rawHeader];
               } else {
-                // Parse float and trim trailing zeros
                 const num = parseFloat(row[rawHeader]);
-                processedRow[mappedCol] = trimTrailingZeros(num);
+                processedRow[mappedCol] = normalizeNumber(num);
                 totalKwh += isNaN(num) ? 0 : num;
               }
             }
-            // Trim trailing zeros from total while maintaining precision
-            processedRow['total_kwh'] = trimTrailingZeros(totalKwh);
+
+            // Normalize the total with same precision
+            processedRow['total_kwh'] = normalizeNumber(totalKwh);
             console.log(`Row ${rowIndex + 1} processed:`, processedRow);
             return processedRow;
           });

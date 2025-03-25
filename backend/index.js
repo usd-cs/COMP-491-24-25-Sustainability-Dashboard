@@ -62,10 +62,12 @@ app.get('/', (req, res) => {
   res.send('Hello, Node.js!');
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Main server is running on http://localhost:${PORT}`);
-});
+// Only start the server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Main server is running on http://localhost:${PORT}`);
+  });
+}
 
 // Export app for testing
 export default app;
