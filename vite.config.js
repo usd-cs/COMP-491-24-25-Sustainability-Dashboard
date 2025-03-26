@@ -13,6 +13,7 @@ export default defineConfig({
   },
   server: {
     port: 5173, // Specify the development server port
+    allowedHosts: ['sustainability.dedyn.io']
   },
   test: {
     globals: true,           // Enable global functions like `describe` and `it`
