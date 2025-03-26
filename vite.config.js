@@ -9,7 +9,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './frontend/src'), // Map "@" to "frontend/src"
     },
-    extensions: ['.js', '.vue', '.json'], // Optional: Simplify imports without file extensions
+    extensions: ['.js', '.vue', '.json'], 
   },
   server: {
     port: 5173, // Specify the development server port
