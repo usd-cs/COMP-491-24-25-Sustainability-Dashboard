@@ -23,6 +23,13 @@ export const getAllData = async (req, res) => {
 export const getEnergySummary = async (req, res) => {
     try {
         const data = await get30DayEnergyTotals();
+        // Check if all values are zero (indicating no real data)
+        const hasData = Object.values(data).some(value => value !== 0);
+        if (!hasData) {
+            return res.status(404).json({ 
+                message: 'No energy data found for the last 30 days.'
+            });
+        }
         res.status(200).json(data);
     } catch (error) {
         console.error('Error fetching energy summary:', error);
