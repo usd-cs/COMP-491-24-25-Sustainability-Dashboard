@@ -22,17 +22,14 @@ describe('BubbleChart.vue', () => {
   // Create mock data 
   const mockData = [
     {
-      co2_production_lbs: '100.1234',
+      nox_reduction_lbs: '100.1234',
       co2_reduction_lbs: '50.5678',
-      ac_efficiency_lhv_percent: '75.9123',
-      total_output_factor_percent: '80.3456',
+      electricity_out_kwh: '75.9123'
     },
     {
-      // note that "200.9999".toFixed(3) produces "201.000"
-      co2_production_lbs: '200.9999',
+      nox_reduction_lbs: '200.9999',
       co2_reduction_lbs: '100.1234',
-      ac_efficiency_lhv_percent: '60.0001',
-      total_output_factor_percent: '90.0000',
+      electricity_out_kwh: '60.0001'
     },
   ];
 
@@ -58,8 +55,8 @@ describe('BubbleChart.vue', () => {
     expect(axios.get).toHaveBeenCalledWith('http://localhost:3000/api/tables/getbubblechart');
 
     expect(wrapper.vm.chartData).toEqual([
-      ['100.123', '50.568', '75.912', '80.346'],
-      ['201.000', '100.123', '60.000', '90.000'],
+      ['100.123', '50.568', '75.912'],
+      ['201.000', '100.123', '60.000'],
     ]);
 
     expect(echarts.init).toHaveBeenCalled();
@@ -68,16 +65,17 @@ describe('BubbleChart.vue', () => {
   });
 
   it('handles errors when fetching data', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
     axios.get.mockRejectedValueOnce(new Error('Network Error'));
     await wrapper.vm.fetchChartData();
     await flushPromises();
     await wrapper.vm.$nextTick();
 
-    // In this implementation, if an error occurs, chartData remains from the first successful call.
-    expect(wrapper.vm.chartData).toEqual([
-      ['100.123', '50.568', '75.912', '80.346'],
-      ['201.000', '100.123', '60.000', '90.000'],
-    ]);
+    expect(consoleSpy).toHaveBeenCalledWith('Error fetching chart data:', expect.any(Error));
+    expect(wrapper.vm.chartData).toEqual([]); // Should be empty array on error
+    
+    consoleSpy.mockRestore();
   });
 
   it('respects the fullPage prop (visualMap.show is true when fullPage is true)', async () => {

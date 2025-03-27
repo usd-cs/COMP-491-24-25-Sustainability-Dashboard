@@ -50,6 +50,7 @@ export default {
         });
       } catch (error) {
         console.error('Error fetching chart data:', error);
+        this.chartData = []; // Reset chartData on error
       }
     },
     renderChart() {
