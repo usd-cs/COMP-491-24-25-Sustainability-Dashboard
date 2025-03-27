@@ -29,6 +29,7 @@
     "@babel/preset-env": "^7.26.9",
     "@eslint/js": "^9.16.0",
     "@jest/globals": "^29.7.0",
+    "@pinia/testing": "^1.0.0",
     "@types/echarts": "^4.9.22",
     "@vitejs/plugin-vue": "^4.6.2",
     "@vitest/coverage-v8": "^3.0.9",
