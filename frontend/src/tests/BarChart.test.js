@@ -57,17 +57,17 @@ describe('BarChart.vue', () => {
 
   it('handles errors when fetching data', async () => {
     // Mock a failed API call
-    axios.get.mockRejectedValueOnce(new Error('Network Error')); 
+    axios.get.mockRejectedValueOnce(new Error('Network Error'));
 
     // Trigger the data fetch
     await wrapper.vm.fetchChartData();
-    
+
     // Wait for the next tick to ensure component has processed the error
     await wrapper.vm.$nextTick();
-    
+
     // Ensure chartData takes in the data from the uploaded file database 
-    expect(wrapper.vm.chartData).toEqual([10000, 5000, 200, 300, 400]); 
-    
+    expect(wrapper.vm.chartData).toEqual([10000, 5000, 200, 300, 400]);
+
     // Verify that chartLabels are still set to their default values
     expect(wrapper.vm.chartLabels).toEqual([
       'Heat Rate',
