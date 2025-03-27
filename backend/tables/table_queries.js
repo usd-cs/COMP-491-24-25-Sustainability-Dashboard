@@ -26,9 +26,24 @@ export const get30DayEnergyTotals = async () => {
     const result = await query(sqlQuery);
     console.log("Full query result:", result);
     const rows = result.rows || result;
+
+    // Create default response object
+    const defaultResponse = {
+      total_output_factor_percent: 0,
+      ac_efficiency_lhv_percent: 0,
+      heat_rate_hhv_btu_per_kwh: 0,
+      electricity_out_kwh: 0,
+      gas_flow_in_therms: 0,
+      co2_reduction_lbs: 0,
+      co2_production_lbs: 0,
+      nox_reduction_lbs: 0,
+      nox_production_lbs: 0,
+      so2_reduction_lbs: 0,
+      so2_production_lbs: 0
+    };
     
     if (!rows || rows.length === 0) {
-      throw new Error("Query returned no rows.");
+      return defaultResponse;
     }
 
     const row = rows[0] || {};
