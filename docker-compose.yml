@@ -56,7 +56,6 @@ services:
     image: postgres:17
     container_name: postgres_container
     restart: always
-    ports:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
