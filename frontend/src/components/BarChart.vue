@@ -14,17 +14,17 @@ export default {
     return {
       // Mapping of headers to database columns
       headerToDbColumnMap: {
-        'Date (Local)': 'date_local',
-        //'Total Output Factor': 'total_output_factor_percent',
-        //'AC Efficiency (LHV)': 'ac_efficiency_lhv_percent',
-        'Heat Rate': 'heat_rate_hhv_btu_per_kwh',
-        'Electricity Out': 'electricity_out_kwh',
-        'Gas Flow In': 'gas_flow_in_therms',
-        'CO₂ Reduction': 'co2_reduction_lbs',
-        'CO₂ Production': 'co2_production_lbs',
+        //'Date (Local)': 'date_local',
+        'Output Factor': 'total_output_factor_percent',
+        'AC Efficiency': 'ac_efficiency_lhv_percent',
+        //'Heat Rate': 'heat_rate_hhv_btu_per_kwh',
+        //'Electricity Out': 'electricity_out_kwh',
+        //'Gas Flow In': 'gas_flow_in_therms',
+        //'CO₂ Reduction': 'co2_reduction_lbs',
+        //'CO₂ Production': 'co2_production_lbs',
         //'NOₓ Reduction': 'nox_reduction_lbs',
-        //'NOₓ Production': 'nox_production_lbs',
-        //'SO₂ Reduction': 'so2_reduction_lbs',
+        'NOₓ Production': 'nox_production_lbs',
+        'SO₂ Reduction': 'so2_reduction_lbs',
         //'SO₂ Production': 'so2_production_lbs',
       },
       chartData: [],
@@ -57,6 +57,7 @@ export default {
         this.renderChart();
       } catch (error) {
         console.error('Error fetching chart data:', error);
+        this.chartData = [];  // Reset data on error
       }
     },
     
@@ -67,7 +68,8 @@ export default {
       const options = {
         title: {
           text: this.title,
-          left: 'center'
+          left: 'center',
+          top: 10
         },
         tooltip: {
           trigger: 'axis'
@@ -76,7 +78,7 @@ export default {
           type: 'category',
           data: this.chartLabels,
           axisLabel: {
-            rotate: 45
+            rotate: 38
           }
         },
         yAxis: {

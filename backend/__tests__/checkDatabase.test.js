@@ -29,6 +29,11 @@ describe('API Endpoints Integration Test', () => {
   // Test for getting 30-day energy summary data
   it('should respond with 30-day energy summary data from /api/tables/getenergy', async () => {
     const mockData = {
+      total_output_factor_percent: 75.5,
+      ac_efficiency_lhv_percent: 80.2,
+      heat_rate_hhv_btu_per_kwh: 10000,
+      electricity_out_kwh: 5000,
+      gas_flow_in_therms: 200,
       co2_reduction_lbs: 1000,
       co2_production_lbs: 2000,
       nox_reduction_lbs: 300,
@@ -49,8 +54,18 @@ describe('API Endpoints Integration Test', () => {
   // Test for getting bubble chart data
   it('should respond with bubble chart data from /api/tables/getbubblechart', async () => {
     const mockBubbleChartData = [
-      { co2_production_lbs: 100, co2_reduction_lbs: 200, ac_efficiency_lhv_percent: 80, total_output_factor_percent: 90 },
-      { co2_production_lbs: 150, co2_reduction_lbs: 250, ac_efficiency_lhv_percent: 85, total_output_factor_percent: 95 },
+      {
+        nox_reduction_lbs: 100,
+        co2_reduction_lbs: 200,
+        electricity_out_kwh: 5000,
+        date_local: '2024-03-26'
+      },
+      {
+        nox_reduction_lbs: 150,
+        co2_reduction_lbs: 250,
+        electricity_out_kwh: 6000,
+        date_local: '2024-03-25'
+      }
     ];
 
     query.mockResolvedValueOnce({ rows: mockBubbleChartData });
@@ -75,7 +90,11 @@ describe('API Endpoints Integration Test', () => {
   // Test for when database query returns no data
   it('should respond with 404 when no data is found on /api/tables/getenergy', async () => {
     query.mockResolvedValueOnce({ rows: [] });
-
+    const response = await request(app).get('/api/tables/getenergy');
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+        message: 'No energy data found for the last 30 days.'
+    });
   });
 
   // Test for database query failure

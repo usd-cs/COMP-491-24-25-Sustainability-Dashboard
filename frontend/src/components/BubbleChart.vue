@@ -39,10 +39,9 @@ export default {
         const data = response.data;
         // Map each record to an array of values.
         this.chartData = data.map(item => [
-          parseFloat(item.co2_production_lbs).toFixed(3),
+        parseFloat(item.nox_reduction_lbs).toFixed(3),    // x-axis
           parseFloat(item.co2_reduction_lbs).toFixed(3),
-          parseFloat(item.ac_efficiency_lhv_percent).toFixed(3),
-          parseFloat(item.total_output_factor_percent).toFixed(3)
+          parseFloat(item.electricity_out_kwh).toFixed(3)   // bubble size
         ]);
         console.log('Chart Data:', this.chartData);
         // Ensure the chart container is rendered before initializing the chart.
@@ -51,14 +50,16 @@ export default {
         });
       } catch (error) {
         console.error('Error fetching chart data:', error);
+        this.chartData = []; // Reset chartData on error
       }
     },
     renderChart() {
       const chart = echarts.init(this.$refs.chart);
       const options = {
         title: {
-          text: this.title,
-          left: 'center'
+          text: 'Emissions Reduction Analysis',
+          left: 'center',
+          padding: [15, 0, 0, 0]
         },
         // grid: {
         //   containLabel: true
@@ -66,15 +67,16 @@ export default {
         tooltip: {
           trigger: 'item',
           formatter: function (params) {
-            return `CO₂ Production: ${params.value[0]} lbs<br/>
+            return `NOx Reduction: ${params.value[0]} lbs<br/>
                     CO₂ Reduction: ${params.value[1]} lbs<br/>
-                    AC Efficiency: ${params.value[2]}%<br/>
-                    Total Output Factor: ${params.value[3]}%`;
+                    Electricity Output: ${params.value[2]} kWh`;
           }
         },
         xAxis: {
           type: 'value',
-          name: 'CO₂ Production (lbs)'
+          name: 'NOx Reduction (lbs)',
+          nameLocation: 'middle',
+          nameGap: 30
         },
         yAxis: {
           type: 'value',
@@ -83,28 +85,29 @@ export default {
         visualMap: {
           // Only show the scale when fullPage is true.
           show: this.fullPage,
-          min: Math.min(...this.chartData.map(item => item[3])),
-          max: Math.max(...this.chartData.map(item => item[3])),
-          dimension: 3,
+          min: Math.min(...this.chartData.map(item => item[2])),
+          max: Math.max(...this.chartData.map(item => item[2])),
+          dimension: 2,
           inRange: {
             color: ['#d94e5d', '#eac736', '#50a3ba']
           },
-          text: ['High Efficiency', 'Low Efficiency'],
+          text: ['High Output', 'Low Output'],
           calculable: true,
           precision: 3,
-          left: 'left',
+          right: 'right',
           top: 'middle',
+          padding: [0, 10, 0, 0],
           itemWidth: 20,
           itemHeight: 200,
           textStyle: { fontSize: 12 }
         },
         series: [
           {
-            name: 'Bubble',
+            name: 'Reductions',
             type: 'scatter',
-            data: this.chartData.map(item => [item[0], item[1], item[2], item[3]]),
+            data: this.chartData,
             symbolSize: function (data) {
-              return data[2] * 100; // Adjust the bubble size as needed.
+              return Math.sqrt(data[2]) / 10; // Scale bubble size based on electricity output
             },
             itemStyle: { opacity: 0.8 }
           }

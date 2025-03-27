@@ -5,6 +5,7 @@ import UploadData from '../components/UploadData.vue'; // Upload data page compo
 import UploadSuccess from '../components/UploadSuccess.vue'; // Upload success confirmation component
 import BarChart from '@/components/BarChart.vue';
 import BubbleChart from '@/components/BubbleChart.vue';
+import PieChart from '@/components/PieChart.vue';
 import FileImport from '@/components/FileImport.vue';
 
 /**
@@ -31,8 +32,9 @@ const routes = [
   { path: '/select', component: FileImport }, // Route for the file source select
   { path: '/upload', component: UploadData }, // Route for the upload data page
   { path: '/upload-success', component: UploadSuccess }, // Route for the upload success page
-  { path: '/bar-chart', component: BarChart}, // Route for the bar chart page
-  { path: '/bubble-chart', component: BubbleChart, props: { fullPage: true } }
+  { path: '/bar-chart', component: BarChart }, // Route for the bar chart page
+  { path: '/bubble-chart', component: BubbleChart, props: { fullPage: true } },
+  { path: '/pie-chart', component: PieChart }
 ];
 
 /**
