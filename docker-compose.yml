@@ -1,11 +1,32 @@
 services:
+  web: 
+    build:
+      context: app
+      target: builder
+    # flask requires SIGINT to stop gracefully
+    # (default stop signal from Compose is SIGTERM)
+    stop_signal: SIGINT
+  proxy:
+    image: nginx:latest
+    ports:
+      - "3000:3000"
+      - "5173:5173"
+      - "5434:5432"  # Maps PostgreSQL's default port to host
+      - "8000:8000"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    restart: always
+    depends_on:
+      - web
+      - backend
+      - database
+
   backend:
     platform: linux/amd64
     build:
       context: .
       dockerfile: backend/Dockerfile.backend
-    ports:
-      - "3000:3000"
     volumes:
       - ${COMPOSE_PROJECT_PATH:-.}:/app
       - /app/node_modules  # Ensures node_modules is created inside the container
@@ -16,9 +37,7 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=postgres
-    depends_on:
-      database:
-        condition: service_healthy
+    
 
 
   frontend:
@@ -26,22 +45,18 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile.frontend
-    ports:
-      - "5173:5173"
     volumes:
       - ${COMPOSE_PROJECT_PATH:-.}:/app
       - /app/node_modules  # Ensures node_modules is created inside the container
     environment:
       - NODE_ENV=development
-    depends_on:
-      - backend
+      
 
   database:
     image: postgres:17
     container_name: postgres_container
     restart: always
     ports:
-      - "5434:5432"  # Maps PostgreSQL's default port to host
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

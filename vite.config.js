@@ -12,9 +12,10 @@ export default defineConfig({
     extensions: ['.js', '.vue', '.json'], 
   },
   server: {
+    host: '0.0.0.0',
     port: 5173, // Specify the development server port
     allowedHosts: [
-      'sustainability.dedyn.io', // Add this host directly
+      "sustainability.dedyn.io", // Add this host directly
       'localhost', // Include localhost for local development
       '.dedyn.io', // Allow any subdomain under dedyn.io if needed
     ],
