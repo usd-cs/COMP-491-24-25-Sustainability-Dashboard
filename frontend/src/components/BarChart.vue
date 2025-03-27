@@ -57,6 +57,7 @@ export default {
         this.renderChart();
       } catch (error) {
         console.error('Error fetching chart data:', error);
+        this.chartData = [];  // Reset data on error
       }
     },
     
