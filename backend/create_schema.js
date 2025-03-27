@@ -4,7 +4,7 @@ const { Pool } = pkg; // Destructure `Pool` from the imported package
 /**
  * @file create_schema.js
  * @description This script sets up the database schema for the project, including the creation of tables:
- * `users`, `energy_30_day_totals`, `energy_daily_data`, and a new tracking table `bloom_meta_data`.
+ * `users`, `energy_30_day_totals`, `energy_daily_data`, `bloom_meta_data`, and `athena_hourly_output`.
  * The `bloom_meta_data` table is used exclusively to track the Bloom API pulls by storing a unique (Date_Local, user_id)
  * pair along with a last_modified timestamp, without modifying the production daily data table.
  */
@@ -29,6 +29,7 @@ const pool = new Pool({
  * - `energy_30_day_totals` table: Stores aggregated energy data over 30 days.
  * - `energy_daily_data` table: Stores daily energy data.
  * - `bloom_meta_data` table: Tracks the Bloom API pulls with a unique (Date_Local, user_id) combination and a last_modified timestamp.
+ * - `athena_hourly_output` table: Stores hourly energy data from Athena along with a reference to the user.
  *
  * @returns {Promise<void>} Logs success or error messages to the console.
  */
@@ -115,31 +116,30 @@ const createSchema = async () => {
     `);
     console.log("Table 'bloom_meta_data' created successfully.");
 
-
     // Create `athena_hourly_output` table to store hourly energy data from Athena.
-    // Stores individual site summary data and then the total kWh of all sites for each hoursly timestamp. 
+    // Stores individual site summary data and then the total kWh of all sites for each hourly timestamp.
     await client.query(`
       CREATE TABLE IF NOT EXISTS athena_hourly_output (
         id SERIAL PRIMARY KEY,              -- Unique identifier for the record
         timestamp TIMESTAMP NOT NULL,       -- The timestamp of the hourly data
-        alcala_borrego DECIMAL(10, 5),   -- Energy output for Alcala Borrego
-        alcala_laguna DECIMAL(10, 5),   -- Energy output for Alcala Laguna
-        camino_hall DECIMAL(10, 5),         -- Energy output for Camino Hall
-        copley_library DECIMAL(10, 5),      -- Energy output for Copley Library
-        founders_hall DECIMAL(10, 5),     -- Energy output for Founders Hall
-        jenny_craig_pavilion DECIMAL(10, 5),      -- Energy output for Jenny Craig Pavilion
-        kroc DECIMAL(10, 5),            -- Energy output for Kroc Center
-        manchester_a DECIMAL(10, 5),    -- Energy output for Manchester A
-        manchester_b DECIMAL(10, 5),    -- Energy output for Manchester B
-        soles DECIMAL(10, 5),        -- Energy output for Soles Hall
-        west_parking DECIMAL(10, 5),  -- Energy output for West Parking
-        total_kwh DECIMAL(10, 5),          -- Summed kWh of all site columns
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Timestamp for when the record was created
+        alcala_borrego DECIMAL(10, 5),        -- Energy output for Alcala Borrego
+        alcala_laguna DECIMAL(10, 5),         -- Energy output for Alcala Laguna
+        camino_hall DECIMAL(10, 5),           -- Energy output for Camino Hall
+        copley_library DECIMAL(10, 5),        -- Energy output for Copley Library
+        founders_hall DECIMAL(10, 5),         -- Energy output for Founders Hall
+        jenny_craig_pavilion DECIMAL(10, 5),  -- Energy output for Jenny Craig Pavilion
+        kroc DECIMAL(10, 5),                  -- Energy output for Kroc Center
+        manchester_a DECIMAL(10, 5),          -- Energy output for Manchester A
+        manchester_b DECIMAL(10, 5),          -- Energy output for Manchester B
+        soles DECIMAL(10, 5),                 -- Energy output for Soles Hall
+        west_parking DECIMAL(10, 5),          -- Energy output for West Parking
+        total_kwh DECIMAL(10, 5),             -- Summed kWh of all site columns
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp for when the record was created
+        user_id INT,                         -- Reference to the user associated with the data
+        CONSTRAINT fk_user_athena FOREIGN KEY (user_id) REFERENCES users(user_id) -- Foreign key constraint
       );
     `);
     console.log("Table 'athena_hourly_output' created successfully.");
-
-
 
     // Commit the transaction
     await client.query('COMMIT');
