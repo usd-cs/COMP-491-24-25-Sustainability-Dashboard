@@ -72,6 +72,7 @@ import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
 import PieChart from './PieChart.vue';
 
+
 const router = useRouter(); // Vue Router instance for programmatic navigation
 
 /**
@@ -79,7 +80,7 @@ const router = useRouter(); // Vue Router instance for programmatic navigation
  * Triggered when the "Upload Data" button in the sidebar is clicked.
  */
 const navigateToUpload = () => {
-  router.push('/upload');
+  router.push('/select');
 };
 
 const navigateToMain = () => {

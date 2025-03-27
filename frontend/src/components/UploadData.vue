@@ -44,23 +44,23 @@
               type="file"
               id="fileInput"
               class="visually-hidden"
-              accept=".xlsx"
+              :accept="acceptedFileType"
               @change="handleFileSelect"
             />
             <p class="file-format-info">
-              Importing requires Microsoft Excel .xlsx
+              Importing requires a {{ selectedSource === 'Athena' ? 'CSV' : 'Microsoft Excel (.xlsx)' }} file.
             </p>
           </div>
         </div>
         
         <!-- Display selected file name -->
         <div v-if="uploadedFileName" class="uploaded-file">
-          <p>Uploaded File: <strong>{{ uploadedFileName }}</strong></p>
+          <p>Selected File: <strong>{{ uploadedFileName }}</strong></p>
         </div>
-
 
         <div class="action-buttons">
           <button class="cancel-btn" @click="handleCancel" tabindex="0">Cancel</button>
+          <button class="cancel-btn" @click="handleBack">Back</button>
           <button type="submit" class="import-btn">Import</button>
         </div>
       </form>
@@ -69,13 +69,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
 const selectedFile = ref(null);
-const uploadedFileName = ref(''); // State to store the uploaded file name
+const uploadedFileName = ref(''); // Initialize as empty string
+const selectedSource = ref(localStorage.getItem("selectedSource") || "Athena");
+
+// Computed property for accepted file type based on selected source
+const acceptedFileType = computed(() => {
+  return selectedSource.value === 'Athena' ? '.csv' : '.xlsx';
+});
+
+// Helper function to validate file based on its extension
+const isValidFile = (file) => {
+  const extension = file.name.split('.').pop().toLowerCase();
+  if (selectedSource.value === 'Athena') {
+    return extension === 'csv';
+  } else {
+    return extension === 'xlsx';
+  }
+};
 
 const handleUpload = async (_event) => {
   if (!selectedFile.value) {
@@ -86,15 +102,17 @@ const handleUpload = async (_event) => {
   const formData = new FormData();
   formData.append('file', selectedFile.value);
 
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ': ' + pair[1].name);
-  }
-
   try {
     console.log('Making POST request to upload file...');
-    console.log('FormData:', formData);
+    
+    // Determine the endpoint based on the selected source
+    const endpoint = selectedSource.value === 'Athena' 
+      ? 'http://localhost:3000/api/auth/athena-upload'
+      : 'http://localhost:3000/api/auth/file-upload';
 
-    const response = await axios.post('http://localhost:3000/api/auth/file-upload', formData, {
+    console.log(`Using endpoint: ${endpoint}`);
+    
+    const response = await axios.post(endpoint, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -103,7 +121,7 @@ const handleUpload = async (_event) => {
     console.log('Response:', response);
 
     if (response.status === 200) {
-      uploadedFileName.value = selectedFile.value.name; // Update the uploaded file name
+      uploadedFileName.value = selectedFile.value.name;
       router.push('/upload-success');
     }
   } catch (error) {
@@ -118,29 +136,33 @@ const handleFileDrop = (event) => {
 
   if (event.dataTransfer && event.dataTransfer.files.length > 0) {
     const file = event.dataTransfer.files[0];
-    if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-      alert('Invalid file type. Please upload an .xlsx file.');
+    if (!isValidFile(file)) {
+      alert(`Invalid file type. Please upload a ${selectedSource.value === 'Athena' ? '.csv' : '.xlsx'} file.`);
       return;
     }
     selectedFile.value = file;
-    uploadedFileName.value = file.name; // Update the uploaded file name
-    console.log('File dropped:', selectedFile.value.name);
+    uploadedFileName.value = file.name; // Set the filename
+    console.log('File dropped:', file.name);
   }
 };
 
 const handleFileSelect = (event) => {
   const file = event.target.files[0];
-  if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-    alert('Invalid file type. Please upload an .xlsx file.');
+  if (!isValidFile(file)) {
+    alert(`Invalid file type. Please upload a ${selectedSource.value === 'Athena' ? '.csv' : '.xlsx'} file.`);
     return;
   }
   selectedFile.value = file;
-  uploadedFileName.value = file.name; // Update the uploaded file name
-  console.log('File selected:', selectedFile.value.name);
+  uploadedFileName.value = file.name; // Set the filename
+  console.log('File selected:', file.name);
 };
 
 const handleCancel = () => {
   router.push('/main');
+};
+
+const handleBack = () => {
+  router.push('/select');
 };
 
 const handleLogout = () => {
@@ -225,7 +247,6 @@ const handleLogout = () => {
   background-color: #ffffff;
   color: #003b70;
 }
-
 
 .upload-section {
   background-color: #f4f4f4; /* Light gray background for the upload section */
@@ -357,5 +378,4 @@ const handleLogout = () => {
     gap: 10px;
   }
 }
-
 </style>

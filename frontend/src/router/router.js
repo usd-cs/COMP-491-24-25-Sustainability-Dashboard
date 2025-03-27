@@ -6,6 +6,7 @@ import UploadSuccess from '../components/UploadSuccess.vue'; // Upload success c
 import BarChart from '@/components/BarChart.vue';
 import BubbleChart from '@/components/BubbleChart.vue';
 import PieChart from '@/components/PieChart.vue';
+import FileImport from '@/components/FileImport.vue';
 
 /**
  * @file router.js
@@ -28,6 +29,7 @@ import PieChart from '@/components/PieChart.vue';
 const routes = [
   { path: '/', component: LoginPage }, // Route for the login page
   { path: '/main', component: MainPage }, // Route for the main dashboard page
+  { path: '/select', component: FileImport }, // Route for the file source select
   { path: '/upload', component: UploadData }, // Route for the upload data page
   { path: '/upload-success', component: UploadSuccess }, // Route for the upload success page
   { path: '/bar-chart', component: BarChart }, // Route for the bar chart page
