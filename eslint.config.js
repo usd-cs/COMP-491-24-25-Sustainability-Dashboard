@@ -5,7 +5,7 @@ import pluginVue from "eslint-plugin-vue";
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    files: ["**/*.{js,mjs,cjs,vue}"], // Apply to JavaScript, Vue, and module files
+    files: ["**/*.{js,mjs,cjs,vue,cy.js}"], // Apply to JavaScript, Vue, and module files
     languageOptions: {
       globals: {
         ...globals.browser, // Include browser-specific globals
@@ -17,6 +17,10 @@ export default [
         expect: "readonly", // Add `expect` for testing frameworks
         beforeEach: "readonly", // Add `beforeEach` for Vitest
         test: "readonly", // Add `test` for Vitest
+        cy: "readonly",      // Add Cypress global
+        Cypress: "readonly", // Add Cypress global
+        before: "readonly",  // Add Cypress hook
+        after: "readonly",   // Add Cypress hook
       },
     },
   },
