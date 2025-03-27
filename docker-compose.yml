@@ -12,7 +12,7 @@ services:
       - "3000:3000"
       - "5173:5173"
       - "5434:5432"  # Maps PostgreSQL's default port to host
-      - "8000:8000"
+      - "5443:5443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - /etc/letsencrypt:/etc/letsencrypt
@@ -56,7 +56,6 @@ services:
     image: postgres:17
     container_name: postgres_container
     restart: always
-    ports:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
