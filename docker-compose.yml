@@ -1,4 +1,11 @@
 services:
+  web: 
+    build:
+      context: ./backend
+      target: builder
+    # flask requires SIGINT to stop gracefully
+    # (default stop signal from Compose is SIGTERM)
+    stop_signal: SIGINT
   proxy:
     image: nginx:latest
     ports:
