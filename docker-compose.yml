@@ -1,11 +1,5 @@
 services:
-  web: 
-    build:
-      context: app
-      target: builder
-    # flask requires SIGINT to stop gracefully
-    # (default stop signal from Compose is SIGTERM)
-    stop_signal: SIGINT
+
   proxy:
     image: nginx:latest
     ports:
@@ -18,7 +12,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
     restart: always
     depends_on:
-      - web
+      - frontend
       - backend
       - database
 
@@ -37,6 +31,8 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=postgres
+    depends on:
+      - database
     
 
 
