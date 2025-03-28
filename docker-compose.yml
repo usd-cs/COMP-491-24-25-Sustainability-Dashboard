@@ -2,7 +2,7 @@ services:
   web: 
     build:
       context: ./frontend
-      target: builder
+      dockerfile: Dockerfile.frontend
     # flask requires SIGINT to stop gracefully
     # (default stop signal from Compose is SIGTERM)
     stop_signal: SIGINT
