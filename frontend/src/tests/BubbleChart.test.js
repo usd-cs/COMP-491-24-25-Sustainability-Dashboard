@@ -43,8 +43,8 @@ describe('BubbleChart.vue', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the full-page container and chart container', () => {
-    expect(wrapper.find('.full-page').exists()).toBe(true);
+  it('renders the chart wrapper and chart container', () => {
+    expect(wrapper.find('.chart-wrapper').exists()).toBe(true);
     expect(wrapper.find('.chart-container').exists()).toBe(true);
   });
 

@@ -1,12 +1,13 @@
 <template>
-  <div class="full-page">
+  <div class="chart-wrapper">
     <div ref="chart" class="chart-container"></div>
   </div>
 </template>
 
+
 <script>
 import * as echarts from 'echarts';
-import axios from 'axios'; // Assuming you have axios for making API calls
+import axios from 'axios'; 
 
 export default {
   name: 'BarChart',
@@ -14,18 +15,10 @@ export default {
     return {
       // Mapping of headers to database columns
       headerToDbColumnMap: {
-        //'Date (Local)': 'date_local',
         'Output Factor': 'total_output_factor_percent',
         'AC Efficiency': 'ac_efficiency_lhv_percent',
-        //'Heat Rate': 'heat_rate_hhv_btu_per_kwh',
-        //'Electricity Out': 'electricity_out_kwh',
-        //'Gas Flow In': 'gas_flow_in_therms',
-        //'CO₂ Reduction': 'co2_reduction_lbs',
-        //'CO₂ Production': 'co2_production_lbs',
-        //'NOₓ Reduction': 'nox_reduction_lbs',
         'NOₓ Production': 'nox_production_lbs',
         'SO₂ Reduction': 'so2_reduction_lbs',
-        //'SO₂ Production': 'so2_production_lbs',
       },
       chartData: [],
       chartLabels: [],
@@ -35,6 +28,11 @@ export default {
   mounted() {
     this.fetchChartData(); // Fetch data on mount
   },
+  beforeUnmount() {
+    if (this.chartInstance) {
+      window.removeEventListener('resize', this.resizeHandler);
+    }
+  },
   methods: {
     // Fetch the chart data from API
     async fetchChartData() {
@@ -42,10 +40,7 @@ export default {
         const response = await axios.get('http://localhost:3000/api/tables/getenergy'); 
         const data = response.data;
 
-        // Set chart labels (exclude the date)
-        this.chartLabels = Object.keys(this.headerToDbColumnMap).filter(
-          label => label !== 'Date (Local)'
-        );
+        this.chartLabels = Object.keys(this.headerToDbColumnMap);
 
         // Map the fetched data to the chart data
         this.chartData = this.chartLabels.map(label => {
@@ -62,9 +57,7 @@ export default {
     },
     
     renderChart() {
-      const chart = echarts.init(this.$refs.chart);
-      // Store the instance so we can use it in the resize event
-      this.chartInstance = chart;
+      this.chartInstance = echarts.init(this.$refs.chart);
       const options = {
         title: {
           text: this.title,
@@ -73,6 +66,13 @@ export default {
         },
         tooltip: {
           trigger: 'axis'
+        },
+        grid: {
+          top: 50,
+          left: 20,
+          right: 20,
+          bottom: 30,
+          containLabel: true  // ensures labels are never clipped
         },
         xAxis: {
           type: 'category',
@@ -97,30 +97,29 @@ export default {
         ]
       };
       this.chartInstance.setOption(options);
-      window.addEventListener('resize', () => this.chartInstance.resize());
+      this.resizeHandler = () => this.chartInstance.resize();
+      window.addEventListener('resize', this.resizeHandler);
     }
   }
 };
 </script>
 
 <style scoped>
-:global(body) {
-  background-color: #ffffff; /* Global background color */
-}
-.full-page {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-.chart-container {
+.chart-wrapper {
   width: 100%;
-  height: 100%; /* Fill the full-page container */
+  height: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 8px; /* Match your box rounding */
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  position: relative;
-  /* border: 1px solid red; For debugging */
+}
+
+.chart-container {
+  width: 100%;
+  height: 100%;
 }
 </style>
