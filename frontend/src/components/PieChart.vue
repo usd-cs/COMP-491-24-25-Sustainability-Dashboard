@@ -1,5 +1,5 @@
 <template>
-  <div class="full-page">
+  <div class="chart-wrapper">
     <div ref="chart" class="chart-container"></div>
   </div>
 </template>
@@ -28,7 +28,6 @@ export default {
       try {
         const response = await axios.get('http://localhost:3000/api/tables/getenergy');
         const data = response.data;
-        console.log('API Response:', data);
         // Transform data for pie chart format
         this.chartData = [
           {
@@ -47,8 +46,6 @@ export default {
             itemStyle: { color: '#45B7D1' }
           }
         ];
-        // Log the transformed data
-        console.log('Chart Data:', this.chartData);
 
         this.renderChart();
       } catch (error) {
@@ -56,7 +53,7 @@ export default {
       }
     },
     renderChart() {
-      const chart = echarts.init(this.$refs.chart);
+      this.chartInstance = echarts.init(this.$refs.chart);
       const options = {
         title: {
           text: this.title,
@@ -65,7 +62,7 @@ export default {
         },
         tooltip: {
           trigger: 'item',
-          formatter: function(params) {
+          formatter: (params) => {
             const unit = params.name.includes('Electricity') ? 'kWh' : 'lbs';
             return `${params.name}: ${params.value} ${unit} (${params.percent}%)`;
           }
@@ -113,13 +110,11 @@ export default {
           }
         ]
       };
-      
-      chart.setOption(options);
-      this.chart = chart;
+      this.chartInstance.setOption(options);
     },
     handleResize() {
-      if (this.chart) {
-        this.chart.resize();
+      if (this.chartInstance) {
+        this.chartInstance.resize();
       }
     }
   }
@@ -127,19 +122,22 @@ export default {
 </script>
 
 <style scoped>
-.full-page {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-.chart-container {
+.chart-wrapper {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.chart-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
   overflow: hidden;
-  position: relative;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="full-page">
+  <div class="chart-wrapper">
     <div ref="chart" class="chart-container"></div>
   </div>
 </template>
@@ -25,7 +25,6 @@ export default {
     };
   },
   mounted() {
-    console.log("fullPage prop:", this.fullPage);
     this.fetchChartData();
     window.addEventListener('resize', this.handleResize);
   },
@@ -43,7 +42,6 @@ export default {
           parseFloat(item.co2_reduction_lbs).toFixed(3),
           parseFloat(item.electricity_out_kwh).toFixed(3)   // bubble size
         ]);
-        console.log('Chart Data:', this.chartData);
         // Ensure the chart container is rendered before initializing the chart.
         nextTick(() => {
           this.renderChart();
@@ -54,19 +52,19 @@ export default {
       }
     },
     renderChart() {
-      const chart = echarts.init(this.$refs.chart);
+      this.chartInstance = echarts.init(this.$refs.chart);
       const options = {
         title: {
           text: 'Emissions Reduction Analysis',
           left: 'center',
-          padding: [15, 0, 0, 0]
+          top: '5%'
         },
         // grid: {
         //   containLabel: true
         // },
         tooltip: {
           trigger: 'item',
-          formatter: function (params) {
+          formatter: (params) => {
             return `NOx Reduction: ${params.value[0]} lbs<br/>
                     CO₂ Reduction: ${params.value[1]} lbs<br/>
                     Electricity Output: ${params.value[2]} kWh`;
@@ -113,12 +111,11 @@ export default {
           }
         ]
       };
-      chart.setOption(options);
-      this.chart = chart;
+      this.chartInstance.setOption(options);
     },
     handleResize() {
-      if (this.chart) {
-        this.chart.resize();
+      if (this.chartInstance) {
+        this.chartInstance.resize();
       }
     }
   }
@@ -126,22 +123,22 @@ export default {
 </script>
 
 <style scoped>
-.full-page {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
-.chart-container {
+.chart-wrapper {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 8px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.chart-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
   overflow: hidden;
-  position: relative;
-  /* Remove or comment out the border after debugging */
-  /* border: 1px solid red; */
 }
 </style>
