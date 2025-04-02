@@ -134,10 +134,11 @@ const navigateToPieChart = () => {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #fafafa; /* solid base */
+    background-color: #79bde9;/*
+    background-color: #fafafa; /* solid base 
     background-image: url('https://www.sandiego.edu/brand/images/logos/spirit-mark/usd-logo-spirit-primary.png');
     background-repeat: repeat;
-    background-size: 150px 150px;
+    background-size: 150px 150px; */
     opacity: 0.87; 
     z-index: -1000;
     pointer-events: none;
