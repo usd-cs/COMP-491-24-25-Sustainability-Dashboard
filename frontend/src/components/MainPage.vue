@@ -1,65 +1,45 @@
 <template>
-  <!-- Main container for the dashboard page -->
+  <div class="background-pattern"></div>
   <div class="dashboard-container">
-    <!-- Header section with the application title and logout button -->
-    <header class="header">
-      <div class="header-content">
-        <!-- Clickable logo -->
-        <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png"
-            alt="University of San Diego Logo"
-            class="logo"
-          />
-        </a>
-        <h1 class="title">USD Office of Sustainability</h1>
-      </div>
-      <!-- Logout button -->
-      <div class="user-section">
-        <button class="logout-btn" @click="handleLogout" tabindex="0">
-          Logout →
-        </button>
+    <!-- New Navigation Bar -->
+    <header class="nav-menu">
+      <div class="nav-content">
+        <div class="logo">
+          <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png" alt="USD Logo" class="logo-img">
+          </a>
+        </div>
+        <ul class="nav-items">
+          <li class="navLi"><router-link to="/main" class="navLink" active-class="active" @click.prevent="navigateToMain">Summary</router-link></li>
+          <li class="navLi"><router-link to="/sources" class="navLink" active-class="active" @click.prevent="navigateToSources">Sources</router-link></li>
+          <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active" @click.prevent="navigateToInitiatives">Initiatives</router-link></li>
+          <li class="navLi"><router-link to="/contact" class="navLink" active-class="active" @click.prevent="navigateToContact">Contact</router-link></li>
+        </ul>
+        <!-- logout button separated -->
+        <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
       </div>
     </header>
 
+
     <!-- Main content area of the dashboard -->
     <main class="main-content">
-        <!-- Sidebar with navigation items -->
-      <div class="sidebar">
-        <div class="sidebar-content">
-          <nav class="navigation-menu">
-            <!-- Navigation items for future use -->
-            <div class="nav-item" tabindex="0" role="button" @click="navigateToMain">Summary</div>
-            <div class="nav-item" tabindex="0" role="button">Sources</div>
-            <div class="nav-item" tabindex="0" role="button">Reports</div>
-            <div class="nav-item" tabindex="0" role="button">Contact</div>
-          </nav>
-          <!-- Button to navigate to the upload data page -->
-          <button class="upload-button" @click="navigateToUpload" tabindex="0">Upload Data</button>
-        </div>
-      </div>
-
-      <!-- Placeholder for dashboard visuals -->
+      <!-- Main visuals -->
       <div class="visual-container">
         <div class="visual-section" role="button" @click="navigateToBarChart">
-          <!-- Placeholder for the first graphic visual -->
           <BarChart/>
         </div>
         <div class="visual-section" role="button" @click="navigateToBubbleChart">
-          <!-- Placeholder for the second graphic visual -->
           <BubbleChart/>
         </div>
         <div class="visual-section" role="button" @click="navigateToPieChart"> 
-          <!-- Placeholder for the third graphic visual -->
           <PieChart/>
         </div>
-        <div class="visual-section">
-          <!-- Placeholder for the fourth graphic visual -->
-        </div>
+        <div class="visual-section"></div>
       </div>
     </main>
   </div>
 </template>
+
 
 <script setup>
 /**
@@ -67,13 +47,18 @@
  * @description This Vue component represents the main dashboard page. It includes a header, navigation sidebar, and placeholders for dashboard visuals and data upload functionality.
  */
 
-import { useRouter } from 'vue-router'; // Import Vue Router for navigation
+import { useRouter, useRoute } from 'vue-router'; // Import Vue Router for navigation
 import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
 import PieChart from './PieChart.vue';
 
 
-const router = useRouter(); // Vue Router instance for programmatic navigation
+const router = useRouter();
+const route = useRoute();
+
+const isActive = (path) => {
+  return route.path === path;
+};
 
 /**
  * Navigate to the data upload page.
@@ -87,6 +72,17 @@ const navigateToMain = () => {
   router.push('/main');
 };
 
+const navigateToSources = () => {
+  router.push('/sources');
+};
+
+const navigateToInitiatives = () => {
+  router.push('/initiatives');
+};
+
+const navigateToContact = () => {
+  router.push('/contact');
+};
 /**
  * Handle user logout.
  * Clears session and redirects the user to the login page.
@@ -132,60 +128,105 @@ const navigateToPieChart = () => {
   padding: 0;
   box-sizing: border-box;
 }
+.background-pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fafafa; /* solid base */
+    background-image: url('https://www.sandiego.edu/brand/images/logos/spirit-mark/usd-logo-spirit-primary.png');
+    background-repeat: repeat;
+    background-size: 150px 150px;
+    opacity: 0.87; 
+    z-index: -1000;
+    pointer-events: none;
+}
 
-/* Main container for the dashboard page */
 .dashboard-container {
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow-y:auto;
+    position: relative;  /* <-- make sure content is "positioned" */
+    z-index: 0;          /* <-- sits above the background */
 }
 
-/* Header styling */
-.header {
-  background-color: #003b70; /* Official USD dark blue */
+.main-content {
+    width: 100%;
+    max-width: 1400px;  
+    margin: 0 auto;      /* centers it */
+    padding: 20px;       
+    box-sizing: border-box;
+    flex: 1;
+    display: flex;
+}
+
+.nav-menu {
+  background-color: #003b70;
+  height: 71px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px 40px;
+  justify-content: flex-start;
+  padding: 0 20px; /* zero vertical padding, 20px left-right */
   box-sizing: border-box;
-  width: 100%;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
-.header-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Align content to the left */
-}
-
-.logo {
-  height: 40px;
-  margin-bottom: 10px; /* Add spacing between the logo and the title */
-}
-
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1;
-  text-align: left;
-}
-
-.user-section {
+.nav-content {
   display: flex;
   align-items: center;
+  gap: 30px;
+  height: 100%;
+  width: 100%;
+  padding-right: 60px;
+}
+
+.nav-items {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 .logout-btn {
+  margin-left: auto; 
   background-color: transparent;
   color: #ffffff;
-  font: 400 16px Inter, sans-serif;
+  font: 400 14px Inter, sans-serif;
   border: 1px solid #ffffff;
-  padding: 8px 16px;
+  padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.logo-img {
+  height: 50px;
+}
+
+.navLi {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: relative;
+}
+
+.navLink {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0 20px; /* horizontal padding only */
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.navLink.active {
+    background: rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.navLink:hover {
+  background: rgba(0, 0, 0, 0.10);
 }
 
 .logout-btn:hover {
@@ -193,110 +234,42 @@ const navigateToPieChart = () => {
   color: #003b70;
 }
 
-/* Main content styles */
-.main-content {
-  display: flex;
-  width: 100%;
-  overflow: auto; /* Prevent scrolling */
-  align-items: flex-start;
-}
-
-/* Sidebar styles */
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  width: 15%;
-  height: 100%; /* Make sidebar take full height */
-  padding-bottom: 3px; /* Same as dashboard-container padding-bottom */
-  box-sizing: border-box; /* Ensure padding is included in the width */
-  margin-left: 20px;
-}
-
-.sidebar-content {
-  background: #003b70;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; 
-  padding: 15px;
-  margin-top: 20px;
-  height: 80vh; /* Make sidebar content take full height */
-  color: #000;
-}
-
-.navigation-menu {
-  margin-top: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 23px;
-}
-
-.nav-item {
-  background: #fff;
-  padding: 8px 1px;
-  cursor: pointer;
-  display: flex; /* Use Flexbox */
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.nav-item:hover {
-  background: #75bee9;
-  color: #fff;
-  border-radius: 4px;
-}
-
-.upload-button {
-  background: #fff;
-  margin-top: 20px;
-  font-size: 15px;
-  padding: 5px 15px;
-  border: none;
-  cursor: pointer;
-}
-
 /* Visual container styles */
 .visual-container {
-  background: #003b70;
-  display: grid;
-  align-items: center;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 18px; /* Reduce the gap between the visual containers */
-  width: 100%; /* Adjust the width to fit within the viewport */
-  margin: 20px;
-  padding-top: 20px;
-  padding-right: 20px;
-  padding-left: 20px; 
-  padding-bottom: 20px;
-  height: 80vh; /* Make visual container take full height */
-  grid-template-areas: 
-    "chart1 chart2"
-    "chart3 chart4";
+    background: transparent;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 18px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    height: calc(100vh - 71px - 40px);
+    border-radius: 8px;
 }
-
-.visual-section:nth-child(1) { grid-area: chart1; } /* Top-left */
-.visual-section:nth-child(2) { grid-area: chart2; }
-.visual-section:nth-child(3) { grid-area: chart3; }
-.visual-section:nth-child(4) { grid-area: chart4; }
-
 
 .visual-section {
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  position: relative;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; 
+    position: relative;
+    border-radius: 8px;
+    padding: 10px; /* give breathing space to the chart */
+    box-sizing: border-box;
+    border: 2px solid rgba(0,0,0,0.05);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
+
 .visual-section > * {
-  width: 100%;
-  height: 100%;
-  /* border: 1px solid red; For debugging */
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    border-radius: 8px; 
 }
 </style>
