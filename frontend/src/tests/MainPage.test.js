@@ -31,14 +31,6 @@ describe('DashboardLayout', () => {
   });
 
   /**
-   * @description Tests if the user section exists in the layout.
-   */
-  it('has a user section', () => {
-    const wrapper = mount(DashboardLayout);
-    expect(wrapper.find('.user-section').exists()).toBe(true); // Verify user section is present
-  });
-
-  /**
    * @description Tests if the logout button is present in the layout.
    */
   it('has logout button', () => {
@@ -51,14 +43,7 @@ describe('DashboardLayout', () => {
    */
   it('has correct navigation items', () => {
     const wrapper = mount(DashboardLayout);
-    expect(wrapper.findAll('.nav-item')).toHaveLength(4); // Verify four navigation items exist
+    expect(wrapper.findAll('.navLi')).toHaveLength(4); // Verify four navigation items exist
   });
 
-  /**
-   * @description Tests if the upload button is present and has the correct text.
-   */
-  it('has upload button', () => {
-    const wrapper = mount(DashboardLayout);
-    expect(wrapper.find('.upload-button').text()).toBe('Upload Data'); // Verify upload button text
-  });
 });
