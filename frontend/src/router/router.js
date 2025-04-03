@@ -8,7 +8,7 @@ import BubbleChart from "@/components/BubbleChart.vue";
 import PieChart from "@/components/PieChart.vue";
 import FileImport from "@/components/FileImport.vue";
 import Sources from "@/components/Sources.vue";
-import AthenaLandingPage from "./AthenaLandingPage.vue";
+import AthenaLandingPage from "@/components/AthenaSources.vue";
 
 /**
  * @file router.js
