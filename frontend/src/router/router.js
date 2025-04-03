@@ -29,6 +29,7 @@ import FileImport from '@/components/FileImport.vue';
 const routes = [
   { path: '/', component: LoginPage }, // Route for the login page
   { path: '/main', component: MainPage }, // Route for the main dashboard page
+  { path: '/sources', component: Sources },
   { path: '/select', component: FileImport }, // Route for the file source select
   { path: '/upload', component: UploadData }, // Route for the upload data page
   { path: '/upload-success', component: UploadSuccess }, // Route for the upload success page
