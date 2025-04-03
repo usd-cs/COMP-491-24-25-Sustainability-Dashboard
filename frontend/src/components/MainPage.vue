@@ -134,11 +134,9 @@ const navigateToPieChart = () => {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #79bde9;/*
-    background-color: #fafafa; /* solid base 
-    background-image: url('https://www.sandiego.edu/brand/images/logos/spirit-mark/usd-logo-spirit-primary.png');
-    background-repeat: repeat;
-    background-size: 150px 150px; */
+    background-color: #79bde9;
+    background-color: #fafafa;
+    background-image: url('https://s8kvb6qnle.execute-api.us-west-2.amazonaws.com/?hash=57e2f2c6f8c556e8de9634c71a03601a&url=https://www.sandiego.edu/admission-and-aid/undergraduate/images/campus-beauty.jpg&width=2100&webp=true');
     opacity: 0.87; 
     z-index: -1000;
     pointer-events: none;

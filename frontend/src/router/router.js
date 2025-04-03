@@ -8,7 +8,6 @@ import BubbleChart from "@/components/BubbleChart.vue";
 import PieChart from "@/components/PieChart.vue";
 import FileImport from "@/components/FileImport.vue";
 import Sources from "@/components/Sources.vue";
-import AthenaLandingPage from "@/components/AthenaSources.vue";
 
 /**
  * @file router.js
@@ -37,8 +36,7 @@ const routes = [
   { path: "/upload-success", component: UploadSuccess }, // Route for the upload success page
   { path: "/bar-chart", component: BarChart }, // Route for the bar chart page
   { path: "/bubble-chart", component: BubbleChart, props: { fullPage: true } },
-  { path: "/pie-chart", component: PieChart },
-  { path: "/athena", component: AthenaLandingPage }, // Route for the Athena Landing Page
+  { path: "/pie-chart", component: PieChart }
 ];
 
 /**
