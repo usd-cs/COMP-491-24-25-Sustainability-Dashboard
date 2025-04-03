@@ -10,11 +10,12 @@
             </a>
           </div>
           <ul class="nav-items">
-            <li class="navLi"><router-link to="/main" class="navLink" active-class="active" @click.prevent="navigateToMain">Summary</router-link></li>
-            <li class="navLi"><router-link to="/sources" class="navLink" active-class="active" @click.prevent="navigateToSources">Sources</router-link></li>
-            <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active" @click.prevent="navigateToInitiatives">Initiatives</router-link></li>
-            <li class="navLi"><router-link to="/contact" class="navLink" active-class="active" @click.prevent="navigateToContact">Contact</router-link></li>
-          </ul>
+          <li class="navLi"><router-link to="/main" class="navLink" active-class="active" @click.prevent="navigateToMain">Summary</router-link></li>
+          <li class="navLi"><router-link to="/sources" class="navLink" active-class="active" @click.prevent="navigateToSources">Sources</router-link></li>
+          <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active" @click.prevent="navigateToInitiatives">Initiatives</router-link></li>
+          <li class="navLi"><router-link to="/contact" class="navLink" active-class="active" @click.prevent="navigateToContact">Contact</router-link></li>
+        </ul>
+
           <!-- Logout button -->
           <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
         </div>
@@ -109,81 +110,65 @@
   <style scoped>
   @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
   
-  /* Reset styles */
-  * {
+
+    * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-  }
-  
-  .background-pattern {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #79bde9;
-    opacity: 0.87;
-    z-index: -1000;
-    pointer-events: none;
-  }
-  
-  /* Navigation Styles */
-  .nav-menu {
+    }
+    .background-pattern {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #79bde9;/*
+        background-color: #fafafa; /* solid base 
+        background-image: url('https://www.sandiego.edu/brand/images/logos/spirit-mark/usd-logo-spirit-primary.png');
+        background-repeat: repeat;
+        background-size: 150px 150px; */
+        opacity: 0.87; 
+        z-index: -1000;
+        pointer-events: none;
+    }
+
+    .dashboard-container {
+        position: relative;  /* <-- make sure content is "positioned" */
+        z-index: 0;          /* <-- sits above the background */
+    }
+
+
+    .nav-menu {
     background-color: #003b70;
     height: 71px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 0 20px;
+    padding: 0 20px; /* zero vertical padding, 20px left-right */
+    box-sizing: border-box;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-  }
-  
-  .nav-content {
+    }
+
+    .nav-content {
     display: flex;
     align-items: center;
     gap: 30px;
+    height: 100%;
     width: 100%;
     padding-right: 60px;
-  }
-  
-  .nav-items {
+    }
+
+    .nav-items {
     list-style: none;
     display: flex;
     gap: 20px;
-  }
-  
-  .logo-img {
-    height: 50px;
-  }
-  
-  .navLi {
-    display: flex;
-    align-items: center;
+    margin: 0;
+    padding: 0;
     height: 100%;
-  }
-  
-  .navLink {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
-  
-  .navLink.active {
-    background: rgba(0, 0, 0, 0.15);
-    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .navLink:hover {
-    background: rgba(0, 0, 0, 0.10);
-  }
-  
-  .logout-btn {
-    margin-left: auto;
+    }
+
+    .logout-btn {
+    margin-left: auto; 
     background-color: transparent;
     color: #ffffff;
     font: 400 14px Inter, sans-serif;
@@ -192,13 +177,82 @@
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
-  }
-  
-  .logout-btn:hover {
+    }
+
+    .logo-img {
+    height: 50px;
+    }
+
+    .navLi {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        position: relative;
+    }
+
+    .navLink {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0 20px; /* horizontal padding only */
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    .navLink.active {
+        background: rgba(0, 0, 0, 0.15);
+        box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .navLink:hover {
+    background: rgba(0, 0, 0, 0.10);
+    }
+
+    .logout-btn:hover {
     background-color: #ffffff;
     color: #003b70;
-  }
-  
+    }
+
+    /* Visual container styles */
+    .visual-container {
+        background: transparent;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 18px;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        box-sizing: border-box;
+        height: calc(100vh - 71px - 40px);
+        border-radius: 8px;
+    }
+
+    .visual-section {
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; 
+        position: relative;
+        border-radius: 8px;
+        padding: 10px; /* give breathing space to the chart */
+        box-sizing: border-box;
+        border: 2px solid rgba(0,0,0,0.05);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    .visual-section > * {
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        border-radius: 8px; 
+    }
+
   /* Sources Content */
   .sources__content {
     padding: 24px;
