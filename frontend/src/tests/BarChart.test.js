@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import BarChart from '../components/BarChart.vue';
 import axios from 'axios';
-// eslint-disable-next-line no-unused-vars
+ 
 import * as echarts from 'echarts';
 
 const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));

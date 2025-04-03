@@ -46,7 +46,7 @@
                 class="sources__building-card"
               >
                 <h3 class="sources__building-name">{{ building.name }}</h3>
-                <p class="sources__building-type">Type: {{ String(building.type) }}</p>
+                <p class="sources__building-type">Type: {{ building.type }}</p>
               </article>
             </section>
           </div>
@@ -55,48 +55,41 @@
     </div>
   </template>
   
-  <script setup lang="ts">
-  import { ref, computed } from "vue";
-  import { useRouter } from "vue-router";
-  
-  const router = useRouter();
-  
-  type BType = "electricity" | "solar" | "fuelcell";
-  type FilterType = BType | "all";
-  
-  interface Building {
-    name: string;
-    type: BType;
-  }
-  
-  const activeFilter = ref<FilterType>("all");
-  const filters: FilterType[] = ["all", "electricity", "fuelcell", "solar"];
-  
-  const buildings: Building[] = [
-    { name: "Alcala Borrego", type: "electricity" },
-    { name: "Alcala Laguna", type: "electricity" },
-    { name: "Camino Hall", type: "solar" },
-    { name: "Copley Library", type: "electricity" },
-    { name: "Founders Hall", type: "solar" },
-    { name: "Jenny Craig Pavilion", type: "electricity" },
-    { name: "Kroc", type: "fuelcell" },
-    { name: "Manchester A", type: "electricity" },
-    { name: "Manchester B", type: "solar" },
-    { name: "Soles", type: "electricity" },
-    { name: "West Parking - Solar", type: "solar" },
-    { name: "West Parking - Fuel Cell", type: "fuelcell" },
-  ];
-  
-  const filteredBuildings = computed(() => {
-    return activeFilter.value === "all"
-      ? buildings
-      : buildings.filter((b) => b.type === activeFilter.value);
-  });
-  
-  const handleLogout = () => {
-    router.push("/");
-  };
-  </script>
+  <script setup>
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const activeFilter = ref("all");
+const filters = ["all", "electricity", "fuelcell", "solar"];
+
+const buildings = [
+  { name: "Alcala Borrego", type: "electricity" },
+  { name: "Alcala Laguna", type: "electricity" },
+  { name: "Camino Hall", type: "solar" },
+  { name: "Copley Library", type: "electricity" },
+  { name: "Founders Hall", type: "solar" },
+  { name: "Jenny Craig Pavilion", type: "electricity" },
+  { name: "Kroc", type: "fuelcell" },
+  { name: "Manchester A", type: "electricity" },
+  { name: "Manchester B", type: "solar" },
+  { name: "Soles", type: "electricity" },
+  { name: "West Parking - Solar", type: "solar" },
+  { name: "West Parking - Fuel Cell", type: "fuelcell" },
+];
+
+const filteredBuildings = computed(() => {
+  return activeFilter.value === "all"
+    ? buildings
+    : buildings.filter((b) => b.type === activeFilter.value);
+});
+
+const handleLogout = () => {
+  router.push("/");
+};
+</script>
+
   
   <style scoped>
   @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
@@ -226,3 +219,4 @@
     }
   }
   </style>
+  
