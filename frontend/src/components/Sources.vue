@@ -1,12 +1,9 @@
 <template>
-    <div class="min-h-screen w-screen bg-[#fff] font-[Inter]">
+    <div class="sources">
       <header class="header">
         <div class="header-content">
-          <a
-            href="https://www.sandiego.edu/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <!-- Clickable logo -->
+          <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
             <img
               src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png"
               alt="University of San Diego Logo"
@@ -15,26 +12,23 @@
           </a>
           <h1 class="title">USD Office of Sustainability</h1>
         </div>
+        <!-- Logout button -->
         <div class="user-section">
-          <button class="logout-btn" @click="handleLogout" tabindex="0">
-            Logout →
-          </button>
+          <button class="logout-btn" @click="handleLogout">Logout →</button>
         </div>
       </header>
   
-      <main class="p-[24px]">
-        <div class="bg-[#003B6F] p-[24px] rounded-[4px]">
-          <div class="bg-white p-[24px] rounded-[4px]">
-            <nav
-              class="flex gap-[32px] items-center border-b border-[#6C6C6C] pb-[12px] mb-[24px]"
-            >
+      <main class="sources__content">
+        <section class="sources__panel">
+          <div class="sources__panel-inner">
+            <nav class="sources__filters">
               <button
                 v-for="filter in filters"
                 :key="filter"
                 @click="activeFilter = filter"
                 :class="[
-                  'text-[20px]',
-                  activeFilter === filter ? 'font-bold' : 'font-normal',
+                  'sources__filter-btn',
+                  activeFilter === filter ? 'sources__filter-btn--active' : ''
                 ]"
               >
                 {{
@@ -45,24 +39,18 @@
               </button>
             </nav>
   
-            <section
-              class="grid grid-cols-4 max-lg:grid-cols-2 max-sm:grid-cols-1 gap-[24px]"
-            >
+            <section class="sources__buildings-grid">
               <article
                 v-for="building in filteredBuildings"
                 :key="building.name"
-                class="bg-white p-4 rounded shadow-md"
+                class="sources__building-card"
               >
-                <h3 class="text-xl font-semibold text-[#003B6F]">
-                  {{ building.name }}
-                </h3>
-                <p class="text-gray-600 mt-2 capitalize">
-                  Type: {{ building.type }}
-                </p>
+                <h3 class="sources__building-name">{{ building.name }}</h3>
+                <p class="sources__building-type">Type: {{ building.type }}</p>
               </article>
             </section>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   </template>
@@ -150,9 +138,7 @@
   .logout-btn {
     background-color: transparent;
     color: #ffffff;
-    font:
-      400 16px Inter,
-      sans-serif;
+    font: 400 16px Inter, sans-serif;
     border: 1px solid #ffffff;
     padding: 8px 16px;
     border-radius: 4px;
@@ -165,9 +151,78 @@
     color: #003b70;
   }
   
+  .sources__content {
+    padding: 24px;
+  }
+  
+  .sources__panel {
+    background-color: #003b70;
+    padding: 24px;
+    border-radius: 4px;
+  }
+  
+  .sources__panel-inner {
+    background-color: white;
+    padding: 24px;
+    border-radius: 4px;
+  }
+  
+  .sources__filters {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    border-bottom: 2px solid #6c6c6c;
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .sources__filter-btn {
+    font-size: 20px;
+    color: #003b70;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+  
+  .sources__filter-btn--active {
+    font-weight: bold;
+  }
+  
+  .sources__buildings-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  
+  .sources__building-card {
+    background-color: white;
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sources__building-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #003b70;
+  }
+  
+  .sources__building-type {
+    color: gray;
+    margin-top: 8px;
+  }
+  
   @media (max-width: 991px) {
-    .header {
-      padding: 10px 20px;
+    .sources__buildings-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+    .sources__panel {
+      padding: 16px;
+    }
+  
+    .sources__panel-inner {
+      padding: 16px;
     }
   }
   </style>
