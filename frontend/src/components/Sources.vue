@@ -46,7 +46,7 @@
                 class="sources__building-card"
               >
                 <h3 class="sources__building-name">{{ building.name }}</h3>
-                <p class="sources__building-type">Type: {{ building.type }}</p>
+                <p class="sources__building-type">Type: {{ String(building.type) }}</p>
               </article>
             </section>
           </div>
@@ -61,12 +61,12 @@
   
   const router = useRouter();
   
-  type BuildingType = "electricity" | "solar" | "fuelcell";
-  type FilterType = BuildingType | "all";
+  type BType = "electricity" | "solar" | "fuelcell";
+  type FilterType = BType | "all";
   
   interface Building {
     name: string;
-    type: BuildingType;
+    type: BType;
   }
   
   const activeFilter = ref<FilterType>("all");
@@ -226,4 +226,3 @@
     }
   }
   </style>
-  
