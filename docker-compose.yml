@@ -12,6 +12,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
     restart: always
     depends_on:
+      - web
       - frontend
       - backend
       - database
