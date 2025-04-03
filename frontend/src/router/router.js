@@ -7,7 +7,7 @@ import BarChart from '@/components/BarChart.vue';
 import BubbleChart from '@/components/BubbleChart.vue';
 import PieChart from '@/components/PieChart.vue';
 import FileImport from '@/components/FileImport.vue';
-import Sources from '@/components/Sources.vue';
+import Sources from '../components/Sources.vue';
 
 /**
  * @file router.js
