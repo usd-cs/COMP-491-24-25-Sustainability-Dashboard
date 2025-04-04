@@ -40,7 +40,7 @@
               v-for="building in filteredBuildings"
               :key="building.name"
               class="sources__building-card"
-              @click="storeBuildingName(building.name)"
+              @click="storeBuildingNameAndRedirect(building.name)"
             >
               <h3 class="sources__building-name">{{ building.name }}</h3>
               <p class="sources__building-type">Type: {{ building.type }}</p>
@@ -61,9 +61,10 @@ const router = useRouter();
 const activeFilter = ref("solar"); // Starting with 'solar'
 const filters = ["all", "electricity", "fuelcell", "solar"];
 
-// Function to store building name
-const storeBuildingName = (name) => {
-  localStorage.setItem('selectedBuilding', name);
+// Function to store building name in localStorage and redirect to /sources-graph
+const storeBuildingNameAndRedirect = (name) => {
+  localStorage.setItem('selectedBuilding', name);  // Store building name in localStorage
+  router.push('/sources-graph');  // Redirect to /sources-graph
 };
 
 const buildings = [
@@ -250,12 +251,17 @@ const handleLogout = () => router.push("/");
   padding: 16px;
   border-radius: 4px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .sources__building-name {
   font-size: 18px;
   font-weight: 600;
   color: #003b70;
+}
+
+.sources__building-card:hover {
+  background-color: #f0f0f0;
 }
 
 /* Visualization Grid */

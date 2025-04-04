@@ -1,32 +1,34 @@
 <template>
-    <div>
-      <h2>Electricity Output Over Time</h2>
-      <div ref="chart" style="width: 100%; height: 400px;"></div>
-    </div>
-  </template>
-  
-  <script setup>
-  import { onMounted, ref } from 'vue';
-  import * as echarts from 'echarts';
-  
-  const chart = ref(null);
-  
-  onMounted(() => {
-    const chartInstance = echarts.init(chart.value);
-  
-    // Get and parse data from localStorage
-    const rawData = localStorage.getItem('energyData');
-    if (!rawData) {
-      console.warn('No data found in localStorage.');
+  <div>
+    <h2>Electricity Output Over Time</h2>
+    <div ref="chart" style="width: 100%; height: 400px;"></div>
+  </div>
+</template>
+
+<script setup>
+import { onMounted, ref } from 'vue';
+import * as echarts from 'echarts';
+import axios from 'axios';
+
+const chart = ref(null);
+
+onMounted(async () => {
+  const chartInstance = echarts.init(chart.value);
+
+  try {
+    // Fetch Athena hourly data
+    const response = await axios.get('http://localhost:3000/api/tables/getathenaenergy');
+    const data = response.data;
+
+    if (!data || data.length === 0) {
+      console.warn('No Athena data available.');
       return;
     }
-  
-    const data = JSON.parse(rawData);
-  
-    // Extract labels and values
-    const dates = data.map(row => row.date_local);
-    const electricityOut = data.map(row => row.electricity_out_kwh);
-  
+
+    // Extract timestamps and electricity output data
+    const timestamps = data.map(row => row.timestamp);
+    const electricityOut = data.map(row => row.total_kwh);
+
     // Configure the chart
     const option = {
       tooltip: {
@@ -35,11 +37,11 @@
       },
       xAxis: {
         type: 'category',
-        data: dates,
-        name: 'Date',
+        data: timestamps,
+        name: 'Timestamp',
         axisLabel: {
           rotate: 45,
-          formatter: value => value.slice(5) // Show MM-DD for readability
+          formatter: value => value.slice(11) // Show only time HH:MM for readability
         }
       },
       yAxis: {
@@ -56,15 +58,17 @@
         }
       ]
     };
-  
+
     chartInstance.setOption(option);
-  });
-  </script>
-  
-  <style scoped>
-  h2 {
-    text-align: center;
-    margin-bottom: 1rem;
+  } catch (error) {
+    console.error('Error fetching Athena hourly data:', error);
   }
-  </style>
-  
+});
+</script>
+
+<style scoped>
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+</style>

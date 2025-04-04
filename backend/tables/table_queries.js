@@ -109,3 +109,44 @@ export const getBubbleChartData = async () => {
 };
 
 
+
+/**
+ * Get Athena hourly energy data with optional filtering by date range.
+ * @param {string|null} startTime - Start timestamp (YYYY-MM-DD HH:MM:SS) or null for no filtering.
+ * @param {string|null} endTime - End timestamp (YYYY-MM-DD HH:MM:SS) or null for no filtering.
+ * @returns {Promise<Array>}
+ */export const getAthenaHourlyData = async (startTime = null, endTime = null) => {
+  const sqlQuery = `
+  SELECT * FROM get_athena_data($1, $2);
+`;
+
+try {
+  const result = await query(sqlQuery, [startTime, endTime]);
+  console.log("Athena data query result:", result);
+  const rows = result.rows || result;  // Ensure the rows are retrieved correctly
+  
+  if (!rows || rows.length === 0) {
+    console.warn("No data returned from Athena query.");
+  }
+
+  return rows.map(row => ({
+    timestamp: row.timestamp,
+    alcala_borrego: row.alcala_borrego ? parseFloat(row.alcala_borrego) : 0,
+    alcala_laguna: row.alcala_laguna ? parseFloat(row.alcala_laguna) : 0,
+    camino_hall: row.camino_hall ? parseFloat(row.camino_hall) : 0,
+    copley_library: row.copley_library ? parseFloat(row.copley_library) : 0,
+    founders_hall: row.founders_hall ? parseFloat(row.founders_hall) : 0,
+    jenny_craig_pavilion: row.jenny_craig_pavilion ? parseFloat(row.jenny_craig_pavilion) : 0,
+    kroc: row.kroc ? parseFloat(row.kroc) : 0,
+    manchester_a: row.manchester_a ? parseFloat(row.manchester_a) : 0,
+    manchester_b: row.manchester_b ? parseFloat(row.manchester_b) : 0,
+    soles: row.soles ? parseFloat(row.soles) : 0,
+    west_parking: row.west_parking ? parseFloat(row.west_parking) : 0,
+    total_kwh: row.total_kwh ? parseFloat(row.total_kwh) : 0
+  }));
+} catch (error) {
+  console.error("Error fetching Athena hourly data:", error.message);
+  console.error("Stack Trace:", error.stack);
+  throw error;  // Rethrow to handle it at a higher level if necessary
+}
+};

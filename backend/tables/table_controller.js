@@ -17,6 +17,8 @@ export const getAllData = async (req, res) => {
     }
 };
 
+
+
 /**
  * Fetch 30-day energy totals
  */
@@ -49,6 +51,24 @@ export const getBubbleChart = async (req, res) => {
         res.status(500).json({ message: 'Failed to retrieve bubble chart data.' });
     }
 };
+
+/**
+ * Fetch Athena hourly energy data
+ */
+export const getAthenaEnergyData = async (req, res) => {
+    try {
+        const { startTime, endTime } = req.query;
+        if (!startTime || !endTime) {
+            return res.status(400).json({ message: 'Start time and end time are required' });
+        }
+        const data = await getAthenaHourlyData(startTime, endTime);
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Error fetching Athena hourly data:', error);
+        res.status(500).json({ message: 'Failed to retrieve Athena hourly data.' });
+    }
+};
+
 
 // Set up the directory where CSV files will be stored
 const uploadDir = path.join(process.cwd(), 'uploads');
