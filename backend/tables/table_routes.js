@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getEnergySummary, getBubbleChart, getAthenaEnergyData } from './table_controller.js';
+import { getEnergySummary, getBubbleChart, getAthenaDataForGraph } from './table_controller.js';
 import { getPieChartData, uploadPieChartCSV } from './table_controller.js';
 import multer from 'multer';
 
@@ -21,7 +21,7 @@ router.get('/getenergy', getEnergySummary);
 router.get('/getbubblechart', getBubbleChart);
 
 // GET route for athena data
-router.get('/getathenaenergy', getAthenaEnergyData);
+router.get('/getathenaenergy', getAthenaDataForGraph);
 
 
 // GET route for retrieving Pie Chart Data

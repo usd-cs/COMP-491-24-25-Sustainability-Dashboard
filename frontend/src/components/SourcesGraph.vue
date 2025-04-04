@@ -27,7 +27,7 @@ onMounted(async () => {
 
     // Extract timestamps and electricity output data
     const timestamps = data.map(row => row.timestamp);
-    const electricityOut = data.map(row => row.total_kwh);
+    const electricityOut = data.map(row => row.total_kwh || 0); // Make sure total_kwh exists, otherwise use 0
 
     // Configure the chart
     const option = {

@@ -1,5 +1,5 @@
 import { query } from '../database_connection.js';
-import { get30DayEnergyTotals, getBubbleChartData } from './table_queries.js';
+import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables } from './table_queries.js';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
@@ -17,7 +17,30 @@ export const getAllData = async (req, res) => {
     }
 };
 
+/**
+ * get the final athena data what i want for the graph
+ */
 
+/**
+ * Get the final Athena data for the graph
+ */
+export const getAthenaDataForGraph = async (req, res) => {
+    try {
+        // Fetch the Athena data
+        const athenaData = await getAthenaTables();
+
+        // Check if data exists
+        if (!athenaData || athenaData.length === 0) {
+            return res.status(404).json({ message: 'No Athena data found.' });
+        }
+
+        // Return the formatted data as a JSON response
+        res.status(200).json(athenaData);
+    } catch (error) {
+        console.error('Error fetching Athena data for graph:', error);
+        res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
+    }
+};
 
 /**
  * Fetch 30-day energy totals
@@ -52,22 +75,6 @@ export const getBubbleChart = async (req, res) => {
     }
 };
 
-/**
- * Fetch Athena hourly energy data
- */
-export const getAthenaEnergyData = async (req, res) => {
-    try {
-        const { startTime, endTime } = req.query;
-        if (!startTime || !endTime) {
-            return res.status(400).json({ message: 'Start time and end time are required' });
-        }
-        const data = await getAthenaHourlyData(startTime, endTime);
-        res.status(200).json(data);
-    } catch (error) {
-        console.error('Error fetching Athena hourly data:', error);
-        res.status(500).json({ message: 'Failed to retrieve Athena hourly data.' });
-    }
-};
 
 
 // Set up the directory where CSV files will be stored
