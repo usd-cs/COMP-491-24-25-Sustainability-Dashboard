@@ -18,24 +18,27 @@ export const getAllData = async (req, res) => {
 };
 /**
  * Get the final Athena data for the graph - only get the data under timestamp and building name column
- */const getAthenaDataForGraph = async (req, res) => {
-  const buildingName = req.params.building_name; // Get building name from URL
+ */
+export const getAthenaDataForGraph = async (req, res) => {
 
-  try {
-    // Example database query or data fetching based on the building name
-    const data = await fetchDataForBuilding(buildingName);
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({ message: 'No data found for this building.' });
-    }
-
-    // Send the data as response
-    return res.status(200).json(data);
-  } catch (error) {
-    console.error('Error fetching Athena data:', error);
-    return res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
-  }
-};
+        const { building_name } = req.query;
+      
+        if (!building_name) {
+          return res.status(400).json({ message: 'Missing building_name in query params.' });
+        }
+      
+        try {
+          const data = await getAthenaTables(building_name);
+          if (!data || data.length === 0) {
+            return res.status(404).json({ message: 'No data found for this building.' });
+          }
+          return res.status(200).json(data);
+        } catch (error) {
+          console.error('Error in getathenaenergy handler:', error);
+          return res.status(500).json({ message: 'Internal Server Error' });
+        }
+      }
+      
 
 
 

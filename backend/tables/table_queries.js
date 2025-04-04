@@ -108,46 +108,31 @@ export const getBubbleChartData = async () => {
   }
 };
 
-/* Fetch all the data from the Athena Table *//* Fetch all the data from the Athena Table */
-export const getAthenaTables = async (buildingName) => {
+
+/* Fetch the data from the Athena Table */
+
+export const getAthenaTables = async () => {
+  const buildingName = 'alcala_borrego'; // hardcoded building name
+  const column = buildingName; // assume column name is the same
+
   const sqlQuery = `
-    SELECT timestamp, building_name, total_kwh
-    FROM athena_hourly_output
-    WHERE building_name = ?  -- Filter by building_name
+    SELECT timestamp, ${column}
+    FROM public.athena_hourly_output
+    WHERE ${column} IS NOT NULL
   `;
 
   try {
-    // Run the query, passing the building name
-    const result = await query(sqlQuery, [buildingName]);
-    console.log("Query result for building:", result);
-    
-    // Ensure result has rows, otherwise handle it
+    const result = await query(sqlQuery);
     const rows = result.rows || result;
 
-    // Check if rows exist or return empty response
-    if (!rows || rows.length === 0) {
-      throw new Error("No data found for this building.");
-    }
-
-    // Map through the rows and return necessary data
-    return rows.map(row => {
-      // Parse timestamp into a Date object
-      const timestamp = new Date(row.timestamp);
-      
-      if (isNaN(timestamp)) {
-        console.warn(`Invalid timestamp value: ${row.timestamp}`);
-        // Optionally return null or skip invalid entries:
-        return null;  // Will filter out in next step
-      }
-
-      return {
-        timestamp,           // Ensure timestamp is a Date object
-        building_name: row.building_name,  // Returning building name as well
-        total_kwh: row.total_kwh || 0      // Use 0 if total_kwh is missing
-      };
-    }).filter(row => row !== null);  // Filter out any null entries due to invalid timestamps
+    return rows.map(row => ({
+      timestamp: row.timestamp,
+      energy_output: row.energy_output || 0,
+      total_kwh: row.total_kwh || 0,
+      building_name: buildingName
+    }));
   } catch (error) {
-    console.error("Error fetching Athena data:", error);
-    throw error; // Rethrow error after logging
+    console.error('Error fetching Athena data:', error);
+    throw error;
   }
 };
