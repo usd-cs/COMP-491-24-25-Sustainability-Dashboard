@@ -16,31 +16,28 @@ export const getAllData = async (req, res) => {
         res.status(500).json({ message: 'Failed to retrieve data.' });
     }
 };
-
 /**
- * get the final athena data what i want for the graph
- */
+ * Get the final Athena data for the graph - only get the data under timestamp and building name column
+ */const getAthenaDataForGraph = async (req, res) => {
+  const buildingName = req.params.building_name; // Get building name from URL
 
-/**
- * Get the final Athena data for the graph
- */
-export const getAthenaDataForGraph = async (req, res) => {
-    try {
-        // Fetch the Athena data
-        const athenaData = await getAthenaTables();
+  try {
+    // Example database query or data fetching based on the building name
+    const data = await fetchDataForBuilding(buildingName);
 
-        // Check if data exists
-        if (!athenaData || athenaData.length === 0) {
-            return res.status(404).json({ message: 'No Athena data found.' });
-        }
-
-        // Return the formatted data as a JSON response
-        res.status(200).json(athenaData);
-    } catch (error) {
-        console.error('Error fetching Athena data for graph:', error);
-        res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: 'No data found for this building.' });
     }
+
+    // Send the data as response
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error('Error fetching Athena data:', error);
+    return res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
+  }
 };
+
+
 
 /**
  * Fetch 30-day energy totals

@@ -12,12 +12,25 @@ import axios from 'axios';
 
 const chart = ref(null);
 
+// Retrieve the building name from localStorage
+const buildingName = localStorage.getItem('selectedBuilding'); // Get the selected building name
+
 onMounted(async () => {
+  if (!buildingName) {
+    console.warn('No building selected.');
+    return;
+  }
+
   const chartInstance = echarts.init(chart.value);
 
   try {
-    // Fetch Athena hourly data
-    const response = await axios.get('http://localhost:3000/api/tables/getathenaenergy');
+    // Fetch Athena hourly data with building name as query param
+    const response = await axios.get('http://localhost:3000/api/tables/getathenaenergy', {
+      params: {
+        building_name: buildingName
+      }
+    });
+
     const data = response.data;
 
     if (!data || data.length === 0) {
@@ -27,7 +40,7 @@ onMounted(async () => {
 
     // Extract timestamps and electricity output data
     const timestamps = data.map(row => row.timestamp);
-    const electricityOut = data.map(row => row.total_kwh || 0); // Make sure total_kwh exists, otherwise use 0
+    const electricityOut = data.map(row => row.total_kwh || 0); // Use 0 if missing
 
     // Configure the chart
     const option = {
@@ -41,7 +54,7 @@ onMounted(async () => {
         name: 'Timestamp',
         axisLabel: {
           rotate: 45,
-          formatter: value => value.slice(11) // Show only time HH:MM for readability
+          formatter: value => value.slice(11) // Show only time
         }
       },
       yAxis: {

@@ -20,8 +20,10 @@ router.get('/getenergy', getEnergySummary);
 // GET route for bubble chart data
 router.get('/getbubblechart', getBubbleChart);
 
-// GET route for athena data
-router.get('/getathenaenergy', getAthenaDataForGraph);
+
+// GET route for Athena data filtered by building name
+router.get('/getathenaenergy/:building_name', getAthenaDataForGraph);
+
 
 
 // GET route for retrieving Pie Chart Data

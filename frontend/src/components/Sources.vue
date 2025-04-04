@@ -31,9 +31,13 @@
               @click="activeFilter = filter"
               :class="['sources__filter-btn', activeFilter === filter ? 'sources__filter-btn--active' : '']"
             >
-              {{ filter === "all" ? "All" : filter.charAt(0).toUpperCase() + filter.slice(1) }}
+              {{ formatFilterText(filter) }}
             </button>
           </nav>
+
+          <h2 class="sources__grid-title">
+            {{ activeFilter === 'all' ? 'All Buildings' : formatFilterText(activeFilter) + ' Buildings' }}
+          </h2>
 
           <section class="sources__buildings-grid">
             <article
@@ -61,11 +65,20 @@ const router = useRouter();
 const activeFilter = ref("solar"); // Starting with 'solar'
 const filters = ["all", "electricity", "fuelcell", "solar"];
 
-// Function to store building name in localStorage and redirect to /sources-graph
+// Function to format the filter text
+const formatFilterText = (filter) => {
+  if (filter === "all") {
+    return "All";
+  }
+  return filter.charAt(0).toUpperCase() + filter.slice(1);
+};
+
 const storeBuildingNameAndRedirect = (name) => {
-  localStorage.setItem('selectedBuilding', name);  // Store building name in localStorage
+  const formattedName = name.toLowerCase().replace(/\s+/g, '_'); // Converts "Alcala Borrego" to "alcala_borrego"
+  localStorage.setItem('selectedBuilding', formattedName);  // Store building name in localStorage in correct format
   router.push('/sources-graph');  // Redirect to /sources-graph
 };
+
 
 const buildings = [
   { name: "Alcala Borrego", types: ["electricity", "solar"] },
@@ -203,6 +216,14 @@ const handleLogout = () => router.push("/");
 }
 
 /* Sources Content */
+
+.sources__grid-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #003b70;
+  margin-bottom: 16px;
+}
+ 
 .sources__content {
   padding: 24px;
 }

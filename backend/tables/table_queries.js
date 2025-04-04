@@ -108,51 +108,44 @@ export const getBubbleChartData = async () => {
   }
 };
 
-export const getAthenaTables = async () => {
+/* Fetch all the data from the Athena Table *//* Fetch all the data from the Athena Table */
+export const getAthenaTables = async (buildingName) => {
   const sqlQuery = `
-    SELECT *
+    SELECT timestamp, building_name, total_kwh
     FROM athena_hourly_output
+    WHERE building_name = ?  -- Filter by building_name
   `;
 
   try {
-    const result = await query(sqlQuery);
-    console.log("Full query result:", result);
+    // Run the query, passing the building name
+    const result = await query(sqlQuery, [buildingName]);
+    console.log("Query result for building:", result);
     
     // Ensure result has rows, otherwise handle it
     const rows = result.rows || result;
-    
+
+    // Check if rows exist or return empty response
     if (!rows || rows.length === 0) {
-      throw new Error("Query returned no rows.");
+      throw new Error("No data found for this building.");
     }
 
+    // Map through the rows and return necessary data
     return rows.map(row => {
-      // Parse timestamp into a Date object if necessary (optional but useful)
+      // Parse timestamp into a Date object
       const timestamp = new Date(row.timestamp);
+      
       if (isNaN(timestamp)) {
         console.warn(`Invalid timestamp value: ${row.timestamp}`);
+        // Optionally return null or skip invalid entries:
+        return null;  // Will filter out in next step
       }
 
-      // Parse energy output values safely
-      const parseEnergyOutput = (value) => {
-        const parsedValue = parseFloat(value);
-        return isNaN(parsedValue) ? 0 : parsedValue;
-      };
-
       return {
-        timestamp,  // Ensure timestamp is a Date object
-        alcala_borrego: parseEnergyOutput(row.alcala_borrego),
-        alcala_laguna: parseEnergyOutput(row.alcala_laguna),
-        camino_hall: parseEnergyOutput(row.camino_hall),
-        copley_library: parseEnergyOutput(row.copley_library),
-        founders_hall: parseEnergyOutput(row.founders_hall),
-        jenny_craig_pavilion: parseEnergyOutput(row.jenny_craig_pavilion),
-        kroc: parseEnergyOutput(row.kroc),
-        manchester_a: parseEnergyOutput(row.manchester_a),
-        manchester_b: parseEnergyOutput(row.manchester_b),
-        soles: parseEnergyOutput(row.soles),
-        west_parking: parseEnergyOutput(row.west_parking)
+        timestamp,           // Ensure timestamp is a Date object
+        building_name: row.building_name,  // Returning building name as well
+        total_kwh: row.total_kwh || 0      // Use 0 if total_kwh is missing
       };
-    });
+    }).filter(row => row !== null);  // Filter out any null entries due to invalid timestamps
   } catch (error) {
     console.error("Error fetching Athena data:", error);
     throw error; // Rethrow error after logging
