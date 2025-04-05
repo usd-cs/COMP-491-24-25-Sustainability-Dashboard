@@ -3,7 +3,7 @@
  * @description Unit tests for the `uploadAthenaFile` function.
  */
 
-import { vi, expect, describe, it, beforeEach } from 'vitest';
+import { vi, expect, describe, it, beforeEach, afterEach } from 'vitest';
 import { Readable } from 'stream';
 import { uploadAthenaFile } from '../auth/upload/upload_controller.js';
 import * as db from '../database_connection.js';
@@ -21,7 +21,7 @@ describe('uploadAthenaFile', () => {
     req = {
       file: {
         originalname: 'test-athena.csv',
-        buffer: Buffer.from('') // We'll set the content per test.
+        buffer: Buffer.from(''), // We'll set the content per test.
       },
     };
 
@@ -34,8 +34,12 @@ describe('uploadAthenaFile', () => {
     db.query.mockClear();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks(); // Restore all mocks after each test.
+  });
+
   it('should return 400 if no file is uploaded', async () => {
-    req.file = null;
+    req.file = null;  // Simulate no file uploaded.
     await uploadAthenaFile(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ message: 'No Athena file uploaded.' });
@@ -113,18 +117,27 @@ describe('uploadAthenaFile', () => {
     expect(secondCallValues).toEqual(expectedRow2);
   });
 
-  it('should handle errors and return a 500 response', async () => {
-    // Override Readable.from to throw an error.
-    vi.spyOn(Readable, 'from').mockImplementation(() => {
-      throw new Error('Test error');
-    });
+  it('should handle errors and return a 500 response when an error occurs in processing', async () => {
+    // Mock db.query to throw an error.
+    db.query.mockRejectedValueOnce(new Error('Database insert failed'));
 
-    await expect(uploadAthenaFile(req, res)).rejects.toThrow('Test error');
+    await uploadAthenaFile(req, res);
+
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
       message: 'Failed to process Athena file. Please check the file and try again.'
     });
+  });
 
-    vi.restoreAllMocks();
+  it('should return a 400 response if CSV format is invalid', async () => {
+    const invalidCsv = 'Invalid data, without proper columns';
+    req.file.buffer = Buffer.from(invalidCsv);
+
+    await uploadAthenaFile(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Athena file has invalid format.'
+    });
   });
 });
