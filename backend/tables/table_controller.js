@@ -47,14 +47,15 @@ export const getAthenaDataForGraph = async (req, res) => {
       return res.status(200).json(data);
     } catch (globalError) {
         console.error('Global error in getAthenaDataForGraph:', {
-            message: error.message,
-            stack: error.stack,
-            queryParameters: req.query, // Log query parameters
-            headers: req.headers,       // Log headers
-            url: req.originalUrl        // Log the original URL of the request
+            message: globalError.message,
+            stack: globalError.stack,
+            queryParameters: req.query,
+            headers: req.headers,
+            url: req.originalUrl
         });
-      return res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
+        return res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
     }
+    
   };
   
 
