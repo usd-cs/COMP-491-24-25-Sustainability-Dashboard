@@ -5,24 +5,36 @@ import multer from 'multer';
 
 
 
+
+
+
 const router = Router();
 const upload = multer({ dest: 'uploads/' });
 
 
+
+
 // Temporary test route to verify router mounting
 router.get('/test', (req, res) => {
-  res.send('Test route is working!');
+ res.send('Test route is working!');
 });
+
 
 // GET route for energy summary
 router.get('/getenergy', getEnergySummary);
+
 
 // GET route for bubble chart data
 router.get('/getbubblechart', getBubbleChart);
 
 
+
+
 // GET route for Athena data filtered by building name
-router.get('/hourlyenergybybuilding', getAthenaDataForGraph);
+router.get('/:athena_building_name', getAthenaDataForGraph);
+
+
+
 
 
 
@@ -30,4 +42,8 @@ router.get('/hourlyenergybybuilding', getAthenaDataForGraph);
 router.get('/getPieChartData', getPieChartData);
 router.post('/upload-piechart-csv', upload.single('file'), uploadPieChartCSV);
 
+
 export default router;
+
+
+

@@ -55,21 +55,32 @@
     </main>
   </div>
 </template>
-
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const activeFilter = ref("solar"); // Starting with 'solar'
 const filters = ["all", "electricity", "fuelcell", "solar"];
+
+// Load activeFilter from localStorage or default to 'solar'
+const activeFilter = ref("solar");
+
+onMounted(() => {
+  const savedFilter = localStorage.getItem("activeFilter");
+  if (savedFilter && filters.includes(savedFilter)) {
+    activeFilter.value = savedFilter;
+  }
+});
+
+// Watch activeFilter and store in localStorage
+watch(activeFilter, (newFilter) => {
+  localStorage.setItem("activeFilter", newFilter);
+});
 
 // Function to format the filter text
 const formatFilterText = (filter) => {
-  if (filter === "all") {
-    return "All";
-  }
+  if (filter === "all") return "All";
   return filter.charAt(0).toUpperCase() + filter.slice(1);
 };
 
@@ -88,30 +99,26 @@ const buildings = [
   { name: "West Parking - Fuel Cell", types: ["fuelcell"] },
 ];
 
-// Computed property to filter buildings based on selected filter
+// Computed property to filter buildings
 const filteredBuildings = computed(() => {
-  if (activeFilter.value === "all") {
-    return buildings; // Show all buildings when 'all' is selected
-  }
-  return buildings.filter(b => b.types.includes(activeFilter.value)); // Filter buildings based on the active type
+  if (activeFilter.value === "all") return buildings;
+  return buildings.filter(b => b.types.includes(activeFilter.value));
 });
 
-// Selected building
-const selectedBuilding = ref(null);
-
-// Function to select a building and display its graph
+// Function to go to building graph
 const navigateToGraph = (buildingName) => {
-  const formattedName = buildingName.toLowerCase().replace(/\s+/g, "_"); // Format the building name
-  router.push({ path: `/sources-graph`, query: { buildingName: formattedName } }); // Navigate to /sources-graph with query params
+  const formattedName = buildingName.toLowerCase().replace(/\s+/g, "_");
+  localStorage.setItem("selectedBuildling", formattedName);
+  router.push({ path: `/sources-graph`, query: { buildingName: formattedName } });
 };
 
-// Navigation functions
+// Nav functions
 const navigateToMain = () => router.push('/main');
 const navigateToSources = () => router.push('/sources');
 const navigateToInitiatives = () => router.push('/initiatives');
 const navigateToContact = () => router.push('/contact');
 
-// Handle logout
+// Logout
 const handleLogout = () => router.push("/");
 </script>
 
