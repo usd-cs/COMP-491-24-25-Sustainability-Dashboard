@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { getEnergySummary, getBubbleChart } from './table_controller.js';
+import { getEnergySummary, getBubbleChart, getAthenaDataForGraph } from './table_controller.js';
 import { getPieChartData, uploadPieChartCSV } from './table_controller.js';
 import multer from 'multer';
+
 
 
 const router = Router();
@@ -18,6 +19,12 @@ router.get('/getenergy', getEnergySummary);
 
 // GET route for bubble chart data
 router.get('/getbubblechart', getBubbleChart);
+
+
+// GET route for Athena data filtered by building name
+router.get('/hourlyenergybybuilding', getAthenaDataForGraph);
+
+
 
 // GET route for retrieving Pie Chart Data
 router.get('/getPieChartData', getPieChartData);

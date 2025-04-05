@@ -124,9 +124,7 @@ export const uploadFile = async (req, res) => {
  *
  * @param {Object} req - The request object, containing the uploaded CSV file in `req.file`.
  * @param {Object} res - The response object, used to send the response back to the client.
- */
-export const uploadAthenaFile = async (req, res) => {
-  // Wrap the processing in a Promise so tests can await completion.
+ */export const uploadAthenaFile = async (req, res) => {
   return new Promise((resolve, reject) => {
     try {
       console.log('Request received for Athena file upload');
@@ -137,7 +135,6 @@ export const uploadAthenaFile = async (req, res) => {
       }
       console.log('Athena file received:', req.file.originalname);
 
-      // Convert file buffer into a readable stream.
       const stream = Readable.from(req.file.buffer);
       const rows = [];
 
@@ -154,18 +151,15 @@ export const uploadAthenaFile = async (req, res) => {
             return resolve();
           }
 
-          // Extract header row from row 5 (index 4).
           const headerRowRaw = rows[4];
           const headerRow = Array.isArray(headerRowRaw)
             ? headerRowRaw
             : Object.values(headerRowRaw);
           console.log('Detected Athena headers:', headerRow);
 
-          // Data rows start from row 8 (index 7 onward).
           const dataRows = rows.slice(7);
           console.log('Data rows count:', dataRows.length);
 
-          // Define a map from raw CSV headers to our database table column names.
           const headerMap = {
             'Timestamp': 'timestamp',
             'University of San Diego - Alcala Borrego': 'alcala_borrego',
@@ -181,7 +175,6 @@ export const uploadAthenaFile = async (req, res) => {
             'University of San Diego - West Parking': 'west_parking'
           };
 
-          // Map each data row (array) into an object using the header row as keys.
           let parsedData = dataRows.map((row) => {
             const obj = {};
             headerRow.forEach((header, index) => {
@@ -191,19 +184,14 @@ export const uploadAthenaFile = async (req, res) => {
           });
           console.log('Mapped Athena data (raw headers):', parsedData);
 
-          // Filter out any rows with an empty or missing Timestamp.
           parsedData = parsedData.filter((row) => {
             const ts = row['Timestamp'];
             return ts !== undefined && ts !== null && ts.toString().trim() !== '';
           });
           console.log('Filtered Athena data (non-empty Timestamp):', parsedData);
 
-          // Next, filter out rows where Timestamp is present,
-          // but all site columns are empty.
           const siteHeaders = Object.keys(headerMap).filter(h => h !== 'Timestamp');
           parsedData = parsedData.filter((row) => {
-            // If *every* site header is empty, skip the row.
-            // "Empty" means undefined, null, or empty string (once trimmed).
             const allEmpty = siteHeaders.every((h) => {
               const val = row[h];
               return val === undefined || val === null || val.toString().trim() === '';
@@ -212,19 +200,14 @@ export const uploadAthenaFile = async (req, res) => {
           });
           console.log('Filtered Athena data (non-empty site columns):', parsedData);
 
-          // Transform each row to use the mapped column names and compute total_kwh.
           const processedData = parsedData.map((row, rowIndex) => {
             const processedRow = {};
             let totalKwh = 0;
-
-            // Helper function to normalize numbers to fixed precision
             const normalizeNumber = (num) => {
               if (num === null || isNaN(num)) return null;
-              // Use toFixed(1) to match test expectations, then convert back to number
               return Number(Number(num).toFixed(1));
             };
 
-            // Process each value
             for (const rawHeader in row) {
               const mappedCol = headerMap[rawHeader];
               if (!mappedCol) {
@@ -240,28 +223,28 @@ export const uploadAthenaFile = async (req, res) => {
               }
             }
 
-            // Normalize the total with same precision
             processedRow['total_kwh'] = normalizeNumber(totalKwh);
             console.log(`Row ${rowIndex + 1} processed:`, processedRow);
             return processedRow;
           });
           console.log('Processed Athena data with mapped columns and total_kwh:', processedData);
 
-          // Build an array of final column names (order matters).
           const tableColumns = headerRow.map(header =>
             header === 'Timestamp' ? 'timestamp' : headerMap[header]
           );
           tableColumns.push('total_kwh');
           console.log('Table columns for insertion:', tableColumns);
 
-          // Construct the dynamic INSERT query.
           const insertQuery = `
             INSERT INTO public.athena_hourly_output (${tableColumns.join(', ')})
             VALUES (${tableColumns.map((_, index) => `$${index + 1}`).join(', ')})
           `;
           console.log('Insert query:', insertQuery);
 
-          // Insert each processed row into the database.
+          // ✅ Clear existing data before inserting new rows
+          await query('DELETE FROM public.athena_hourly_output');
+          console.log('Existing Athena records cleared.');
+
           for (const row of processedData) {
             const values = tableColumns.map(col => row[col]);
             console.log('Prepared row for insertion:', values);

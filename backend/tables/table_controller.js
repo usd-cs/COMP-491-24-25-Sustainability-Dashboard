@@ -1,5 +1,5 @@
 import { query } from '../database_connection.js';
-import { get30DayEnergyTotals, getBubbleChartData } from './table_queries.js';
+import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables } from './table_queries.js';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
@@ -16,6 +16,48 @@ export const getAllData = async (req, res) => {
         res.status(500).json({ message: 'Failed to retrieve data.' });
     }
 };
+/**
+ * Get the final Athena data for the graph - only get the data under timestamp and building name column
+ */
+
+// Function to handle the request
+export const getAthenaDataForGraph = async (req, res) => {
+    console.log('Request received:', req);
+
+    // Log specific parts of the request
+    console.log('Query parameters:', req.query);
+    console.log('Headers:', req.headers);
+    
+    const { buildingName } = req.query; // Get building name from the URL parameter
+    
+    // Validate that buildingName is provided
+    if (!buildingName) {
+        return res.status(400).json({ message: 'Building name is required.' });
+    }
+    try {
+      // Fetch Athena data for the building
+      const data = await getAthenaTables(buildingName);
+  
+      // Check if data is available
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: 'No data found for this building.' });
+      }
+  
+      // Send the data as a response
+      return res.status(200).json(data);
+    } catch (globalError) {
+        console.error('Global error in getAthenaDataForGraph:', {
+            message: globalError.message,
+            stack: globalError.stack,
+            queryParameters: req.query,
+            headers: req.headers,
+            url: req.originalUrl
+        });
+        return res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
+    }
+    
+  };
+  
 
 /**
  * Fetch 30-day energy totals
@@ -49,6 +91,8 @@ export const getBubbleChart = async (req, res) => {
         res.status(500).json({ message: 'Failed to retrieve bubble chart data.' });
     }
 };
+
+
 
 // Set up the directory where CSV files will be stored
 const uploadDir = path.join(process.cwd(), 'uploads');
