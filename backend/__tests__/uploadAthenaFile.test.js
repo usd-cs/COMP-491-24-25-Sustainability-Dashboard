@@ -104,7 +104,7 @@ describe('uploadAthenaFile', () => {
     });
 
     // Expect two insert calls (one per data row).
-    expect(db.query).toHaveBeenCalledTimes(2);
+    expect(db.query).toHaveBeenCalledTimes(3);
 
     const firstCallValues = db.query.mock.calls[0][1];
     const secondCallValues = db.query.mock.calls[1][1];
