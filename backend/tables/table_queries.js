@@ -110,27 +110,59 @@ export const getBubbleChartData = async () => {
 
 
 /* Fetch the data from the Athena Table */
-export const getAthenaTables = async () => {
-  const buildingName = 'alcala_borrego'; // hardcoded building name
-  const column = buildingName; // same as the column name in the table
+export const getAthenaTables = async (buildingName) => {
+  const validColumns = [
+    "alcala_borrego",
+    "alcala_laguna",
+    "camino_hall",
+    "copley_library",
+    "founders_hall",
+    "jenny_craig_pavilion",
+    "kroc",
+    "manchester_a",
+    "manchester_b",
+    "soles",
+    "west_parking",
+    "total_kwh"
+  ];
+
+  // Validate the buildingName
+  if (!validColumns.includes(buildingName)) {
+    throw new Error("Invalid building name provided.");
+  }
 
   // Construct the SQL query dynamically
+  // Query the Athena table for the last 24 hours for a specific building
   const sqlQuery = `
-    SELECT timestamp, ${column}
-    FROM public.athena_hourly_output
+    SELECT timestamp, ${buildingName}
+    FROM athena_hourly_output
+    WHERE timestamp >= NOW() - INTERVAL '24 hours'
+    ORDER BY timestamp DESC; -- Sort by timestamp in descending order
   `;
 
   try {
     const result = await query(sqlQuery);
     const rows = result.rows || result;
 
+    if (!rows || rows.length === 0) {
+      console.warn(`No data found for building: ${buildingName} in the last 24 hours.`);
+      return [];
+    }
+
     // Ensure you handle the dynamic column name correctly in the mapping
+    /* Succesfull query result:
+      [
+        { timestamp: '2025-04-03T12:00:00Z', energy_output: '123.45678' },
+        { timestamp: '2025-04-03T13:00:00Z', energy_output: '234.56789' },
+        ...
+      ]
+    */
     return rows.map(row => ({
       timestamp: row.timestamp, // Ensure timestamp is in the correct format
       column: parseFloat(row[column]).toFixed(5)
     }));
   } catch (error) {
-    console.error('Error fetching Athena data:', error);
+    console.error('Error fetching Athena data for building: ${buildingName}', error);
     throw error;
   }
 };

@@ -44,10 +44,10 @@
               v-for="building in filteredBuildings"
               :key="building.name"
               class="sources__building-card"
-              @click="storeBuildingNameAndRedirect(building.name)"
+              @click="navigateToGraph(building.name)"
             >
               <h3 class="sources__building-name">{{ building.name }}</h3>
-              <p class="sources__building-type">Type: {{ building.type }}</p>
+              <p class="sources__building-type">Type: {{ building.types.join(', ') }}</p>
             </article>
           </section>
         </div>
@@ -73,13 +73,6 @@ const formatFilterText = (filter) => {
   return filter.charAt(0).toUpperCase() + filter.slice(1);
 };
 
-const storeBuildingNameAndRedirect = (name) => {
-  const formattedName = name.toLowerCase().replace(/\s+/g, '_'); // Converts "Alcala Borrego" to "alcala_borrego"
-  localStorage.setItem('selectedBuilding', formattedName);  // Store building name in localStorage in correct format
-  router.push('/sources-graph');  // Redirect to /sources-graph
-};
-
-
 const buildings = [
   { name: "Alcala Borrego", types: ["electricity", "solar"] },
   { name: "Alcala Laguna", types: ["electricity", "solar"] },
@@ -102,6 +95,15 @@ const filteredBuildings = computed(() => {
   }
   return buildings.filter(b => b.types.includes(activeFilter.value)); // Filter buildings based on the active type
 });
+
+// Selected building
+const selectedBuilding = ref(null);
+
+// Function to select a building and display its graph
+const navigateToGraph = (buildingName) => {
+  const formattedName = buildingName.toLowerCase().replace(/\s+/g, "_"); // Format the building name
+  router.push({ path: `/sources-graph`, query: { buildingName: formattedName } }); // Navigate to /sources-graph with query params
+};
 
 // Navigation functions
 const navigateToMain = () => router.push('/main');

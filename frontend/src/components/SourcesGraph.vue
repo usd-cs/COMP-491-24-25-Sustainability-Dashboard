@@ -1,20 +1,27 @@
 <template>
-  <div>
+  <div class="chart-wrapper">
     <h2>Electricity Output Over Time</h2>
-    <div ref="chart" style="width: 100%; height: 400px;"></div>
+    <div v-if="!hasData">No data available for the selected building.</div>
+    <div v-else ref="chart" class="chart-container"></div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
+import { useRoute } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
 
-const chart = ref(null);
+const route = useRoute();
+const buildingName = route.query.buildingName; // Retrieve the building name from query parameters
 
-// Retrieve the building name from localStorage
-const buildingName = localStorage.getItem('selectedBuilding'); // Get the selected building name
-console.log(buildingName)
+const chart = ref(null);
+const hasData = ref(false); // Notify user if data is not available
+
+
+// // Retrieve the building name from localStorage
+// const buildingName = localStorage.getItem('selectedBuilding'); // Get the selected building name
+// console.log(buildingName)
 
 onMounted(async () => {
   if (!buildingName) {
@@ -26,17 +33,22 @@ onMounted(async () => {
 
   try {
     // Make the GET request with the building name as a URL parameter
-    const response = await axios.get(`http://localhost:3000/api/tables/${buildingName}`);
+    const response = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
+      params: { buildingName } // Pass buildingName as a query parameter
+    });
     const data = response.data;
 
     if (!data || data.length === 0) {
       console.warn('No Athena data available.');
+      hasData.value = false;
       return;
     }
 
+    hasData.value = true; // Set hasData to true if data is available
+
     // Extract timestamps and electricity output data
     const timestamps = data.map(row => row.timestamp);
-    const electricityOut = data.map(row => row.total_kwh || 0); // Use 0 if missing
+    const electricityOut = data.map(row => row.energy_output || 0); // Use 0 if missing
 
     // Configure the chart
     const option = {
@@ -50,7 +62,7 @@ onMounted(async () => {
         name: 'Timestamp',
         axisLabel: {
           rotate: 45,
-          formatter: value => value.slice(11) // Show only time
+          formatter: value => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       },
       yAxis: {
@@ -76,8 +88,21 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-h2 {
-  text-align: center;
-  margin-bottom: 1rem;
+.chart-wrapper {
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 8px; /* Match your box rounding */
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-container {
+  width: 100%;
+  height: 100%;
 }
 </style>
