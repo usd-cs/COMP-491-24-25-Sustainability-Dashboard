@@ -134,10 +134,11 @@ export const getAthenaTables = async (buildingName) => {
   // Construct the SQL query dynamically
   // Query the Athena table for the last 24 hours for a specific building
   const sqlQuery = `
-    SELECT timestamp, ${buildingName}
-    FROM athena_hourly_output
-    WHERE timestamp >= NOW() - INTERVAL '24 hours'
-    ORDER BY timestamp DESC; -- Sort by timestamp in descending order
+  SELECT timestamp, ${buildingName}
+  FROM athena_hourly_output
+  WHERE ${buildingName} IS NOT NULL
+  ORDER BY timestamp DESC
+  LIMIT 24; -- Retrieve the most recent 24 entries
   `;
 
   try {
@@ -159,7 +160,7 @@ export const getAthenaTables = async (buildingName) => {
     */
     return rows.map(row => ({
       timestamp: row.timestamp,
-      athena_building_name: parseFloat(row[athena_building_name]).toFixed(5)
+      energy_output: parseFloat(row[buildingName]).toFixed(5)
     }));
   } catch (error) {
     console.error('Error fetching Athena data for building: ${buildingName}', error);

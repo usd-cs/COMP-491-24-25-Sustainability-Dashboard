@@ -22,6 +22,12 @@ export const getAllData = async (req, res) => {
 
 // Function to handle the request
 export const getAthenaDataForGraph = async (req, res) => {
+    console.log('Request received:', req);
+
+    // Log specific parts of the request
+    console.log('Query parameters:', req.query);
+    console.log('Headers:', req.headers);
+    
     const { buildingName } = req.query; // Get building name from the URL parameter
     
     // Validate that buildingName is provided
@@ -30,7 +36,7 @@ export const getAthenaDataForGraph = async (req, res) => {
     }
     try {
       // Fetch Athena data for the building
-      const data = await getAthenaTables(athena_building_name);
+      const data = await getAthenaTables(buildingName);
   
       // Check if data is available
       if (!data || data.length === 0) {
@@ -39,8 +45,14 @@ export const getAthenaDataForGraph = async (req, res) => {
   
       // Send the data as a response
       return res.status(200).json(data);
-    } catch (error) {
-      console.error('Error fetching Athena data:', error.stack);
+    } catch (globalError) {
+        console.error('Global error in getAthenaDataForGraph:', {
+            message: error.message,
+            stack: error.stack,
+            queryParameters: req.query, // Log query parameters
+            headers: req.headers,       // Log headers
+            url: req.originalUrl        // Log the original URL of the request
+        });
       return res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
     }
   };

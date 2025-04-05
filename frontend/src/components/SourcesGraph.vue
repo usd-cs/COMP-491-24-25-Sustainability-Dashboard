@@ -1,13 +1,12 @@
 <template>
   <div class="chart-wrapper">
-    <h2>Electricity Output Over Time</h2>
     <div v-if="!hasData">No data available for the selected building.</div>
     <div v-else ref="chart" class="chart-container"></div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, nextTick } from 'vue';
 import { useRoute } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
@@ -17,6 +16,7 @@ const buildingName = route.query.buildingName; // Retrieve the building name fro
 
 const chart = ref(null);
 const hasData = ref(false); // Notify user if data is not available
+const errorMessage = ref('');
 
 
 // // Retrieve the building name from localStorage
@@ -24,12 +24,12 @@ const hasData = ref(false); // Notify user if data is not available
 // console.log(buildingName)
 
 onMounted(async () => {
-  if (!athena_building_name) {
+  if (!buildingName) {
     console.warn('No building selected.');
     errorMessage.value = 'No building selected.';
     return;
   }
-
+  console.log('Request received:', buildingName);
   try {
     // Make the GET request with the building name as a URL parameter
     const response = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
@@ -37,7 +37,7 @@ onMounted(async () => {
     });
     const data = response.data;
 
-    if (!fetchedData || fetchedData.length === 0) {
+    if (!data || data.length === 0) {
       console.warn('No Athena data available.');
       hasData.value = false;
       return;
@@ -49,8 +49,29 @@ onMounted(async () => {
     const timestamps = data.map(row => row.timestamp);
     const electricityOut = data.map(row => row.energy_output || 0); // Use 0 if missing
 
+    // Wait for the DOM to be updated before initializing the chart
+    await nextTick();
+
+    if (!chart.value) {
+      console.error('Chart DOM element is not available.');
+      errorMessage.value = 'Failed to initialize the chart.';
+      return;
+    }
+
+    // Initialize the chart instance
+    const chartInstance = echarts.init(chart.value);
+
     // Configure the chart
     const option = {
+      title: {
+    text: 'Electricity Output Over Time', // Chart title
+    left: 'center', // Center the title horizontally
+    top: 'top', // Position the title at the top
+    textStyle: {
+      fontSize: 16, // Adjust font size
+      fontWeight: 'bold'
+      }
+    },
       tooltip: {
         trigger: 'axis',
         formatter: '{b0}<br />Electricity Out: {c0} kWh'
@@ -81,17 +102,17 @@ onMounted(async () => {
 
     chartInstance.setOption(option); // Set the chart option
   } catch (error) {
-    console.error('Error fetching Athena hourly data:', error);
-    errorMessage.value = `Error fetching data: ${error.response ? error.response.data.message : error.message}`;
+      console.error('Error fetching Athena hourly data:', error);
+      errorMessage.value = `Error fetching data: ${error.response ? error.response.data.message : error.message}`;
   }
 });
 </script>
 
 <style scoped>
 .chart-wrapper {
-  width: 100%;
-  height: 100%;
-  padding: 15px;
+  width: 80%;
+  height: 80%;
+  padding: 0;
   box-sizing: border-box;
   overflow: hidden;
   border-radius: 8px; /* Match your box rounding */
