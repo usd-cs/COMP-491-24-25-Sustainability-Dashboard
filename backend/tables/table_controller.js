@@ -30,7 +30,7 @@ export const getAthenaDataForGraph = async (req, res) => {
     }
     try {
       // Fetch Athena data for the building
-      const data = await getAthenaTables(buildingName);
+      const data = await getAthenaTables(athena_building_name);
   
       // Check if data is available
       if (!data || data.length === 0) {
@@ -44,7 +44,7 @@ export const getAthenaDataForGraph = async (req, res) => {
       return res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
     }
   };
-
+  
 
 /**
  * Fetch 30-day energy totals

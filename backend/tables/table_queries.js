@@ -158,8 +158,8 @@ export const getAthenaTables = async (buildingName) => {
       ]
     */
     return rows.map(row => ({
-      timestamp: row.timestamp, // Ensure timestamp is in the correct format
-      column: parseFloat(row[column]).toFixed(5)
+      timestamp: row.timestamp,
+      athena_building_name: parseFloat(row[athena_building_name]).toFixed(5)
     }));
   } catch (error) {
     console.error('Error fetching Athena data for building: ${buildingName}', error);

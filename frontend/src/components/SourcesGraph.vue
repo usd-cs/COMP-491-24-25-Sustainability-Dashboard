@@ -24,12 +24,11 @@ const hasData = ref(false); // Notify user if data is not available
 // console.log(buildingName)
 
 onMounted(async () => {
-  if (!buildingName) {
+  if (!athena_building_name) {
     console.warn('No building selected.');
+    errorMessage.value = 'No building selected.';
     return;
   }
-
-  const chartInstance = echarts.init(chart.value); // Initialize the chart instance
 
   try {
     // Make the GET request with the building name as a URL parameter
@@ -38,7 +37,7 @@ onMounted(async () => {
     });
     const data = response.data;
 
-    if (!data || data.length === 0) {
+    if (!fetchedData || fetchedData.length === 0) {
       console.warn('No Athena data available.');
       hasData.value = false;
       return;
@@ -83,6 +82,7 @@ onMounted(async () => {
     chartInstance.setOption(option); // Set the chart option
   } catch (error) {
     console.error('Error fetching Athena hourly data:', error);
+    errorMessage.value = `Error fetching data: ${error.response ? error.response.data.message : error.message}`;
   }
 });
 </script>
@@ -106,3 +106,4 @@ onMounted(async () => {
   height: 100%;
 }
 </style>
+
