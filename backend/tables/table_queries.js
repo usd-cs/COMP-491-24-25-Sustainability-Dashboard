@@ -109,28 +109,26 @@ export const getBubbleChartData = async () => {
 };
 
 
-/* Fetch the data from the Athena Table */
-export const getAthenaTables = async () => {
-  const buildingName = 'alcala_borrego'; // hardcoded building name
-  const column = buildingName; // same as the column name in the table
+/* Fetch the data from the Athena Table */// Fetch the data from the Athena Table with a dynamic building name
+export const getAthenaTables = async (athena_building_name) => {
 
-  // Construct the SQL query dynamically
   const sqlQuery = `
-    SELECT timestamp, ${column}
-    FROM public.athena_hourly_output
+    SELECT timestamp, ${athena_building_name}
+    FROM athena_hourly_output
+    LIMIT 50';
   `;
+  console.log('Executing SQL query:', sqlQuery); // Log the query being executed
 
   try {
     const result = await query(sqlQuery);
     const rows = result.rows || result;
 
-    // Ensure you handle the dynamic column name correctly in the mapping
     return rows.map(row => ({
-      timestamp: row.timestamp, // Ensure timestamp is in the correct format
-      column: parseFloat(row[column]).toFixed(5)
+      timestamp: row.timestamp,
+      athena_building_name: parseFloat(row[athena_building_name]).toFixed(5)
     }));
   } catch (error) {
-    console.error('Error fetching Athena data:', error);
+    console.error('Error executing Athena query:', error); // Log the error if the query fails
     throw error;
   }
 };

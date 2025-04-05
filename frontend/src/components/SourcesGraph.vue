@@ -1,76 +1,45 @@
 <template>
   <div>
     <h2>Electricity Output Over Time</h2>
-    <div ref="chart" style="width: 100%; height: 400px;"></div>
+    <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
+    <pre>{{ data }}</pre> <!-- Display data for debugging -->
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import * as echarts from 'echarts';
 import axios from 'axios';
 
-const chart = ref(null);
+const data = ref(null); // Data to be displayed in the template
+const errorMessage = ref(''); // To store any error messages
 
 // Retrieve the building name from localStorage
-const buildingName = localStorage.getItem('selectedBuilding'); // Get the selected building name
-console.log(buildingName)
+const athena_building_name = localStorage.getItem('selectedBuilding'); // Get the selected building name
 
 onMounted(async () => {
-  if (!buildingName) {
+  if (!athena_building_name) {
     console.warn('No building selected.');
+    errorMessage.value = 'No building selected.';
     return;
   }
 
-  const chartInstance = echarts.init(chart.value); // Initialize the chart instance
-
   try {
     // Make the GET request with the building name as a URL parameter
-    const response = await axios.get(`http://localhost:3000/api/tables/${buildingName}`);
-    const data = response.data;
+    const response = await axios.get(`http://localhost:3000/api/tables/${athena_building_name}`);
+    const fetchedData = response.data;
 
-    if (!data || data.length === 0) {
+    if (!fetchedData || fetchedData.length === 0) {
       console.warn('No Athena data available.');
+      errorMessage.value = 'No Athena data available.';
       return;
     }
 
-    // Extract timestamps and electricity output data
-    const timestamps = data.map(row => row.timestamp);
-    const electricityOut = data.map(row => row.total_kwh || 0); // Use 0 if missing
+    data.value = fetchedData; // Store the data in the ref to display
+    console.log("hi"); // Log the data for debugging
 
-    // Configure the chart
-    const option = {
-      tooltip: {
-        trigger: 'axis',
-        formatter: '{b0}<br />Electricity Out: {c0} kWh'
-      },
-      xAxis: {
-        type: 'category',
-        data: timestamps,
-        name: 'Timestamp',
-        axisLabel: {
-          rotate: 45,
-          formatter: value => value.slice(11) // Show only time
-        }
-      },
-      yAxis: {
-        type: 'value',
-        name: 'Electricity Out (kWh)'
-      },
-      series: [
-        {
-          data: electricityOut,
-          type: 'line',
-          smooth: true,
-          areaStyle: {},
-          name: 'Electricity Out'
-        }
-      ]
-    };
-
-    chartInstance.setOption(option); // Set the chart option
   } catch (error) {
     console.error('Error fetching Athena hourly data:', error);
+    errorMessage.value = `Error fetching data: ${error.response ? error.response.data.message : error.message}`;
   }
 });
 </script>
@@ -80,4 +49,10 @@ h2 {
   text-align: center;
   margin-bottom: 1rem;
 }
+pre {
+  white-space: pre-wrap; /* Ensure it wraps properly */
+  word-wrap: break-word;
+  font-size: 14px;
+}
 </style>
+

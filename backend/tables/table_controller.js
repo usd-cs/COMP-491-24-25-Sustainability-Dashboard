@@ -22,11 +22,12 @@ export const getAllData = async (req, res) => {
 
 // Function to handle the request
 export const getAthenaDataForGraph = async (req, res) => {
-    const { buildingName } = req.params; // Get building name from the URL parameter
-    
+    const { athena_building_name } = req.params; // Get building name from the URL parameter
+    console.log('Received building name:', athena_building_name); // Log the building name
+  
     try {
       // Fetch Athena data for the building
-      const data = await getAthenaTables(buildingName);
+      const data = await getAthenaTables(athena_building_name);
   
       // Check if data is available
       if (!data || data.length === 0) {
@@ -36,11 +37,11 @@ export const getAthenaDataForGraph = async (req, res) => {
       // Send the data as a response
       return res.status(200).json(data);
     } catch (error) {
-      console.error('Error fetching Athena data:', error);
+      console.error('Error fetching Athena data:', error); // Log the error details
       return res.status(500).json({ message: 'Failed to retrieve Athena data for the graph.' });
     }
   };
-
+  
 
 /**
  * Fetch 30-day energy totals
