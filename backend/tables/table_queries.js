@@ -126,7 +126,8 @@ export const getAthenaTables = async (athena_building_name) => {
  const sqlQuery = `
    SELECT timestamp, ${athena_building_name}
    FROM public.athena_hourly_output
-   LIMIT 50';
+   ORDER BY timestamp DESC
+   LIMIT 30';
  `;
  console.log('Executing SQL query:', sqlQuery); // Log the query being executed
 
