@@ -22,7 +22,7 @@ router.get('/getbubblechart', getBubbleChart);
 
 
 // GET route for Athena data filtered by building name
-router.get('/getathenaenergy/:building_name', getAthenaDataForGraph);
+router.get('/:athena_building_name', getAthenaDataForGraph);
 
 
 

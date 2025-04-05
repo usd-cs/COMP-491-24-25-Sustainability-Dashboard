@@ -14,6 +14,7 @@ const chart = ref(null);
 
 // Retrieve the building name from localStorage
 const buildingName = localStorage.getItem('selectedBuilding'); // Get the selected building name
+console.log(buildingName)
 
 onMounted(async () => {
   if (!buildingName) {
@@ -21,16 +22,11 @@ onMounted(async () => {
     return;
   }
 
-  const chartInstance = echarts.init(chart.value);
+  const chartInstance = echarts.init(chart.value); // Initialize the chart instance
 
   try {
-    // Fetch Athena hourly data with building name as query param
-    const response = await axios.get('http://localhost:3000/api/tables/getathenaenergy', {
-      params: {
-        building_name: buildingName
-      }
-    });
-
+    // Make the GET request with the building name as a URL parameter
+    const response = await axios.get(`http://localhost:3000/api/tables/${buildingName}`);
     const data = response.data;
 
     if (!data || data.length === 0) {
@@ -72,7 +68,7 @@ onMounted(async () => {
       ]
     };
 
-    chartInstance.setOption(option);
+    chartInstance.setOption(option); // Set the chart option
   } catch (error) {
     console.error('Error fetching Athena hourly data:', error);
   }
