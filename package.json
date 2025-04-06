@@ -51,8 +51,6 @@
   },
   "scripts": {
     "start": "node backend/index.js",
-    "start:dev": "cross-env NODE_ENV=development node backend/index.js",
-    "start:prod": "cross-env NODE_ENV=production node backend/index.js",  
     "dev": "vite",
     "test:frontend": "vitest --config vitest.frontend.config.js",
     "test:backend": "vitest --config vitest.backend.config.js",
