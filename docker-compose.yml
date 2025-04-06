@@ -1,23 +1,16 @@
 services:
   backend:
     platform: linux/amd64
+    env_file:
+      - .env.development
     build:
       context: .
       dockerfile: backend/Dockerfile.backend
-      args:
-        NODE_ENV: ${NODE_ENV}
     ports:
       - "3000:3000"
     volumes:
       - ${COMPOSE_PROJECT_PATH:-.}:/app
       - /app/node_modules  # Ensures node_modules is created inside the container
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
     depends_on:
       database:
         condition: service_healthy
@@ -25,18 +18,14 @@ services:
 
   frontend:
     platform: linux/amd64
+    env_file:
+      - .env.development
     build:
       context: .
       dockerfile: frontend/Dockerfile.frontend
-      target: ${BUILD_TARGET} # Dynamically set the build target (development or production)
-      args:
-        NODE_ENV: ${NODE_ENV} # Pass NODE_ENV to the Dockerfile
     ports:
       - "5173:5173"
       - "80:80"     # For production
-    environment:
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL} # Pass the base URL to the frontend
-      NODE_ENV: ${NODE_ENV}
     volumes:
       - ${COMPOSE_PROJECT_PATH:-.}:/app
       - /app/node_modules  # Ensures node_modules is created inside the container
@@ -46,13 +35,11 @@ services:
   database:
     image: postgres:17
     container_name: postgres_container
+    env_file:
+      - .env.development
     restart: always
     ports:
       - "5434:5432"  # Maps PostgreSQL's default port to host
-    environment:
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:  # Ensures database is ready before backend starts

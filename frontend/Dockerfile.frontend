@@ -1,5 +1,5 @@
 # Use a specific version of Node.js
-FROM node:18.17.1 AS base
+FROM node:18.17.1
 
 
 # Set the working directory inside the container
@@ -16,18 +16,6 @@ RUN npm install --no-package-lock
 # Copy the entire project into the container
 COPY . .
 
-# Build the frontend for production if specified
-ARG NODE_ENV=development
-RUN if [ "$NODE_ENV" = "production" ]; then npm run build; fi
-
-# For production, use nginx to serve static files
-FROM nginx:alpine AS production
-COPY --from=base /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-
-# For development, run the Vite dev server
-FROM base AS development
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host"]
 
