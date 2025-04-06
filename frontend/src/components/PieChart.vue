@@ -8,7 +8,6 @@
 import * as echarts from 'echarts';
 import axios from 'axios';
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-console.log("baseUrl from pie chart",apiBaseUrl);
 
 export default {
   name: 'PieChart',
