@@ -8,7 +8,9 @@ import axios from 'axios';
 import { query } from '../../database_connection.js';
 import dotenv from 'dotenv';
 
-dotenv.config();
+// Load environment variables from the correct .env file
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+dotenv.config({ path: `../${envFile}` });
 
 
 let token = null; // Store token globally
