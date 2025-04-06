@@ -20,6 +20,11 @@ export default defineConfig({
       '.dedyn.io', // Allow any subdomain under dedyn.io if needed
     ],
   },
+  build: {
+    outDir: '../dist', // Output directory for production build (relative to the root)
+    emptyOutDir: true, // Clear the output directory before building
+    sourcemap: false, // Disable sourcemaps for production (optional)
+  },
   test: {
     globals: true, // Enable global functions like `describe` and `it`
     environment: 'jsdom', // Use jsdom for DOM-related tests

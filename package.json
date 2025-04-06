@@ -52,6 +52,7 @@
   "scripts": {
     "start": "node backend/index.js",
     "dev": "vite",
+    "build": "vite build",
     "test:frontend": "vitest --config vitest.frontend.config.js",
     "test:backend": "vitest --config vitest.backend.config.js",
     "test": "npm-run-all test:frontend test:backend",
