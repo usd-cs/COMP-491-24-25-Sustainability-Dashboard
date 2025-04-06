@@ -18,14 +18,17 @@ RUN npm install --no-package-lock
 # Now copy everything else
 COPY . .
 
-
-
-
 # Expose the port that the app runs on
 EXPOSE 3000
 
+# Set the default environment to development
+ARG NODE_ENV=development
+ENV NODE_ENV=${NODE_ENV}
 
-# Run database schema setup and insert initial user before starting the server
-CMD ["sh", "-c", "node backend/create_schema.js && node backend/setup/setup_user.js && npm start"]
+
+# If NODE_ENV is development, it runs create_schema.js and setup_user.js before starting the server.
+# If NODE_ENV is production, it skips these scripts and directly starts the server.
+
+CMD ["sh", "-c", "if [ \"$NODE_ENV\" = \"development\" ]; then node backend/create_schema.js && node backend/setup/setup_user.js; fi && npm start"]
 
 

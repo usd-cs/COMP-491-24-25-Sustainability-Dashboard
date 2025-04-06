@@ -58,6 +58,7 @@
 import { ref } from 'vue'; // Reactive variables for form inputs
 import axios from 'axios'; // HTTP client for making API calls
 import { useRouter } from 'vue-router'; // Vue Router for navigation
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 // Reactive variables for email and password inputs
 const email = ref('');
@@ -76,7 +77,7 @@ const router = useRouter(); // Router instance for navigation
 const handleSubmit = async () => {
   try {
     // Make an API call to the login endpoint
-    const response = await axios.post('http://localhost:3000/api/auth/login', {
+    const response = await axios.post(`${apiBaseUrl}/api/auth/login`, {
       email: email.value, // Send email input
       password: password.value, // Send password input
     });

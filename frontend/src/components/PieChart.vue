@@ -7,6 +7,8 @@
 <script>
 import * as echarts from 'echarts';
 import axios from 'axios';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+console.log("baseUrl from pie chart",apiBaseUrl);
 
 export default {
   name: 'PieChart',
@@ -26,7 +28,7 @@ export default {
   methods: {
     async fetchChartData() {
       try {
-        const response = await axios.get('http://localhost:3000/api/tables/getenergy');
+        const response = await axios.get(`${apiBaseUrl}/api/tables/getenergy`);
         const data = response.data;
         // Transform data for pie chart format
         this.chartData = [

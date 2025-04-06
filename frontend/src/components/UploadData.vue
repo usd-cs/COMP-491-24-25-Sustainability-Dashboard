@@ -72,6 +72,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const router = useRouter();
 const selectedFile = ref(null);
@@ -107,8 +108,8 @@ const handleUpload = async (_event) => {
     
     // Determine the endpoint based on the selected source
     const endpoint = selectedSource.value === 'Athena' 
-      ? 'http://localhost:3000/api/auth/athena-upload'
-      : 'http://localhost:3000/api/auth/file-upload';
+      ? `${apiBaseUrl}/api/auth/athena-upload`
+      : `${apiBaseUrl}/api/auth/file-upload`;
 
     console.log(`Using endpoint: ${endpoint}`);
     

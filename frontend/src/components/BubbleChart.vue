@@ -8,6 +8,7 @@
 import * as echarts from 'echarts';
 import axios from 'axios';
 import { nextTick } from 'vue';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export default {
   name: 'BubbleChart',
@@ -34,7 +35,7 @@ export default {
   methods: {
     async fetchChartData() {
       try {
-        const response = await axios.get('http://localhost:3000/api/tables/getbubblechart');
+        const response = await axios.get(`${apiBaseUrl}/api/tables/getbubblechart`);
         const data = response.data;
         // Map each record to an array of values.
         this.chartData = data.map(item => [

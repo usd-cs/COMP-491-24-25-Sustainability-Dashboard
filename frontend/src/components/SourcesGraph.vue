@@ -10,6 +10,7 @@ import { onMounted, ref, nextTick } from 'vue';
 import { useRoute } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const route = useRoute();
 const buildingName = route.query.buildingName; // Retrieve the building name from query parameters
@@ -32,7 +33,7 @@ onMounted(async () => {
   console.log('Request received:', buildingName);
   try {
     // Make the GET request with the building name as a URL parameter
-    const response = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
+    const response = await axios.get(`${apiBaseUrl}/api/tables/hourlyenergybybuilding`, {
       params: { buildingName } // Pass buildingName as a query parameter
     });
     const data = response.data;

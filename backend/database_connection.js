@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 // Load environment variables from the correct .env file
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
-dotenv.config({ path: `./backend/${envFile}` });
+dotenv.config({ path: `./${envFile}` });
 
 import pkg from 'pg'; // Import the PostgreSQL module
 const { Pool } = pkg; // Destructure Pool from the imported package

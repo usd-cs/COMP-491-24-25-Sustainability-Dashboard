@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 // Load the correct .env file based on NODE_ENV
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
-dotenv.config({ path: `./backend/${envFile}` });
+dotenv.config({ path: `./${envFile}` });
 
 import authRoutes from './auth/routes.js';
 import tableRoutes from './tables/table_routes.js';
@@ -50,8 +50,8 @@ app.get('/', (req, res) => {
 // Only start the server if not in test environment
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    const baseUrl = process.env.BASE_URL || 'http://localhost';
-    console.log(`Main server is running on ${baseUrl}:${PORT}`);
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    console.log(`Main server is running on ${baseUrl}`);
   });
 }
 

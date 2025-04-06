@@ -7,7 +7,8 @@
 
 <script>
 import * as echarts from 'echarts';
-import axios from 'axios'; 
+import axios from 'axios';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL; 
 
 export default {
   name: 'BarChart',
@@ -37,7 +38,7 @@ export default {
     // Fetch the chart data from API
     async fetchChartData() {
       try {
-        const response = await axios.get('http://localhost:3000/api/tables/getenergy'); 
+        const response = await axios.get(`${apiBaseUrl}/api/tables/getenergy`); 
         const data = response.data;
 
         this.chartLabels = Object.keys(this.headerToDbColumnMap);
