@@ -84,8 +84,7 @@ const buildings = [
   { name: "Manchester A", types: ["electricity", "solar"] },
   { name: "Manchester B", types: ["electricity", "solar"] },
   { name: "Soles", types: ["electricity", "solar"] },
-  { name: "West Parking - Solar", types: ["solar"] },
-  { name: "West Parking - Fuel Cell", types: ["fuelcell"] },
+  { name: "West Parking", types: ["solar", "fuelcell"] },
 ];
 
 // Computed property to filter buildings based on selected filter
