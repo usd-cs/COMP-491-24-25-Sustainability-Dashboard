@@ -2,6 +2,18 @@
   <div class="chart-wrapper">
     <div v-if="!hasData">No data available for the selected building.</div>
     <div v-else ref="chart" class="chart-container"></div>
+    <!-- Add the Compare button and dropdown -->
+    <div class="compare-section">
+      <button v-if="!showDropdown" @click="toggleDropdown">Compare</button>
+      <div v-else>
+        <select v-model="selectedBuilding2" @change="updateBuilding2">
+          <option disabled value="">Select a building</option>
+          <option v-for="building in buildings" :key="building.name" :value="building.name">
+            {{ building.name }}
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -17,11 +29,66 @@ const buildingName = route.query.buildingName; // Retrieve the building name fro
 const chart = ref(null);
 const hasData = ref(false); // Notify user if data is not available
 const errorMessage = ref('');
+const showDropdown = ref(false); // Controls the visibility of the dropdown
+const selectedBuilding2 = ref(''); // Stores the second building name
+const buildings = ref([
+  { name: "Alcala Borrego" },
+  { name: "Alcala Laguna" },
+  { name: "Camino Hall" },
+  { name: "Copley Library" },
+  { name: "Founders Hall" },
+  { name: "Jenny Craig Pavilion" },
+  { name: "Kroc" },
+  { name: "Manchester A" },
+  { name: "Manchester B" },
+  { name: "Soles" },
+  { name: "West Parking" }
+]);
 
+const toggleDropdown = () => {
+  showDropdown.value = true;
+};
+// Function to format the building name for the URL
+const formatBuildingName = (name) => {
+  return name.toLowerCase().replace(/\s+/g, "_"); // Convert to lowercase and replace spaces with underscores
+};
 
-// // Retrieve the building name from localStorage
-// const buildingName = localStorage.getItem('selectedBuilding'); // Get the selected building name
-// console.log(buildingName)
+const updateBuilding2 = async () => {
+  if (!selectedBuilding2.value) return;
+
+  const formattedName = formatBuildingName(selectedBuilding2.value); // Format the building name
+
+  try {
+    // Fetch data for the second building
+    const response2 = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
+      params: { buildingName: formattedName } // Pass selected building name as a query parameter
+    });
+    const data2 = response2.data;
+
+    // Extract timestamps and electricity output data for the second building
+    const timestamps2 = data2.map(row => row.timestamp);
+    const electricityOut2 = data2.map(row => row.energy_output || 0); // Use 0 if missing
+
+    // Update the chart with the second building's data
+    const chartInstance = echarts.getInstanceByDom(chart.value);
+    if (chartInstance) {
+      const option = chartInstance.getOption();
+      option.series.push({
+        data: electricityOut2,
+        type: 'line',
+        smooth: true,
+        name: `Electricity Out (${selectedBuilding2.value})`,
+        lineStyle: {
+          type: 'dashed' // Optional: Make the line dashed for distinction
+        }
+      });
+      chartInstance.setOption(option);
+    }
+  } catch (error) {
+    console.error('Error fetching data for the second building:', error);
+    errorMessage.value = `Error fetching data: ${error.response ? error.response.data.message : error.message}`;
+  }
+};
 
 onMounted(async () => {
   if (!buildingName) {
@@ -64,17 +131,23 @@ onMounted(async () => {
     // Configure the chart
     const option = {
       title: {
-    text: 'Electricity Output Over Time', // Chart title
-    left: 'center', // Center the title horizontally
-    top: 'top', // Position the title at the top
-    textStyle: {
-      fontSize: 16, // Adjust font size
-      fontWeight: 'bold'
+        text: 'Electricity Output Over Time', // Chart title
+        left: 'center', // Center the title horizontally
+        top: 'top', // Position the title at the top
+        textStyle: {
+          fontSize: 16, // Adjust font size
+          fontWeight: 'bold'
       }
     },
       tooltip: {
         trigger: 'axis',
-        formatter: '{b0}<br />Electricity Out: {c0} kWh'
+        formatter: params => {
+          let tooltip = `${params[0].axisValue}<br />`;
+          params.forEach(param => {
+            tooltip += `${param.seriesName}: ${param.data} kWh<br />`;
+          });
+          return tooltip;
+        }
       },
       xAxis: {
         type: 'category',
@@ -87,7 +160,7 @@ onMounted(async () => {
       },
       yAxis: {
         type: 'value',
-        name: 'Electricity Out (kWh)'
+        name: 'Electricity (kWh)'
       },
       series: [
         {
@@ -110,21 +183,46 @@ onMounted(async () => {
 
 <style scoped>
 .chart-wrapper {
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  height: 100%;
   padding: 0;
   box-sizing: border-box;
   overflow: hidden;
   border-radius: 8px; /* Match your box rounding */
   background: #ffffff;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: flex-start; /* Align items at the top */
 }
 
 .chart-container {
   width: 100%;
-  height: 100%;
+  height: 80%;
+}
+
+.compare-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #003b70;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #00509e;
+}
+
+select {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
 </style>
 
