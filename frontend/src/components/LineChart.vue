@@ -196,6 +196,17 @@ onUnmounted(() => {
     chart.dispose();
   }
 });
+
+const props = defineProps({
+    chartData: {
+        type: Object,
+        required: true
+    },
+    chartOptions: {
+        type: Object,
+        required: true
+    }
+});
 </script>
 
 <style scoped>
