@@ -9,6 +9,7 @@ import PieChart from "@/components/PieChart.vue";
 import FileImport from "@/components/FileImport.vue";
 import Sources from "@/components/Sources.vue";
 import SourcesGraph from "@/components/SourcesGraph.vue";
+import LineChart from "@/components/LineChart.vue";
 
 /**
  * @file router.js
@@ -38,7 +39,10 @@ const routes = [
   { path: "/bar-chart", component: BarChart }, // Route for the bar chart page
   { path: "/bubble-chart", component: BubbleChart, props: { fullPage: true } },
   { path: "/pie-chart", component: PieChart },
-  { path: "/sources-graph", component: SourcesGraph}
+  { path: "/sources-graph", component: SourcesGraph },
+  { path: "/line-chart", component: LineChart },
+  { path: "/initiatives", component: () => import("@/components/InitiativesPage.vue") },
+  { path: "/contact", component: () => import("@/components/ContactPage.vue") }
 ];
 
 /**

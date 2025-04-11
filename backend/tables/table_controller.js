@@ -1,5 +1,5 @@
 import { query } from '../database_connection.js';
-import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables } from './table_queries.js';
+import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables, getTreeVisualizationData } from './table_queries.js';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
@@ -92,6 +92,32 @@ export const getBubbleChart = async (req, res) => {
     }
 };
 
+/**
+ * Fetch data for tree visualization.
+ */
+export const getTreeData = async (req, res) => {
+    try {
+      // Get the period from the query string; default to "month" if not provided.
+      const period = req.query.period || "month";
+      
+      const data = await getTreeVisualizationData(period);
+      
+      if (!data || data.length === 0) {
+        return res.status(404).json({ 
+          message: 'No tree visualization data available'
+        });
+      }
+      
+      console.log(`Returning ${data.length} records of tree data`);
+      res.status(200).json(data);
+    } catch (error) {
+      console.error('Error in getTreeData controller:', error);
+      res.status(500).json({ 
+        message: 'Failed to retrieve tree visualization data',
+        error: error.message 
+      });
+    }
+  };
 
 
 // Set up the directory where CSV files will be stored

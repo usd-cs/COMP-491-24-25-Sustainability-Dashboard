@@ -167,3 +167,87 @@ export const getAthenaTables = async (buildingName) => {
     throw error;
   }
 };
+
+/**
+ * Get tree visualization data for a given time period.
+ * The period parameter can be: "week", "month", "6 months", "1 year", or "lifetime".
+ * For periods other than "lifetime", we filter the data based on the actual date columns:
+ * - For athena_hourly_output, we filter on the timestamp column.
+ * - For energy_daily_data, we filter on the date_local column.
+ *
+ * @param {string} period - The selected timeframe.
+ * @returns {Promise<Array>}
+ */
+export const getTreeVisualizationData = async (period) => {
+  let interval = "";
+  if (period && period.toLowerCase() !== "lifetime") {
+    switch (period.toLowerCase()) {
+      case "1 week":
+        interval = "7 days";
+        break;
+      case "1 month":
+        interval = "30 days";
+        break;
+      case "3 months":
+        interval = "90 days";
+        break;
+      case "6 months":
+        interval = "180 days";
+        break;
+      case "1 year":
+        interval = "1 year";
+        break;
+      default:
+        interval = "30 days"; // default is 1 month
+    }
+  }
+  
+  const periodEnergyQuery =
+    (period && period.toLowerCase() !== "lifetime")
+      ? `
+      (
+        COALESCE(
+          (SELECT SUM(total_kwh) FROM athena_hourly_output WHERE timestamp >= CURRENT_DATE - INTERVAL '${interval}'),
+          0::numeric
+        ) +
+        COALESCE(
+          (SELECT SUM(electricity_out_kwh) FROM energy_daily_data WHERE date_local >= CURRENT_DATE - INTERVAL '${interval}'),
+          0::numeric
+        )
+      ) AS period_energy
+      `
+      : `
+      (
+        COALESCE((SELECT SUM(total_kwh) FROM athena_hourly_output), 0::numeric) +
+        COALESCE((SELECT SUM(electricity_out_kwh) FROM energy_daily_data), 0::numeric)
+      ) AS period_energy
+      `;
+      
+  const sqlQuery = `
+    SELECT 
+      (
+        COALESCE((SELECT SUM(total_kwh) FROM athena_hourly_output), 0::numeric) +
+        COALESCE((SELECT SUM(electricity_out_kwh) FROM energy_daily_data), 0::numeric)
+      ) AS lifetime_energy,
+      ${periodEnergyQuery}
+  `;
+
+  try {
+    const result = await query(sqlQuery);
+    // Support both the object and array return cases
+    const rows = result.rows || result;
+    console.log("Tree visualization data:", rows);
+    
+    if (!rows || rows.length === 0) {
+      return [{
+        lifetime_energy: 0,
+        period_energy: 0
+      }];
+    }
+    
+    return rows;
+  } catch (error) {
+    console.error("Error fetching tree visualization data:", error);
+    throw error;
+  }
+};
