@@ -21,38 +21,37 @@
 </template>
 
 
-<script>
+<script setup>
+import { useRouter } from 'vue-router';
 import AppLayout from './AppLayout.vue';
 
 /**
  * @file UploadSuccess.vue
  * @description Component to display a success message after a file is successfully uploaded.
  */
-export default {
-  methods: {
-    /**
-     * Navigates to the main dashboard page.
-     */
-    navigateToMainPage() {
-      this.$router.push('/main');
-    },
-    /**
-     * Navigates to the file upload page.
-     */
-    navigateToImportPage() {
-      this.$router.push('/upload');
-    },
-  },
+ const router = useRouter();
+
+/**
+ * Navigates to the main dashboard page.
+ */
+const navigateToMainPage = () => {
+  router.push('/main');
+};
+
+/**
+ * Navigates to the file upload page.
+ */
+const navigateToImportPage = () => {
+  router.push('/upload');
 };
 </script>
 
 <style scoped>
 .upload-success-portal {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-top: 71px;
-  overflow: hidden;
+  margin-top: 71px; /* Full viewport height */
 }
 
 .upload-success-section {
@@ -62,7 +61,7 @@ export default {
   margin: 40px auto 0;
   padding: 30px 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .upload-success-title {
@@ -150,24 +149,5 @@ export default {
 
 .import-btn:hover {
   background: #0056a4;
-}
-
-@media (max-width: 991px) {
-  .header {
-    padding: 10px 20px;
-  }
-
-  .upload-success-section {
-    padding: 20px;
-  }
-
-  .success-message-container {
-    padding: 40px 15px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    gap: 10px;
-  }
 }
 </style>
