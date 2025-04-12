@@ -67,14 +67,20 @@ const handleLogout = () => {
 
 <style scoped>
 .nav-menu {
+    position: fixed; /* Fix the navigation bar at the top */
+    top: 0; 
+    left: 0; 
+    width: 100%; 
     background-color: #003b70;
     height: 71px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 0 20px; /* zero vertical padding, 20px left-right */
+    padding: 0 20px;
     box-sizing: border-box;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000; /* stays above other elements */
+    border-bottom: 1px solid #43545d;
   }
   
   .nav-content {
