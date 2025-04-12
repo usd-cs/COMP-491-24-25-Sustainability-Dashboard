@@ -5,11 +5,15 @@
     <div class="content">
     <slot></slot>
     </div>
+    <div class="base-footer">
+    <BaseFooter />
+    </div>
   </div>
 </template>
   
 <script setup>
   import NavBar from './NavBar.vue';
+  import BaseFooter from './BaseFooter.vue';
 </script>
 
 <style scoped>
@@ -26,10 +30,17 @@
   pointer-events: none;
 }
 .app-layout {
+  display: flex; /* Enable flexbox */
+  flex-direction: column; /* Stack children vertically */
   position: relative; /* Ensure child elements are positioned relative to this container */
   min-height: 100vh; /* Ensure the layout takes the full height of the viewport */
 }
 
+.base-footer {
+  position: relative; /* Ensure footer is positioned correctly */
+  z-index: 1; /* Place footer above the background */
+  margin-top: auto; /* Push footer to the bottom of the page */
+}
 .content {
   position: relative; /* Ensure content is above the background */
   z-index: 1; /* Place content above the background */
