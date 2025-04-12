@@ -1,31 +1,29 @@
 <template>
-  <div class="background-pattern"></div>
-  <div class="dashboard-container">
-    <!-- New Navigation Bar -->
-    <NavBar/>
-    <!-- Main content area of the dashboard -->
+  <AppLayout>
     <main class="main-content">
-      <!-- Main visuals -->
       <div class="visual-container">
+        <!-- Upper left square -->
         <div class="visual-section" role="button" @click="navigateToBarChart">
           <BarChart/>
         </div>
+        <!-- Upper right square -->
         <div class="visual-section" role="button" @click="navigateToBubbleChart">
           <BubbleChart/>
         </div>
+        <!-- Lower left square -->
         <div class="visual-section" role="button" @click="navigateToPieChart"> 
           <PieChart/>
         </div>
+        <!-- Lower right square -->
         <div class="visual-section"></div>
       </div>
-      <!-- New visualization section -->
       <div class="bottom-visual-container">
         <div class="wide-visual-section" role="button" @click="navigateToLineChart">
           <LineChart/>
         </div>
       </div>
     </main>
-  </div>
+  </AppLayout> 
 </template>
 
 
@@ -36,7 +34,7 @@
  */
 
 import { useRouter} from 'vue-router'; // Import Vue Router for navigation
-import NavBar from './NavBar.vue';
+import AppLayout from './AppLayout.vue';
 import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
 import PieChart from './PieChart.vue';
@@ -88,24 +86,6 @@ const navigateToLineChart = () => {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-.background-pattern {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #79bde9;
-    background-color: #fafafa;
-    background-image: url('https://s8kvb6qnle.execute-api.us-west-2.amazonaws.com/?hash=57e2f2c6f8c556e8de9634c71a03601a&url=https://www.sandiego.edu/admission-and-aid/undergraduate/images/campus-beauty.jpg&width=2100&webp=true');
-    opacity: 0.87; 
-    z-index: -1000;
-    pointer-events: none;
-}
-
-.dashboard-container {
-    position: relative;  /* <-- make sure content is "positioned" */
-    z-index: 0;          /* <-- sits above the background */
 }
 
 .main-content {
@@ -170,6 +150,8 @@ const navigateToLineChart = () => {
     padding: 20px;
     box-sizing: border-box;
     border-radius: 8px;
+    position: relative;
+    z-index: 1; /* Ensure it is above other elements */
 }
 
 .wide-visual-section {
