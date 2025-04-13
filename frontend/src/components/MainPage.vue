@@ -279,11 +279,14 @@ const navigateToLineChart = () => {
     overflow: hidden; 
     position: relative;
     border-radius: 8px;
-    padding: 10px; /* give breathing space to the chart */
+    padding: 10px; 
     box-sizing: border-box;
     border: 2px solid rgba(0,0,0,0.05);
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    width: 100%;  
+    height: 100%;  
 }
+
 
 .visual-section > * {
     width: 100%;

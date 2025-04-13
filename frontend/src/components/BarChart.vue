@@ -120,8 +120,8 @@ export default {
 }
 
 .chart-container {
-  width: 90%;
-  height: 500px;
+  width: 100%;
+  height: 100%;
   justify-content: center;
 }
 </style>
