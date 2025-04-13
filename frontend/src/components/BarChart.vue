@@ -1,6 +1,7 @@
 <template>
   <div class="chart-wrapper">
     <div ref="chart" class="chart-container"></div>
+    
   </div>
 </template>
 
@@ -119,7 +120,8 @@ export default {
 }
 
 .chart-container {
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 500px;
+  justify-content: center;
 }
 </style>
