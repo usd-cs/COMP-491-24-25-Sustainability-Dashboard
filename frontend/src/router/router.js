@@ -4,12 +4,12 @@ import MainPage from "../components/MainPage.vue"; // Main page (dashboard) comp
 import UploadData from "../components/UploadData.vue"; // Upload data page component
 import UploadSuccess from "../components/UploadSuccess.vue"; // Upload success confirmation component
 import BubbleChart from "@/components/BubbleChart.vue";
-import PieChart from "@/components/PieChart.vue";
 import FileImport from "@/components/FileImport.vue";
 import Sources from "@/components/Sources.vue";
 import SourcesGraph from "@/components/SourcesGraph.vue";
 import LineChart from "@/components/LineChart.vue";
 import BarChartExpand from "@/components/BarChartExpand.vue";
+import PieChartExpand from "@/components/PieChartExpand.vue";
 
 /**
  * @file router.js
@@ -38,7 +38,7 @@ const routes = [
   { path: "/upload-success", component: UploadSuccess }, // Route for the upload success page
   { path: "/bar-chart", component: BarChartExpand }, // Route for the bar chart page
   { path: "/bubble-chart", component: BubbleChart, props: { fullPage: true } },
-  { path: "/pie-chart", component: PieChart },
+  { path: "/pie-chart", component: PieChartExpand },
   { path: "/sources-graph", component: SourcesGraph },
   { path: "/line-chart", component: LineChart },
   { path: "/initiatives", component: () => import("@/components/InitiativesPage.vue") },
