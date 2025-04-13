@@ -1,16 +1,16 @@
 <template>
   <div class="chart-with-details">
     <!-- X Button to close and navigate back -->
-    <button class="close-btn" @click="goToMain">X</button>
+    <button class="close-btn" @click="navigateBack">X</button>
 
-    <BarChart ref="barChart" />
+    <div ref="chart" class="chart-container"></div>
 
-    <!-- Individual Accordions for Each Column -->
-    <div v-for="(dbColumn, label) in headerToDbColumnMap" :key="label" class="accordion">
+    <!-- Accordions for Each Column -->
+    <div v-for="(label, index) in chartLabels" :key="index" class="accordion">
       <details>
         <summary>{{ label }}</summary>
         <div class="accordion-content">
-          <p><strong>{{ label }}:</strong> {{ chartData[label] ?? 'N/A' }}</p>
+          <p>{{ getColumnInfo(label) }}</p>
         </div>
       </details>
     </div>
@@ -18,60 +18,118 @@
 </template>
 
 <script>
-import BarChart from './BarChart.vue';
+import * as echarts from 'echarts';
+import axios from 'axios';
 
 export default {
-  name: 'BarChartExpand',
-  components: {
-    BarChart
-  },
+  name: 'BarChartWithAccordion',
   data() {
     return {
+      // Mapping of headers to database columns
       headerToDbColumnMap: {
         'Output Factor': 'total_output_factor_percent',
         'AC Efficiency': 'ac_efficiency_lhv_percent',
         'NOₓ Production': 'nox_production_lbs',
         'SO₂ Reduction': 'so2_reduction_lbs',
       },
-      chartData: {},
+      chartData: [],
+      chartLabels: [],
+      title: 'Energy Production & Emissions',
+      chartInstance: null,
     };
   },
   mounted() {
-    this.extractChartData();
-    // Trigger resize to ensure chart fits properly
-    this.$nextTick(() => {
-      this.$refs.barChart.chartInstance.resize();
-    });
+    this.fetchChartData(); // Fetch data on mount
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    extractChartData() {
-      const chart = this.$refs.barChart;
+    async fetchChartData() {
+      try {
+        const response = await axios.get('http://localhost:3000/api/tables/getenergy');
+        const data = response.data;
 
-      // Delay to ensure chart data is loaded
-      setTimeout(() => {
-        const labels = chart.chartLabels;
-        const data = chart.chartData;
-        const mapped = {};
+        this.chartLabels = Object.keys(this.headerToDbColumnMap);
 
-        labels.forEach((label, i) => {
-          mapped[label] = data[i];
+        // Map the fetched data to the chart data
+        this.chartData = this.chartLabels.map(label => {
+          const dbColumn = this.headerToDbColumnMap[label];
+          return data[dbColumn] || 0; // If value not found, default to 0
         });
 
-        this.chartData = mapped;
-      }, 500);
+        this.renderChart();
+      } catch (error) {
+        console.error('Error fetching chart data:', error);
+        this.chartData = [];  // Reset data on error
+      }
     },
-    goToMain() {
-      this.$router.push('/main'); // Redirect to /main
+
+    renderChart() {
+      this.chartInstance = echarts.init(this.$refs.chart);
+      const options = {
+        title: {
+          text: this.title,
+          left: 'center',
+          top: '5%', // Adjusted to avoid cutting off the title
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        grid: {
+          top: 80, // Increased the top margin to prevent cutoff at the top
+          left: 20,
+          right: 20,
+          bottom: 30,
+          containLabel: true,  // ensures labels are never clipped
+        },
+        xAxis: {
+          type: 'category',
+          data: this.chartLabels,
+          axisLabel: {
+            rotate: 38
+          }
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            name: 'Value',
+            type: 'bar',
+            data: this.chartData,
+            barWidth: '50%',
+            itemStyle: {
+              color: '#4caf50'
+            }
+          }
+        ]
+      };
+      this.chartInstance.setOption(options);
+    },
+
+    handleResize() {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+      }
+    },
+
+    // Get info for each column
+    getColumnInfo(label) {
+      return `The value of ${label} is based on the corresponding data from the database. For more details, refer to the specific metrics related to the ${label}.`;
+    },
+
+    // Redirect to the /main route
+    navigateBack() {
+      this.$router.push('/main');
     }
   }
 };
 </script>
 
 <style scoped>
-
-
-/* Ensure the page takes full height */
-html, body, .page-container {
+html, body, .chart-with-details {
   height: 100%;
   margin: 0;
   background-color: white;
@@ -82,31 +140,21 @@ html, body, .page-container {
   background: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  height: 100%; /* Ensure this container takes full height */
-}
-
-.chart-wrapper {
-  width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px;
-  box-sizing: border-box;
+  position: relative;
 }
 
 .chart-container {
   width: 100%;
-  height: 100%;
+  height: 400px;
+  margin-bottom: 20px;
 }
 
 .accordion {
-  margin-top: 30px;
-  font-size: 16px;
-  background: white; /* Set accordion background to white */
+  margin-top: 20px;
+  background: white;
   border-radius: 8px;
   padding: 12px;
-  cursor: pointer;
   border: 1px solid #ddd;
   color: #003b70;
 }
@@ -114,44 +162,23 @@ html, body, .page-container {
 .accordion-content {
   margin-top: 10px;
   padding-left: 10px;
-  color: #003b70;
-  background-color: white; /* Set the content background to white */
+  background-color: white;
 }
 
-.accordion-content ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.last-updated {
-  margin-top: 12px;
-  font-size: 14px;
-  color: #666;
-}
-
-/* X Button */
 .close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #007bff; /* Set a visible background color */
-  color: white; /* Make text white */
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: #FF6B6B;
+  color: white;
   border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
+  padding: 8px 12px;
   font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .close-btn:hover {
-  background: #0056b3; /* Darken the button on hover */
-}
-
-.close-btn:focus {
-  outline: none; /* Remove focus outline for a cleaner look */
+  background-color: #FF2C2C;
 }
 </style>
