@@ -91,6 +91,8 @@ const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill
   align-items: center;
   padding: 0;
   overflow: hidden;
+  height: 100%;
+  width: 100%;
 }
 
 .header {

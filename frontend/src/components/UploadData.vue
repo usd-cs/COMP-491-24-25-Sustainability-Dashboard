@@ -171,91 +171,43 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+html,
+body {
+  height: 100%;
+  margin: 0;
   padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-}
-
-.uploaded-file {
-  margin-top: 20px;
-  font: 400 16px Inter, sans-serif;
-  color: #003b70;
-  text-align: center;
+  font-family: Inter, sans-serif;
+  background-color: #ffffff;
 }
 
 .upload-portal {
-  background-color: #ffffff;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 0;
   overflow: hidden;
 }
 
 .header {
-  background-color: #003b70; /* Official USD Dark blue background for consistency */
+  flex-shrink: 0;
+  background-color: #003b70;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Space between title/logo and logout button */
+  justify-content: space-between;
   padding: 20px 40px;
   box-sizing: border-box;
   width: 100%;
 }
 
-.header-content {
-  display: flex;
-  flex-direction: column; /* Stack logo and title vertically */
-  align-items: flex-start; /* Align content to the left */
-}
-
-.logo {
-  height: 60px;
-  margin-bottom: 10px; /* Add spacing between the logo and the title */
-}
-
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.5;
-  text-align: left;
-}
-
-.user-section {
-  display: flex;
-  align-items: center;
-}
-
-.logout-btn {
-  background-color: transparent;
-  color: #ffffff;
-  font: 400 16px Inter, sans-serif;
-  border: 1px solid #ffffff;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-  background-color: #ffffff;
-  color: #003b70;
-}
-
 .upload-section {
-  background-color: #f4f4f4; /* Light gray background for the upload section */
-  width: 100%;
-  max-width: 700px;
-  margin: 40px auto 0;
+  flex-grow: 1;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 30px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  height: 100%;
 }
 
 .upload-title {
@@ -269,6 +221,7 @@ const handleLogout = () => {
   background-color: #003b70;
   height: 2px;
   width: 100%;
+  max-width: 700px;
   margin-bottom: 20px;
 }
 
@@ -276,12 +229,13 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 700px;
 }
 
 .dropzone {
   background-color: #ffffff;
   width: 100%;
-  max-width: 500px;
   padding: 50px 20px;
   border: 2px dashed #003b70;
   border-radius: 8px;
@@ -289,36 +243,15 @@ const handleLogout = () => {
   text-align: center;
 }
 
-.dropzone-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.dropzone-text {
-  font: 400 16px Inter, sans-serif;
-  color: #003b70;
-  margin-bottom: 20px;
-}
-
-.select-files-btn {
-  background-color: #003b70;
-  color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font: 400 16px Inter, sans-serif;
-  text-align: center;
-}
-
-.select-files-btn:hover {
-  background-color: #0056a4;
-}
-
+.dropzone-text, 
 .file-format-info {
-  font: 400 14px Inter, sans-serif;
-  color: #333333;
-  margin-top: 15px;
+  color: #003b70;
+  padding: 20px;
+}
+
+.uploaded-file {
+  margin-top: 20px;
+  color: #003b70;
   text-align: center;
 }
 
@@ -326,19 +259,33 @@ const handleLogout = () => {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 500px;
   margin-top: 30px;
+}
+
+.select-files-btn,
+.cancel-btn,
+.import-btn,
+.logout-btn {
+  font: 400 16px Inter, sans-serif;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.select-files-btn {
+  background-color: #003b70;
+  color: #ffffff;
+}
+
+.select-files-btn:hover {
+  background-color: #0056a4;
 }
 
 .cancel-btn {
   background-color: #ffffff;
   color: #003b70;
-  font: 400 16px Inter, sans-serif;
-  padding: 10px 20px;
   border: 2px solid #003b70;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .cancel-btn:hover {
@@ -349,10 +296,6 @@ const handleLogout = () => {
 .import-btn {
   background-color: #003b70;
   color: #ffffff;
-  font: 400 16px Inter, sans-serif;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
   border: none;
 }
 
@@ -360,17 +303,61 @@ const handleLogout = () => {
   background-color: #0056a4;
 }
 
+.logout-btn {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+}
+
+.logout-btn:hover {
+  background-color: #ffffff;
+  color: #003b70;
+}
+
+.logo {
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 @media (max-width: 991px) {
   .header {
     padding: 10px 20px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .upload-section {
     padding: 20px;
-  }
-
-  .dropzone {
-    padding: 40px 15px;
   }
 
   .action-buttons {

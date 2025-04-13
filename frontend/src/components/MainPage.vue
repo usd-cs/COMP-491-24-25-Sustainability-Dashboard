@@ -14,6 +14,7 @@
           <li class="navLi"><router-link to="/sources" class="navLink" active-class="active" @click.prevent="navigateToSources">Sources</router-link></li>
           <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active" @click.prevent="navigateToInitiatives">Initiatives</router-link></li>
           <li class="navLi"><router-link to="/contact" class="navLink" active-class="active" @click.prevent="navigateToContact">Contact</router-link></li>
+          <li class="navLi"><router-link to="/select" class="navLink" active-class="active" @click.prevent="navigateToSelect">Upload</router-link></li>
         </ul>
         <!-- logout button separated -->
         <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
@@ -91,6 +92,10 @@ const navigateToInitiatives = () => {
 const navigateToContact = () => {
   router.push('/contact');
 };
+
+const navigateToSelect = () => {
+  router.push('/select');
+}
 /**
  * Handle user logout.
  * Clears session and redirects the user to the login page.
