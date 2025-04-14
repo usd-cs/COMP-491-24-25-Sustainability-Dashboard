@@ -14,15 +14,19 @@
           <li class="navLi"><router-link to="/sources" class="navLink" active-class="active" @click.prevent="navigateToSources">Sources</router-link></li>
           <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active" @click.prevent="navigateToInitiatives">Initiatives</router-link></li>
           <li class="navLi"><router-link to="/contact" class="navLink" active-class="active" @click.prevent="navigateToContact">Contact</router-link></li>
+          <li class="navLi"><router-link to="/select" class="navLink" active-class="active" @click.prevent="navigateToSelect">Upload</router-link></li>
         </ul>
         <!-- logout button separated -->
         <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
       </div>
     </header>
 
-
     <!-- Main content area of the dashboard -->
     <main class="main-content">
+      <!-- Timestamp section -->
+      <div class="upload-info">
+        Last uploaded: {{ timestamp }}
+      </div>
       <!-- Main visuals -->
       <div class="visual-container">
         <div class="visual-section" role="button" @click="navigateToBarChart">
@@ -49,130 +53,71 @@
 
 
 <script setup>
-/**
- * @file MainPage.vue
- * @description This Vue component represents the main dashboard page. It includes a header, navigation sidebar, and placeholders for dashboard visuals and data upload functionality.
- */
-
-import { useRouter, useRoute } from 'vue-router'; // Import Vue Router for navigation
+import { useRouter, useRoute } from 'vue-router';
 import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
 import PieChart from './PieChart.vue';
 import LineChart from './LineChart.vue';
 
-
 const router = useRouter();
 const route = useRoute();
 
-const isActive = (path) => {
-  return route.path === path;
-};
+const isActive = (path) => route.path === path;
 
-/**
- * Navigate to the data upload page.
- * Triggered when the "Upload Data" button in the sidebar is clicked.
- */
-const navigateToUpload = () => {
-  router.push('/select');
-};
+const navigateToMain = () => router.push('/main');
+const navigateToSources = () => router.push('/sources');
+const navigateToInitiatives = () => router.push('/initiatives');
+const navigateToContact = () => router.push('/contact');
+const navigateToSelect = () => router.push('/select');
+const handleLogout = () => router.push('/');
+const navigateToBarChart = () => router.push('/bar-chart');
+const navigateToBubbleChart = () => router.push('/bubble-chart');
+const navigateToPieChart = () => router.push('/pie-chart');
+const navigateToLineChart = () => router.push('/line-chart');
 
-const navigateToMain = () => {
-  router.push('/main');
-};
+defineProps({
+  timestamp: {
+    type: String, 
+    default: ''
+  }
+})
 
-const navigateToSources = () => {
-  router.push('/sources');
-};
-
-const navigateToInitiatives = () => {
-  router.push('/initiatives');
-};
-
-const navigateToContact = () => {
-  router.push('/contact');
-};
-/**
- * Handle user logout.
- * Clears session and redirects the user to the login page.
- */
-const handleLogout = () => {
-  router.push('/');
-};
-
-/**
- * Navigate to the Bar Chart page.
- * Triggered when the "Bar Chart" navigation item is clicked.
- */
-const navigateToBarChart = () => {
-  router.push('/bar-chart'); 
-};
-
-/**
- * Navigate to the Bubble Chart page.
- * Triggered when the "Bubble Chart" navigation item is clicked.
- */
-const navigateToBubbleChart = () => {
-  router.push('/bubble-chart'); // Replace '/bubble-chart' with your actual route for the Bubble Chart page
-};
-
-/**
- * Navigate to the Pie Chart page.
- * Triggered when the "Pie Chart" navigation item is clicked.
- */
-const navigateToPieChart = () => {
-  router.push('/pie-chart'); // Replace '/bubble-chart' with your actual route for the Bubble Chart page
-};
-
-/**
- * Navigate to the Line Chart page.
- * Triggered when the "Line Chart" navigation item is clicked.
- */
-const navigateToLineChart = () => {
-  router.push('/line-chart'); // Replace '/line-chart' with your actual route for the Line Chart page
-};
 </script>
 
 <style scoped>
-/**
- * Styles for the main dashboard page.
- * Scoped styles ensure these styles apply only to this component.
- */
-
-/* Reset styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 .background-pattern {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #79bde9;
-    background-color: #fafafa;
-    background-image: url('https://s8kvb6qnle.execute-api.us-west-2.amazonaws.com/?hash=57e2f2c6f8c556e8de9634c71a03601a&url=https://www.sandiego.edu/admission-and-aid/undergraduate/images/campus-beauty.jpg&width=2100&webp=true');
-    opacity: 0.87; 
-    z-index: -1000;
-    pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fafafa;
+  background-image: url('https://s8kvb6qnle.execute-api.us-west-2.amazonaws.com/?hash=57e2f2c6f8c556e8de9634c71a03601a&url=https://www.sandiego.edu/admission-and-aid/undergraduate/images/campus-beauty.jpg&width=2100&webp=true');
+  opacity: 0.87;
+  z-index: -1000;
+  pointer-events: none;
 }
 
 .dashboard-container {
-    position: relative;  /* <-- make sure content is "positioned" */
-    z-index: 0;          /* <-- sits above the background */
+  position: relative;
+  z-index: 0;
 }
 
 .main-content {
-    width: 100%;
-    max-width: 1400px;  
-    margin: 0 auto;      /* centers it */
-    padding: 20px;       
-    box-sizing: border-box;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .nav-menu {
@@ -181,7 +126,7 @@ const navigateToLineChart = () => {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 20px; /* zero vertical padding, 20px left-right */
+  padding: 0 20px;
   box-sizing: border-box;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
@@ -205,7 +150,7 @@ const navigateToLineChart = () => {
 }
 
 .logout-btn {
-  margin-left: auto; 
+  margin-left: auto;
   background-color: transparent;
   color: #ffffff;
   font: 400 14px Inter, sans-serif;
@@ -221,25 +166,25 @@ const navigateToLineChart = () => {
 }
 
 .navLi {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  position: relative;
 }
 
 .navLink {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 0 20px; /* horizontal padding only */
-    display: flex;
-    align-items: center;
-    height: 100%;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .navLink.active {
-    background: rgba(0, 0, 0, 0.15);
-    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
 .navLink:hover {
@@ -251,78 +196,74 @@ const navigateToLineChart = () => {
   color: #003b70;
 }
 
-/* Visual container styles */
 .visual-container {
-    background: transparent;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 18px;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    box-sizing: border-box;
-    height: calc(100vh - 71px - 40px);
-    border-radius: 8px;
+  background: transparent;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 18px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  height: calc(100vh - 71px - 40px);
+  border-radius: 8px;
 }
 
 .visual-section {
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    overflow: hidden; 
-    position: relative;
-    border-radius: 8px;
-    padding: 10px; /* give breathing space to the chart */
-    box-sizing: border-box;
-    border: 2px solid rgba(0,0,0,0.05);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 2px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 .visual-section > * {
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    border-radius: 8px; 
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 
-/* Bottom visual container styles */
 .bottom-visual-container {
-    background: transparent;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    box-sizing: border-box;
-    border-radius: 8px;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 8px;
 }
 
 .wide-visual-section {
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 400px;
-    overflow: hidden; 
-    position: relative;
-    border-radius: 8px;
-    padding: 10px; /* give breathing space to the chart */
-    box-sizing: border-box;
-    border: 2px solid rgba(0,0,0,0.05);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 2px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 .wide-visual-section > * {
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    border-radius: 8px; 
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 </style>
