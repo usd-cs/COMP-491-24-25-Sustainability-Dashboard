@@ -186,12 +186,12 @@ function handleResize() {
 onMounted(async () => {
   isMounted = true;
   await fetchData();
-  window.addEventListener('resize', handleResize);
+  //window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
   isMounted = false;
-  window.removeEventListener('resize', handleResize);
+  //window.removeEventListener('resize', handleResize);
   if (chart) {
     chart.dispose();
   }

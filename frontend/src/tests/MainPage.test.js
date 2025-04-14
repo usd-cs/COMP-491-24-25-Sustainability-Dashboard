@@ -43,7 +43,7 @@ describe('DashboardLayout', () => {
    */
   it('has correct navigation items', () => {
     const wrapper = mount(DashboardLayout);
-    expect(wrapper.findAll('.navLi')).toHaveLength(4); // Verify four navigation items exist
+    expect(wrapper.findAll('.navLi')).toHaveLength(5); // Verify four navigation items exist
   });
 
 });
