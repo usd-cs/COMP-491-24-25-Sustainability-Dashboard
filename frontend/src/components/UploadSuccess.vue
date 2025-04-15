@@ -64,7 +64,6 @@ handleFileImport();
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 71px; /* Full viewport height */
 }
 
 .upload-success-section {

@@ -151,28 +151,19 @@ const handleBack = () => {
 </script>
 
 <style scoped>
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: Inter, sans-serif;
-  background-color: #ffffff;
-}
 
 .upload-portal {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 71px;
-  overflow: hidden;
+  justify-content: flex-start;
 }
 
 .upload-section {
   background-color: #f4f4f4; /* Light gray background for the upload section */
   width: 100%;
   max-width: 700px;
-  margin: 40px auto 0;
+  margin: 25px;
   padding: 30px 20px;
   border-radius: 8px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
@@ -232,8 +223,7 @@ body {
 
 .select-files-btn,
 .cancel-btn,
-.import-btn,
-.logout-btn {
+.import-btn {
   font: 400 16px Inter, sans-serif;
   padding: 10px 20px;
   border-radius: 4px;
@@ -269,36 +259,6 @@ body {
 
 .import-btn:hover {
   background-color: #0056a4;
-}
-
-.logout-btn {
-  background-color: transparent;
-  color: #ffffff;
-  border: 1px solid #ffffff;
-}
-
-.logout-btn:hover {
-  background-color: #ffffff;
-  color: #003b70;
-}
-
-.logo {
-  height: 60px;
-  margin-bottom: 10px;
-}
-
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.5;
-  text-align: left;
-}
-
-.header-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
 }
 
 .user-section {
