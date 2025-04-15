@@ -70,40 +70,11 @@ const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 71px;
   overflow: hidden;
   height: 100%;
   width: 100%;
 }
 
-.header {
-  background-color: #003b70;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 40px;
-  box-sizing: border-box;
-  width: 100%;
-}
-
-.header-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.logo {
-  height: 60px;
-  margin-bottom: 10px;
-}
-
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.5;
-  text-align: left;
-}
 
 .user-section {
   display: flex;
