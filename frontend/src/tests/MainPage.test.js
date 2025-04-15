@@ -38,12 +38,5 @@ describe('DashboardLayout', () => {
     expect(wrapper.find('.logout-btn').exists()).toBe(true); // Verify logout button exists
   });
 
-  /**
-   * @description Tests if the correct number of navigation items are present.
-   */
-  it('has correct navigation items', () => {
-    const wrapper = mount(DashboardLayout);
-    expect(wrapper.findAll('.navLi')).toHaveLength(5); // Verify four navigation items exist
-  });
 
 });

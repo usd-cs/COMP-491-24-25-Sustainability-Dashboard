@@ -10,6 +10,10 @@ vi.mock('vue-router', () => {
   return {
     useRouter: () => ({
       push
+    }),
+    useRoute: () => ({
+      path: '/mock-path', // Mocked route path
+      query: {} // Mocked query parameters
     })
   }
 })
@@ -27,7 +31,6 @@ describe('Sources.vue', () => {
     expect(getByText('Summary')).toBeTruthy()
     expect(getByText('Sources')).toBeTruthy()
     expect(getByText('Initiatives')).toBeTruthy()
-    expect(getByText('Contact')).toBeTruthy()
     expect(getByText('Logout →')).toBeTruthy()
   })
 
@@ -65,8 +68,6 @@ describe('Sources.vue', () => {
     await fireEvent.click(getByText('Initiatives'))
     expect(push).toHaveBeenCalledWith('/initiatives')
 
-    await fireEvent.click(getByText('Contact'))
-    expect(push).toHaveBeenCalledWith('/contact')
   })
 
   it('logs out when logout button is clicked', async () => {

@@ -31,14 +31,10 @@ describe('AdminLoginPage', () => {
    * @description Tests if the component renders correctly.
    */
   it('renders correctly', () => {
-    const wrapper = mount(AdminLoginPage, {
-      global: {
-        plugins: [createTestingPinia(), router], // ✅ Injects Vuex/Pinia and Router
-      },
-    });
+    const wrapper = mount(AdminLoginPage);
     expect(wrapper.exists()).toBe(true); // Check if the component mounts correctly
-    expect(wrapper.find('.login-page').exists()).toBe(true); // Ensure root class exists
-    expect(wrapper.find('.title').text()).toContain('USD Office of Sustainability'); // Check header title
+    expect(wrapper.find('.login-form').exists()).toBe(true); // Ensure root class exists
+    expect(wrapper.find('.form-title').text()).toContain('administrative login'); // Check header title
   });
 
   /**
@@ -89,24 +85,13 @@ describe('AdminLoginPage', () => {
   });
 
   /**
-   * @description Tests if the login page has no vertical scroll.
-   */
-  it('has no vertical scroll', async () => {
-    const wrapper = mount(AdminLoginPage);
-
-    // Check computed style of the root element
-    const loginPage = wrapper.find('.login-page');
-    expect(getComputedStyle(loginPage.element).overflowY).toBe('hidden'); // Verify no vertical scroll
-  });
-
-  /**
    * @description Tests if the login page fills the viewport height.
    */
   it('fills viewport height', async () => {
     const wrapper = mount(AdminLoginPage);
 
     // Check computed style of the root element
-    const loginPage = wrapper.find('.login-page');
+    const loginPage = wrapper.find('.login-form');
     expect(getComputedStyle(loginPage.element).height).toBe('100vh'); // Verify height matches viewport
   });
 });

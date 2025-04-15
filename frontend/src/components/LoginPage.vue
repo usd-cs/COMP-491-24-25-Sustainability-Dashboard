@@ -1,52 +1,35 @@
 <template>
-  <!-- The main container for the login page -->
-  <div class="login-page">
-    <!-- Header section with the application title -->
-    <header class="header">
-      <div class="header-content">
-        <!-- Clickable logo -->
-        <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
-        <img
-          src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png"
-          alt="University of San Diego Logo"
-          class="logo"
-        />
-        </a>
-        <h1 class="title">USD Office of Sustainability</h1>
-      </div>
-    </header>
-
-    <!-- Main content with the login form -->
-    <main>
-      <form class="login-form" @submit.prevent="handleSubmit">
-        <h2 class="form-title">Login to Upload Data</h2>
-        <!-- Email input field -->
-        <div class="form-group">
-          <label for="email" class="form-label">Email</label>
-          <input
-            type="email"
-            id="email"
-            v-model="email"
-            class="form-input"
-            required
-          />
-        </div>
-        <!-- Password input field -->
-        <div class="form-group">
-          <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            class="form-input"
-            required
-          />
-        </div>
-        <!-- Submit button -->
-        <button type="submit" class="submit-button">Login</button>
-      </form>
-    </main>
-  </div>
+  <AppLayout>
+      <main>
+        <form class="login-form" @submit.prevent="handleSubmit">
+          <h2 class="form-title">administrative login</h2>
+          <!-- Email input field -->
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              v-model="email"
+              class="form-input"
+              required
+            />
+          </div>
+          <!-- Password input field -->
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              id="password"
+              v-model="password"
+              class="form-input"
+              required
+            />
+          </div>
+          <!-- Submit button -->
+          <button type="submit" class="submit-button">Login</button>
+        </form>
+      </main>
+  </AppLayout>
 </template>
 
 <script setup>
@@ -58,6 +41,7 @@
 import { ref } from 'vue'; // Reactive variables for form inputs
 import axios from 'axios'; // HTTP client for making API calls
 import { useRouter } from 'vue-router'; // Vue Router for navigation
+import AppLayout from './AppLayout.vue';
 
 // Reactive variables for email and password inputs
 const email = ref('');
@@ -111,60 +95,6 @@ const handleSubmit = async () => {
   box-sizing: border-box;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%; /* Ensure it adapts to screen width */
-  height: 100%; /* Ensure it adapts to screen height */
-  font-family: 'Inter', sans-serif;
-  background-color: #ffffff;
-  overflow: hidden; /* Prevent scrolling */
-}
-
-/* Main container for the login page */
-.login-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100vw; /* Adapt to viewport width */
-  height: 100vh; /* Fill the entire viewport height */
-  background-color: #ffffff;
-  overflow-y: hidden; /* Prevent vertical scrolling */
-}
-
-/* Header section */
-.header {
-  background: #003b70; /* Matches the dark blue in the official USD logo */
-  display: flex;
-  align-items: left;
-  justify-content: space-between;
-  width: 100%;
-  padding: 20px;
-}
-
-.header-content {
-  display: flex;
-  align-items: left;
-  justify-content: space-between;
-  flex-direction: column;
-}
-
-.logo {
-  height: 47px;
-  width: 266px; /* Adjust size */
-  margin-bottom: 30px;
-}
-
-.title {
-  font-size: 30px;
-  font-weight: 550;
-  color: #ffffff;
-  text-align: center;
-  line-height: 1.5;
-}
-
 /* Main content section */
 main {
   display: flex;
@@ -176,19 +106,21 @@ main {
 
 /* Login form styles */
 .login-form {
-  background: #d9d9d9;
+  background: #f3f3f3;
   width: 360px; 
   padding: 35px; 
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
+  margin: 20px;
 }
 
 .form-title {
-  font-size: 20px; 
+  font-size: 25px; 
   font-weight: 700;
   margin-bottom: 25px; 
-  color: black;
+  color: #003b70;
+  font-variant: small-caps;
 }
 
 .form-group {

@@ -7,6 +7,8 @@ import FileImport from "@/components/FileImport.vue";
 import Sources from "@/components/Sources.vue";
 import SourcesGraph from "@/components/SourcesGraph.vue";
 import LineChart from "@/components/LineChart.vue";
+import Initiatives from "@/components/Initiatives.vue";
+import Contact from "@/components/Contact.vue"; // Contact page component
 import BarChartExpand from "@/components/BarChartExpand.vue";
 import PieChartExpand from "@/components/PieChartExpand.vue";
 import BubbleChartExpand from "@/components/BubbleChartExpand.vue";
@@ -41,8 +43,8 @@ const routes = [
   { path: "/pie-chart", component: PieChartExpand },
   { path: "/sources-graph", component: SourcesGraph },
   { path: "/line-chart", component: LineChart },
-  { path: "/initiatives", component: () => import("@/components/InitiativesPage.vue") },
-  { path: "/contact", component: () => import("@/components/ContactPage.vue") }
+  { path: "/initiatives", component: Initiatives},
+  { path: "/contact", component: Contact}
 ];
 
 /**

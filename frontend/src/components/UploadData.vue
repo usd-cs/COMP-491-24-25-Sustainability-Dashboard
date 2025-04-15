@@ -1,77 +1,60 @@
 <template>
-  <div class="upload-portal">
-    <header class="header">
-      <div class="header-content">
-        <!-- Clickable logo -->
-        <a href="https://www.sandiego.edu/" target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://www.sandiego.edu/brand/images/logos/master-secondary/usd-logo-secondary-2c-reversed.png"
-            alt="University of San Diego Logo"
-            class="logo"
-          />
-        </a>
-        <h1 class="title">USD Office of Sustainability</h1>
-      </div>
-      <!-- Logout button -->
-      <div class="user-section">
-        <button class="logout-btn" @click="handleLogout" tabindex="0">
-          Logout →
-        </button>
-      </div>
-    </header>
+  <AppLayout>
+    <div class="upload-portal">
+      <main class="upload-section">
+        <h2 class="upload-title">Import Files</h2>
+        <div class="separator"></div>
 
-    <main class="upload-section">
-      <h2 class="upload-title">Import Files</h2>
-      <div class="separator"></div>
-
-      <form @submit.prevent="handleUpload" class="upload-form">
-        <div
-          class="dropzone"
-          @dragover.prevent
-          @drop.prevent="handleFileDrop"
-          tabindex="0"
-          role="button"
-          aria-label="Drop zone for file upload"
-        >
-          <div class="dropzone-content">
-            <p class="dropzone-text">
-              Drag and drop files here<br />or
-            </p>
-            <label for="fileInput" class="select-files-btn" tabindex="0">
-              Select files
-            </label>
-            <input
-              type="file"
-              id="fileInput"
-              class="visually-hidden"
-              :accept="acceptedFileType"
-              @change="handleFileSelect"
-            />
-            <p class="file-format-info">
-              Importing requires a {{ selectedSource === 'Athena' ? 'CSV' : 'Microsoft Excel (.xlsx)' }} file.
-            </p>
+        <form @submit.prevent="handleUpload" class="upload-form">
+          <div
+            class="dropzone"
+            @dragover.prevent
+            @drop.prevent="handleFileDrop"
+            tabindex="0"
+            role="button"
+            aria-label="Drop zone for file upload"
+          >
+            <div class="dropzone-content">
+              <p class="dropzone-text">
+                Drag and drop files here<br />or
+              </p>
+              <label for="fileInput" class="select-files-btn" tabindex="0">
+                Select files
+              </label>
+              <input
+                type="file"
+                id="fileInput"
+                class="visually-hidden"
+                :accept="acceptedFileType"
+                @change="handleFileSelect"
+              />
+              <p class="file-format-info">
+                Importing requires a {{ selectedSource === 'Athena' ? 'CSV' : 'Microsoft Excel (.xlsx)' }} file.
+              </p>
+            </div>
           </div>
-        </div>
-        
-        <!-- Display selected file name -->
-        <div v-if="uploadedFileName" class="uploaded-file">
-          <p>Selected File: <strong>{{ uploadedFileName }}</strong></p>
-        </div>
+          
+          <!-- Display selected file name -->
+          <div v-if="uploadedFileName" class="uploaded-file">
+            <p>Selected File: <strong>{{ uploadedFileName }}</strong></p>
+          </div>
 
-        <div class="action-buttons">
-          <button class="cancel-btn" @click="handleCancel" tabindex="0">Cancel</button>
-          <button class="cancel-btn" @click="handleBack">Back</button>
-          <button type="submit" class="import-btn">Import</button>
-        </div>
-      </form>
-    </main>
-  </div>
+          <div class="action-buttons">
+            <button class="cancel-btn" @click="handleCancel" tabindex="0">Cancel</button>
+            <button class="cancel-btn" @click="handleBack">Back</button>
+            <button type="submit" class="import-btn">Import</button>
+          </div>
+        </form>
+      </main>
+    </div>
+  </AppLayout>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import AppLayout from './AppLayout.vue';
 
 const router = useRouter();
 const selectedFile = ref(null);
@@ -165,49 +148,25 @@ const handleBack = () => {
   router.push('/select');
 };
 
-const handleLogout = () => {
-  router.push('/');
-};
 </script>
 
 <style scoped>
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: Inter, sans-serif;
-  background-color: #ffffff;
-}
 
 .upload-portal {
-  height: 100%;
-  width: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-.header {
-  flex-shrink: 0;
-  background-color: #003b70;
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px 40px;
-  box-sizing: border-box;
-  width: 100%;
+  justify-content: flex-start;
 }
 
 .upload-section {
-  flex-grow: 1;
-  background-color: #f4f4f4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-color: #f4f4f4; /* Light gray background for the upload section */
+  width: 100%;
+  max-width: 700px;
+  margin: 25px;
   padding: 30px 20px;
-  overflow-y: auto;
-  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .upload-title {
@@ -264,8 +223,7 @@ body {
 
 .select-files-btn,
 .cancel-btn,
-.import-btn,
-.logout-btn {
+.import-btn {
   font: 400 16px Inter, sans-serif;
   padding: 10px 20px;
   border-radius: 4px;
@@ -301,36 +259,6 @@ body {
 
 .import-btn:hover {
   background-color: #0056a4;
-}
-
-.logout-btn {
-  background-color: transparent;
-  color: #ffffff;
-  border: 1px solid #ffffff;
-}
-
-.logout-btn:hover {
-  background-color: #ffffff;
-  color: #003b70;
-}
-
-.logo {
-  height: 60px;
-  margin-bottom: 10px;
-}
-
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.5;
-  text-align: left;
-}
-
-.header-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
 }
 
 .user-section {

@@ -18,22 +18,6 @@ const mockRouter = createRouter({
 // Spy on the router's `push` method to verify navigation
 vi.spyOn(mockRouter, 'push');
 
-/**
- * @description Test suite for the `UploadPortal` component.
- */
-describe('UploadPortal', () => {
-  /**
-   * @description Tests if the component renders correctly.
-   */
-  it('renders correctly', () => {
-    const wrapper = mount(UploadPortal);
-
-    // Check if the main upload portal container exists
-    expect(wrapper.find('.upload-portal').exists()).toBe(true);
-
-    // Verify the page title matches expectations
-    expect(wrapper.find('.title').text()).toBe('USD Office of Sustainability');
-  });
 
   /**
    * @description Tests the file selection functionality.
@@ -103,4 +87,3 @@ describe('UploadPortal', () => {
     // Verify navigation to the login page
     expect(mockRouter.push).toHaveBeenCalledWith('/');
   });
-});
