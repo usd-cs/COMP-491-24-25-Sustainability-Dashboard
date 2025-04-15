@@ -1,19 +1,14 @@
 <template>
   <footer class="footer-base">
       <div class="footer-container">
-        <div class="footer-strip" @click="toggleFooter">
-          <h3>USD Sustainability</h3>
-          <i :class="['material-icons', 'arrow-icon', { rotated: isExpanded }]">expand_less</i>
+        <div class="footer-strip">
         </div>
-        <transition name="slide-fade">
-          <div v-show="isExpanded" class="footer-content">
-            <!-- Contact Info -->
+          <div class="footer-content">
             <section class="footer-contactInfo">
-              <div class="contactInfo__title">
-                <h3>USD Office of Sustainability</h3>
-              </div>
+              
               <div class="contactInfo__Addr">
                 <span>
+                  <h3 style="font-weight: 600;">USD Office of Sustainability</h3>
                   <i class="material-icons icon-style" style="vertical-align: middle; margin-right: 0.1rem;">location_on</i>
                   Facilities Management Offices 134A<br>5998 Alcalá Park<br>San Diego, CA 92110<br>
                   <a href="https://www.instagram.com/usdsustain/" target="_blank">
@@ -24,9 +19,19 @@
                   </a>
                 </span><br>
               </div>
+              <div class="footer-image">
+                <img src="https://www.sandiego.edu/brand/images/logos/spirit-mark/usd-logo-spirit-primary-reversed.png" alt="USD Logo" />
+              </div>
+              <div class="footer-adv">
+                <h3 style="font-weight: 520; color: #75bee9; text-transform: uppercase;">helpful links</h3>
+                <a type="link" href="https://www.sandiego.edu/sustainability/">Sustainability Events</a>
+                <a type="link" href="https://www.sandiego.edu/sustainability/energy-projects-programs.php">Energy Projects</a>
+                <a type="link" href="https://www.sandiego.edu/epic/">Energy Policy</a>
+                <a type="link" href="https://www.sandiego.edu/epic/students/">Courses</a>
+                <a type="link" href="https://www.sandiego.edu/epic/our-work/">Impact</a>
+            </div>
             </section>
           </div>
-        </transition>
         <div class="footer-gradient-box">
             <div class="footer-copy">
               <p>&copy; 2025 University of San Diego. All rights reserved.</p>
@@ -62,72 +67,70 @@ const toggleFooter = () => {
 
 .footer-strip {
   background-color: 	#011122;
-  color: white;
+  height: 1.2rem;
   width: 100%;
-  padding: 0.25rem 2rem 0.1rem 4rem; /* Add padding for spacing */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
   border-top: #296590 1.1px solid;
 }
-.footer-strip h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: bold;
-  flex-grow: 1;
-}
 
-.arrow-icon {
-  margin-right: 1rem;
-  transition: transform 0.3s ease;
-}
-
-.arrow-icon.rotated {
-  transform: rotate(180deg);
-}
-
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: all 0.3s ease;
-}
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-}
 .footer-container {
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Stack children vertically */
   justify-content: space-between;
-  background-color: #002147;
+  background-color: #003b70;
   width: 100%;
-  font-family: sans-serif;
   box-sizing: border-box;
 }
 .footer-content {
-  display: flex; /* Enable flexbox */
-  flex-direction: column; /* Stack children vertically */
-  justify-content: flex-start; /* Align items at the top */
   width: 100%;
   margin: 0 auto;
-  font-family: sans-serif;
-  padding-left: 5rem; /* Add padding for spacing */
-  padding-top: 1rem;
+  padding: 1rem 5rem;
   box-sizing: border-box;
 }
 
 .footer-contactInfo {
-  margin-bottom: 1rem; /* Add spacing below contact info */
+  display: flex; /* Enable flexbox */
+  flex-direction: row; /* Stack children vertically */
+  justify-content: center; /* Push items to the edges */
+  align-items: center;/* Align items at the top */
   color: #ffffff;
-  font-size: 0.75rem;
+  width: 100%;
+  gap: 10rem;
 }
 
-.footer-contactInfo h3 {
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: 0.25rem;
+.contactInfo__Addr {
+  text-align: left; /* Align text to the left */
+  flex-shrink: 0;
+  font-size: .77rem; /* Increase font size */
+}
+
+.footer-image {
+  display: flex;
+  justify-content: center; /* Align image to the far right */
+  align-items: center; /* Center vertically */
+  flex-shrink: 0;
+}
+
+.footer-adv {
+  display: flex; /* Enable flexbox */
+  flex-direction: column; /* Stack children vertically */
+  justify-content: center; /* Push items to the edges */
+  align-items: flex-start;/* Align items at the top */
+}
+
+.footer-adv a {
+  margin-left: 1rem; /* Add spacing between links */
+  color: #ffffff;
+  font-size: .6rem;
+  font-family: myriad-pro, Arial, sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  line-height: 1;
+  margin-bottom: .28rem;
+}
+
+.footer-image img {
+  max-width: 150px; /* Limit the image width */
+  height: auto; /* Maintain aspect ratio */
 }
 
 .icon-style {
