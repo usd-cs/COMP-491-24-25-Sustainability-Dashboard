@@ -102,7 +102,6 @@ main {
   align-items: center;
   flex-grow: 1;
   width: 100%;
-  margin-top: 71px;
 }
 
 /* Login form styles */
@@ -113,7 +112,7 @@ main {
   border-radius: 8px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
-  margin-top: 6%;
+  margin: 20px;
 }
 
 .form-title {
