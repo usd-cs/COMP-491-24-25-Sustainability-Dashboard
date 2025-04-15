@@ -1,6 +1,11 @@
 <template>
   <AppLayout>
     <main class="main-content">
+      <!-- Timestamp section -->
+      <div class="upload-info">
+        Last uploaded: {{ timestamp }}
+      </div>
+      <!-- Main visuals -->
       <div class="visual-container">
         <!-- Upper left square -->
         <div class="visual-section" role="button" @click="navigateToBarChart">
@@ -28,12 +33,7 @@
 
 
 <script setup>
-/**
- * @file MainPage.vue
- * @description This Vue component represents the main dashboard page. It includes a header, navigation sidebar, and placeholders for dashboard visuals and data upload functionality.
- */
-
-import { useRouter} from 'vue-router'; // Import Vue Router for navigation
+import { useRouter} from 'vue-router';
 import AppLayout from './AppLayout.vue';
 import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
@@ -41,47 +41,31 @@ import PieChart from './PieChart.vue';
 import LineChart from './LineChart.vue';
 
 const router = useRouter();
+const route = useRoute();
 
-/**
- * Navigate to the Bar Chart page.
- * Triggered when the "Bar Chart" navigation item is clicked.
- */
-const navigateToBarChart = () => {
-  router.push('/bar-chart'); 
-};
+const isActive = (path) => route.path === path;
 
-/**
- * Navigate to the Bubble Chart page.
- * Triggered when the "Bubble Chart" navigation item is clicked.
- */
-const navigateToBubbleChart = () => {
-  router.push('/bubble-chart'); // Replace '/bubble-chart' with your actual route for the Bubble Chart page
-};
+const navigateToMain = () => router.push('/main');
+const navigateToSources = () => router.push('/sources');
+const navigateToInitiatives = () => router.push('/initiatives');
+const navigateToContact = () => router.push('/contact');
+const navigateToSelect = () => router.push('/select');
+const handleLogout = () => router.push('/');
+const navigateToBarChart = () => router.push('/bar-chart');
+const navigateToBubbleChart = () => router.push('/bubble-chart');
+const navigateToPieChart = () => router.push('/pie-chart');
+const navigateToLineChart = () => router.push('/line-chart');
 
-/**
- * Navigate to the Pie Chart page.
- * Triggered when the "Pie Chart" navigation item is clicked.
- */
-const navigateToPieChart = () => {
-  router.push('/pie-chart'); // Replace '/bubble-chart' with your actual route for the Bubble Chart page
-};
+defineProps({
+  timestamp: {
+    type: String, 
+    default: ''
+  }
+})
 
-/**
- * Navigate to the Line Chart page.
- * Triggered when the "Line Chart" navigation item is clicked.
- */
-const navigateToLineChart = () => {
-  router.push('/line-chart'); // Replace '/line-chart' with your actual route for the Line Chart page
-};
 </script>
 
 <style scoped>
-/**
- * Styles for the main dashboard page.
- * Scoped styles ensure these styles apply only to this component.
- */
-
-/* Reset styles */
 * {
   margin: 0;
   padding: 0;
@@ -89,57 +73,54 @@ const navigateToLineChart = () => {
 }
 
 .main-content {
-    width: 100%;
-    max-width: 1400px;  
-    margin: 0 auto;      /* centers it */
-    padding: 20px;       
-    box-sizing: border-box;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* Visual container styles */
 .visual-container {
-    background: transparent;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 18px;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    box-sizing: border-box;
-    height: calc(100vh - 71px - 40px);
-    border-radius: 8px;
+  background: transparent;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 18px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  height: calc(100vh - 71px - 40px);
+  border-radius: 8px;
 }
 
 .visual-section {
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    overflow: hidden; 
-    position: relative;
-    border-radius: 8px;
-    padding: 10px; /* give breathing space to the chart */
-    box-sizing: border-box;
-    border: 2px solid rgba(0,0,0,0.05);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 2px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 .visual-section > * {
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    border-radius: 8px; 
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 
-/* Bottom visual container styles */
 .bottom-visual-container {
     background: transparent;
     display: flex;
@@ -155,25 +136,24 @@ const navigateToLineChart = () => {
 }
 
 .wide-visual-section {
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 400px;
-    overflow: hidden; 
-    position: relative;
-    border-radius: 8px;
-    padding: 10px; /* give breathing space to the chart */
-    box-sizing: border-box;
-    border: 2px solid rgba(0,0,0,0.05);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 2px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 .wide-visual-section > * {
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    border-radius: 8px; 
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 </style>

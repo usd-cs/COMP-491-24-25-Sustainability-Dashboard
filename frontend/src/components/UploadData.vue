@@ -151,22 +151,13 @@ const handleBack = () => {
 </script>
 
 <style scoped>
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+html,
+body {
+  height: 100%;
+  margin: 0;
   padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-}
-
-.uploaded-file {
-  margin-top: 20px;
-  font: 400 16px Inter, sans-serif;
-  color: #003b70;
-  text-align: center;
+  font-family: Inter, sans-serif;
+  background-color: #ffffff;
 }
 
 .upload-portal {
@@ -198,6 +189,7 @@ const handleBack = () => {
   background-color: #003b70;
   height: 2px;
   width: 100%;
+  max-width: 700px;
   margin-bottom: 20px;
 }
 
@@ -205,12 +197,13 @@ const handleBack = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 700px;
 }
 
 .dropzone {
   background-color: #ffffff;
   width: 100%;
-  max-width: 500px;
   padding: 50px 20px;
   border: 2px dashed #003b70;
   border-radius: 8px;
@@ -218,36 +211,15 @@ const handleBack = () => {
   text-align: center;
 }
 
-.dropzone-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.dropzone-text {
-  font: 400 16px Inter, sans-serif;
-  color: #003b70;
-  margin-bottom: 20px;
-}
-
-.select-files-btn {
-  background-color: #003b70;
-  color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font: 400 16px Inter, sans-serif;
-  text-align: center;
-}
-
-.select-files-btn:hover {
-  background-color: #0056a4;
-}
-
+.dropzone-text, 
 .file-format-info {
-  font: 400 14px Inter, sans-serif;
-  color: #333333;
-  margin-top: 15px;
+  color: #003b70;
+  padding: 20px;
+}
+
+.uploaded-file {
+  margin-top: 20px;
+  color: #003b70;
   text-align: center;
 }
 
@@ -255,19 +227,33 @@ const handleBack = () => {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 500px;
   margin-top: 30px;
+}
+
+.select-files-btn,
+.cancel-btn,
+.import-btn,
+.logout-btn {
+  font: 400 16px Inter, sans-serif;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.select-files-btn {
+  background-color: #003b70;
+  color: #ffffff;
+}
+
+.select-files-btn:hover {
+  background-color: #0056a4;
 }
 
 .cancel-btn {
   background-color: #ffffff;
   color: #003b70;
-  font: 400 16px Inter, sans-serif;
-  padding: 10px 20px;
   border: 2px solid #003b70;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .cancel-btn:hover {
@@ -278,10 +264,6 @@ const handleBack = () => {
 .import-btn {
   background-color: #003b70;
   color: #ffffff;
-  font: 400 16px Inter, sans-serif;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
   border: none;
 }
 
@@ -289,17 +271,61 @@ const handleBack = () => {
   background-color: #0056a4;
 }
 
+.logout-btn {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+}
+
+.logout-btn:hover {
+  background-color: #ffffff;
+  color: #003b70;
+}
+
+.logo {
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 @media (max-width: 991px) {
   .header {
     padding: 10px 20px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .upload-section {
     padding: 20px;
-  }
-
-  .dropzone {
-    padding: 40px 15px;
   }
 
   .action-buttons {

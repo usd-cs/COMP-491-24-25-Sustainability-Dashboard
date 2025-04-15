@@ -3,15 +3,15 @@ import LoginPage from "../components/LoginPage.vue"; // Login page component
 import MainPage from "../components/MainPage.vue"; // Main page (dashboard) component
 import UploadData from "../components/UploadData.vue"; // Upload data page component
 import UploadSuccess from "../components/UploadSuccess.vue"; // Upload success confirmation component
-import BarChart from "@/components/BarChart.vue";
-import BubbleChart from "@/components/BubbleChart.vue";
-import PieChart from "@/components/PieChart.vue";
 import FileImport from "@/components/FileImport.vue";
 import Sources from "@/components/Sources.vue";
 import SourcesGraph from "@/components/SourcesGraph.vue";
 import LineChart from "@/components/LineChart.vue";
 import Initiatives from "@/components/Initiatives.vue";
 import Contact from "@/components/Contact.vue"; // Contact page component
+import BarChartExpand from "@/components/BarChartExpand.vue";
+import PieChartExpand from "@/components/PieChartExpand.vue";
+import BubbleChartExpand from "@/components/BubbleChartExpand.vue";
 
 /**
  * @file router.js
@@ -38,9 +38,9 @@ const routes = [
   { path: "/select", component: FileImport }, // Route for the file source select
   { path: "/upload", component: UploadData }, // Route for the upload data page
   { path: "/upload-success", component: UploadSuccess }, // Route for the upload success page
-  { path: "/bar-chart", component: BarChart }, // Route for the bar chart page
-  { path: "/bubble-chart", component: BubbleChart, props: { fullPage: true } },
-  { path: "/pie-chart", component: PieChart },
+  { path: "/bar-chart", component: BarChartExpand }, // Route for the bar chart page
+  { path: "/bubble-chart", component: BubbleChartExpand, props: { fullPage: true } },
+  { path: "/pie-chart", component: PieChartExpand },
   { path: "/sources-graph", component: SourcesGraph },
   { path: "/line-chart", component: LineChart },
   { path: "/initiatives", component: Initiatives},

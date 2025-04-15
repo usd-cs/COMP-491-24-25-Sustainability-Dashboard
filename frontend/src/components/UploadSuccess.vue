@@ -9,6 +9,7 @@
             <h3 class="success-heading">SUCCESS</h3>
             <p class="success-detail">Imported file successfully</p>
             <p class="success-prompt">Would you like to import more files?</p>
+            <p v-if="timestamp" class="timestamp">Imported at: {{ timestamp }}</p>
             <div class="action-buttons">
               <button class="cancel-btn" @click="navigateToMainPage" tabindex="0">Cancel</button>
               <button class="import-btn" @click="navigateToImportPage" tabindex="0">Import</button>
@@ -24,6 +25,15 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import AppLayout from './AppLayout.vue';
+
+import { ref } from 'vue';
+const timestamp = ref(null);
+
+// Function to handle file import and set timestamp
+const handleFileImport = () => {
+  const now = new Date();
+  timestamp.value = now.toLocaleString(); // Set the timestamp to the current date and time
+};
 
 /**
  * @file UploadSuccess.vue
@@ -44,6 +54,9 @@ const navigateToMainPage = () => {
 const navigateToImportPage = () => {
   router.push('/upload');
 };
+
+// Simulate file import action (You can call handleFileImport when actual import occurs)
+handleFileImport();
 </script>
 
 <style scoped>
@@ -55,10 +68,9 @@ const navigateToImportPage = () => {
 }
 
 .upload-success-section {
-  background-color: #f4f4f4; /* Light gray background */
-  width: 100%;
+  background-color: #f4f4f4;
   max-width: 700px;
-  margin: 40px auto 0;
+  margin: 60px auto;
   padding: 30px 20px;
   border-radius: 8px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
@@ -74,26 +86,13 @@ const navigateToImportPage = () => {
 .separator {
   background-color: #003b70;
   height: 2px;
-  width: 100%;
   margin-bottom: 20px;
 }
 
 .success-message-container {
   background: #C4E8B7;
-  margin: 35px auto 0;
-  width: 100%;
-  max-width: 500px;
   padding: 50px 20px;
   border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.success-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   text-align: center;
 }
 
@@ -116,20 +115,31 @@ const navigateToImportPage = () => {
   margin-bottom: 20px;
 }
 
+.timestamp {
+  color: #07700C;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
 .action-buttons {
   display: flex;
+  justify-content: center;
   gap: 20px;
+}
+
+.cancel-btn,
+.import-btn {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .cancel-btn {
   background: #ffffff;
   color: #003b70;
-  font-size: 16px;
-  padding: 10px 20px;
   border: 2px solid #003b70;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .cancel-btn:hover {
@@ -140,10 +150,6 @@ const navigateToImportPage = () => {
 .import-btn {
   background: #003b70;
   color: #ffffff;
-  font-size: 16px;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
   border: none;
 }
 
