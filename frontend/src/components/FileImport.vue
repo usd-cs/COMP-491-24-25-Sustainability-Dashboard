@@ -66,11 +66,6 @@ const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill
 
 <style scoped>
 
-:global(html, body) {
-  overflow: hidden;
-  height: 100%;
-}
-
 .file-import {
   display: flex;
   flex-direction: column;
