@@ -41,16 +41,7 @@ import PieChart from './PieChart.vue';
 import LineChart from './LineChart.vue';
 
 const router = useRouter();
-const route = useRoute();
 
-const isActive = (path) => route.path === path;
-
-const navigateToMain = () => router.push('/main');
-const navigateToSources = () => router.push('/sources');
-const navigateToInitiatives = () => router.push('/initiatives');
-const navigateToContact = () => router.push('/contact');
-const navigateToSelect = () => router.push('/select');
-const handleLogout = () => router.push('/');
 const navigateToBarChart = () => router.push('/bar-chart');
 const navigateToBubbleChart = () => router.push('/bubble-chart');
 const navigateToPieChart = () => router.push('/pie-chart');
@@ -62,7 +53,6 @@ defineProps({
     default: ''
   }
 })
-
 </script>
 
 <style scoped>
