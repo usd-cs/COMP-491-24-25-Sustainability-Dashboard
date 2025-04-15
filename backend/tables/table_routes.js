@@ -5,7 +5,8 @@ import {
   getAthenaDataForGraph,
   getPieChartData, 
   uploadPieChartCSV,
-  getTreeData 
+  getTreeData,
+  getAllData
 } from './table_controller.js';
 import multer from 'multer';
 
@@ -16,6 +17,9 @@ const upload = multer({ dest: 'uploads/' });
 router.get('/test', (req, res) => {
   res.send('Test route is working!');
 });
+
+// GET route for timestamp for Bloom 
+router.get('/bloomdate', getAllData);
 
 // GET route for energy summary
 router.get('/getenergy', getEnergySummary);

@@ -12,17 +12,18 @@
                 <label class="source-option" @click="selectSource('Athena')">
                   <span class="source-option__label">Athena</span>
                   <span class="source-option__radio" v-html="selectedSource === 'Athena' ? selectedRadioSvg : unselectedRadioSvg"></span>
+                  <span class="source-option__stamp">Last uploaded: {{ athenaTimestamp || 'N/A' }}</span>
                 </label>
                 <label class="source-option" @click="selectSource('Bloom')">
                   <span class="source-option__label">Bloom</span>
                   <span class="source-option__radio" v-html="selectedSource === 'Bloom' ? selectedRadioSvg : unselectedRadioSvg"></span>
+                  <span class="source-option__stamp">Last uploaded: {{ bloomTimestamp || 'N/A' }}</span>
                 </label>
               </div>
             </div>
           </div>
         </section>
-        
-        <!-- Wrapping both buttons in a flex container -->
+
         <div class="file-import__buttons">
           <button class="file-import__cancel" @click="navigateToMain">Cancel</button>
           <button class="source-selector__submit" @click="navigateToUpload">Submit</button>
@@ -37,22 +38,15 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AppLayout from "./AppLayout.vue";
 
+// router and state
 const router = useRouter();
 const selectedSource = ref(localStorage.getItem("selectedSource") || "Athena");
 
-const selectSource = (source) => {
-  selectedSource.value = source;
-  localStorage.setItem("selectedSource", source);
-};
+// timestamps
+const athenaTimestamp = ref(localStorage.getItem("AthenaTimestamp"));
+const bloomTimestamp = ref(localStorage.getItem("BloomTimestamp"));
 
-const navigateToMain = () => {
-  router.push("/main");
-};
-
-const navigateToUpload = () => {
-  router.push("/upload");
-};
-
+// radio SVGs
 const selectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_80_109)">
 <circle cx="9.5" cy="5.5" r="5.5" fill="#003B70" />
@@ -62,6 +56,50 @@ const selectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill="
 const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="9.5" cy="9.5" r="5.5" stroke="#003B70" stroke-width="2" fill="white" />
 </svg>`;
+
+// select source logic
+const selectSource = async (source) => {
+  if (selectedSource.value === source) return;
+
+  selectedSource.value = source;
+  localStorage.setItem("selectedSource", source);
+
+  let url = "";
+  if (source === "Athena") {
+    url = "http://localhost:3000/api/tables/hourlyenergybybuilding";
+  } else if (source === "Bloom") {
+    url = "http://localhost:3000/api/tables/bloomdate";
+  }
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    // Assuming 'created_at' exists in each row and is in ISO or readable format
+    const lastRow = data[data.length - 1];
+    const timestamp = lastRow?.created_at || "Unknown";
+
+    localStorage.setItem(`${source}Timestamp`, timestamp);
+
+    if (source === "Athena") {
+      athenaTimestamp.value = timestamp;
+    } else if (source === "Bloom") {
+      bloomTimestamp.value = timestamp;
+    }
+  } catch (error) {
+    console.error("Failed to fetch timestamp:", error);
+  }
+};
+
+
+// navigation
+const navigateToMain = () => {
+  router.push("/main");
+};
+
+const navigateToUpload = () => {
+  router.push("/upload");
+};
 </script>
 
 <style scoped>
@@ -157,6 +195,10 @@ const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill
   display: inline-block;  /* Ensure it stays in line */
   vertical-align: middle; /* Align it properly */
   padding: 2px;
+}
+
+.source-option__stamp {
+  color:#003b70;
 }
 
 /* Flex container for buttons */
