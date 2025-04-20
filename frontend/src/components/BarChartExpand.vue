@@ -357,19 +357,21 @@ html, body, .chart-with-details {
 }
 
 .close-btn {
-  position: fixed;
+  position: absolute;
   top: 10px;
   right: 10px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  line-height: 36px;
+  text-align: center;
+  border-radius: 50%;
   background-color: #FF6B6B;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 8px 16px;
-  font-size: 18px;
-  border-radius: 8px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 1000;       
+  pointer-events: auto; 
 }
 
 .close-btn:hover {

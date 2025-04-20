@@ -189,6 +189,9 @@ export default {
   border-radius: 50%;
   cursor: pointer;
 }
+.close-button:hover {
+  background-color: #FF2C2C;
+}
 
 /* Accordion Styles */
 .accordion {

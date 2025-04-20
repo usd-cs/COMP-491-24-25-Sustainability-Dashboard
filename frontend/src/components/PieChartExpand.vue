@@ -170,13 +170,18 @@ html, body, .chart-with-details {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #FF6B6B;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  line-height: 36px;
+  text-align: center;
   border-radius: 50%;
+  background-color: #FF6B6B;
+  color: #fff;
+  border: none;
   cursor: pointer;
+  z-index: 1000;       
+  pointer-events: auto; 
 }
 .close-btn:hover {
   background-color: #FF2C2C;
