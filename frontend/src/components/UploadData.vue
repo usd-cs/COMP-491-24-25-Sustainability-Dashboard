@@ -105,6 +105,7 @@ const handleUpload = async (_event) => {
 
     if (response.status === 200) {
       uploadedFileName.value = selectedFile.value.name;
+      
       router.push('/upload-success');
     }
   } catch (error) {

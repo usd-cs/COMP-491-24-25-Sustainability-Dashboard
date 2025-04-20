@@ -9,7 +9,6 @@
             <h3 class="success-heading">SUCCESS</h3>
             <p class="success-detail">Imported file successfully</p>
             <p class="success-prompt">Would you like to import more files?</p>
-            <p v-if="timestamp" class="timestamp">Imported at: {{ timestamp }}</p>
             <div class="action-buttons">
               <button class="cancel-btn" @click="navigateToMainPage" tabindex="0">Cancel</button>
               <button class="import-btn" @click="navigateToImportPage" tabindex="0">Import</button>
@@ -27,12 +26,10 @@ import { useRouter } from 'vue-router';
 import AppLayout from './AppLayout.vue';
 
 import { ref } from 'vue';
-const timestamp = ref(null);
 
-// Function to handle file import and set timestamp
+// Function to handle file import
 const handleFileImport = () => {
   const now = new Date();
-  timestamp.value = now.toLocaleString(); // Set the timestamp to the current date and time
 };
 
 /**
@@ -56,7 +53,6 @@ const navigateToImportPage = () => {
 };
 
 // Simulate file import action (You can call handleFileImport when actual import occurs)
-handleFileImport();
 </script>
 
 <style scoped>
@@ -68,8 +64,8 @@ handleFileImport();
 
 .upload-success-section {
   background-color: #f4f4f4;
-  max-width: 700px;
   margin: 60px auto;
+  width: 900px;
   padding: 30px 20px;
   border-radius: 8px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
@@ -114,11 +110,6 @@ handleFileImport();
   margin-bottom: 20px;
 }
 
-.timestamp {
-  color: #07700C;
-  font-size: 16px;
-  margin-top: 10px;
-}
 
 .action-buttons {
   display: flex;
