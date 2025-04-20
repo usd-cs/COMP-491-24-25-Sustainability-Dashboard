@@ -13,7 +13,7 @@ export default {
   data() {
     return {
       chartData: [],
-      title: 'Emissions Production Distribution'
+      title: 'Solar Energy Contributions by Site'
     };
   },
   mounted() {
@@ -26,79 +26,63 @@ export default {
   methods: {
     async fetchChartData() {
       try {
-        const response = await axios.get('http://localhost:3000/api/tables/getenergy');
-        const data = response.data;
-        // Transform data for pie chart format
-        this.chartData = [
-          {
-            name: 'CO₂ Production',
-            value: parseFloat(data.co2_production_lbs),
-            itemStyle: { color: '#FF6B6B' }
-          },
-          {
-            name: 'Electricity Production',
-            value: parseFloat(data.electricity_out_kwh),
-            itemStyle: { color: '#4ECDC4' }
-          },
-          {
-            name: 'Gas Flow',
-            value: parseFloat(data.gas_flow_in_therms),
-            itemStyle: { color: '#45B7D1' }
-          }
-        ];
-
+        const response = await axios.get('http://localhost:3000/api/tables/energy/solar/contributions');
+        this.chartData = response.data.map(item => ({
+          name: item.site,
+          value: parseFloat(item.total_kwh.toFixed(2))
+        }));
         this.renderChart();
       } catch (error) {
-        console.error('Error fetching chart data:', error);
+        console.error('Error fetching solar contributions:', error);
       }
     },
     renderChart() {
+      const names = this.chartData.map(i => i.name);
+      const mid = Math.ceil(names.length / 2);
+      const leftNames = names.slice(0, mid);
+      const rightNames = names.slice(mid);
+
       this.chartInstance = echarts.init(this.$refs.chart);
       const options = {
+        // Distinct palette without any brown tones
+        color: [
+          '#5470C6', '#91CC75', '#FAC858', '#EE6666',
+          '#73C0DE', '#3BA272', '#FC8452', '#9A60B4',
+          '#5A9BD4', '#50C878',
+          '#E377C2', '#7F7F7F', '#BCBD22', '#17BECF'
+        ],
         title: {
           text: this.title,
           left: 'center',
-          top: '5%'
+          top: '2%'
         },
         tooltip: {
           trigger: 'item',
-          formatter: (params) => {
-            const unit = params.name.includes('Electricity') ? 'kWh' : 'lbs';
-            return `${params.name}: ${params.value} ${unit} (${params.percent}%)`;
+          formatter: '{b}: {c} kWh ({d}%)'
+        },
+        legend: [
+          {
+            orient: 'vertical',
+            left: '5%',
+            top: 'center',
+            data: leftNames
+          },
+          {
+            orient: 'vertical',
+            right: '5%',
+            top: 'center',
+            data: rightNames
           }
-        },
-        legend: {
-          orient: 'horizontal',
-          bottom: '5%',
-          left: 'center',
-          padding: [15, 0, 0, 0]
-        },
+        ],
         series: [
           {
-            name: 'Emissions',
+            name: 'Solar Output',
             type: 'pie',
-            radius: ['40%', '70%'], // Creates a donut chart
-            center: ['50%', '50%'],  // Center the pie chart
-            startAngle: 45, // Start angle at 90 degrees
-            avoidLabelOverlap: false, // Disable auto-adjustment
-            label: {
-              show: true,
-              formatter: '{b}: {d}%',
-              position: 'outside',
-              alignTo: 'labelLine',
-              margin: 5,
-              distanceToLabelLine: 5 // Add small distance between label and line
-            },
-            labelLayout: {
-              hideOverlap: true,
-              moveOverlap: 'shiftY'
-            },
-            labelLine: {
-              length: 10,  // Reduce first segment length
-              length2: 10, // Reduce second segment length
-              smooth: true,
-              minTurnAngle: 45 // Add minimum turn angle for smoother lines
-            },
+            radius: ['40%', '70%'],
+            center: ['50%', '55%'],
+            avoidLabelOverlap: false,
+            label: { show: false },
+            labelLine: { show: false },
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
@@ -133,7 +117,6 @@ export default {
   background: #ffffff;
   box-sizing: border-box;
 }
-
 .chart-container {
   width: 100%;
   height: 100%;

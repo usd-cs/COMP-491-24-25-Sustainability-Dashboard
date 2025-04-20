@@ -450,3 +450,40 @@ export const getDailyEnergyDataQuery = async (weekStart) => {
     throw error;
   }
 };
+
+/**
+ * Get total solar kWh by site for a donut chart.
+ * @returns {Promise<Array<{site: string, total_kwh: number}>>}
+ */
+export const getSolarContributionsData = async () => {
+  const sqlQuery = `
+    SELECT 'Alcala Borrego'       AS site, SUM(alcala_borrego)       AS total_kwh FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Alcala Laguna',       SUM(alcala_laguna)      FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Camino Hall',         SUM(camino_hall)        FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Copley Library',      SUM(copley_library)     FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Founders Hall',       SUM(founders_hall)      FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Jenny Craig Pavilion',SUM(jenny_craig_pavilion) FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Kroc Center',         SUM(kroc)               FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Manchester A',        SUM(manchester_a)       FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Manchester B',        SUM(manchester_b)       FROM athena_hourly_output
+    UNION ALL
+    SELECT 'Soles Hall',          SUM(soles)              FROM athena_hourly_output
+    UNION ALL
+    SELECT 'West Parking',        SUM(west_parking)       FROM athena_hourly_output;
+  `;
+  const result = await query(sqlQuery);
+  const rows = result.rows || result;
+  return rows.map(r => ({
+    site: r.site,
+    total_kwh: parseFloat(r.total_kwh) || 0
+  }));
+};
+

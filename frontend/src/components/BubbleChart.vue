@@ -65,7 +65,7 @@ export default {
 
       const chart = echarts.init(this.$refs.chart);
       chart.setOption({
-        title: { text: this.title, left: 'center' },
+        title: { text: this.title, left: 'center', top: '0%' },
         tooltip: {
           trigger: 'item',
           formatter: params => {

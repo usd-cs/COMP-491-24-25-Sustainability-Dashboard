@@ -7,7 +7,8 @@ import {
     getCombinedWeeklyData as getCombinedWeeklyDataQuery,
     getDailyEnergyDataQuery,
     fetchBloom,
-    fetchAthena
+    fetchAthena, 
+    getSolarContributionsData
 } from './table_queries.js';
 import multer from 'multer';
 import fs from 'fs';
@@ -244,3 +245,23 @@ export const getPieChartData = async (req, res) => {
         res.status(500).json({ message: 'Failed to retrieve XLSX file.' });
     }
 };
+
+
+/**
+ * Fetch total solar kWh by site for donut chart.
+ */
+export const getSolarContributions = async (req, res) => {
+    try {
+      const data = await getSolarContributionsData();
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: 'No solar contribution data available' });
+      }
+      res.status(200).json(data);
+    } catch (error) {
+      console.error('Error fetching solar contributions:', error);
+      res.status(500).json({
+        message: 'Failed to retrieve solar contributions',
+        error: error.message
+      });
+    }
+  };

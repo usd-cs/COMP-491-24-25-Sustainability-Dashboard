@@ -92,7 +92,7 @@ export default {
         title: {
           text: this.title,
           left: 'center',
-          top: '5%'
+          top: '0%'
         },
         tooltip: {
           trigger: 'axis',

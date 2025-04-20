@@ -10,7 +10,8 @@ import {
   getCombinedWeeklyData,
   getDailyEnergyData,
   getBloomDate,
-  getAthenaDate
+  getAthenaDate,
+  getSolarContributions
 } from './table_controller.js';
 import multer from 'multer';
 
@@ -47,5 +48,9 @@ router.post('/upload-piechart-csv', upload.single('file'), uploadPieChartCSV);
 
 // GET route for tree data
 router.get('/gettreedata', getTreeData);
+
+// Solar contributions for donut chart
+router.get('/energy/solar/contributions', getSolarContributions);
+
 
 export default router;
