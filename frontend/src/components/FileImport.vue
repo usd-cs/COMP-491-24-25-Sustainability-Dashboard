@@ -12,12 +12,12 @@
                 <label class="source-option" @click="selectSource('Athena')">
                   <span class="source-option__label">Athena</span>
                   <span class="source-option__radio" v-html="selectedSource === 'Athena' ? selectedRadioSvg : unselectedRadioSvg"></span>
-                  <span class="source-option__stamp">Last updated: {{ athenaTimestamp || 'N/A' }}</span>
+                  <span class="source-option__stamp">Last updated: {{ athenaTimestamp ? new Date(athenaTimestamp).toLocaleString('en-US') : 'N/A' }}</span>
                 </label>
                 <label class="source-option" @click="selectSource('Bloom')">
                   <span class="source-option__label">Bloom</span>
                   <span class="source-option__radio" v-html="selectedSource === 'Bloom' ? selectedRadioSvg : unselectedRadioSvg"></span>
-                  <span class="source-option__stamp">Last updated: {{ bloomTimestamp || 'N/A' }}</span>
+                  <span class="source-option__stamp">Last updated: {{ bloomTimestamp ? new Date(bloomTimestamp).toLocaleString('en-US') : 'N/A' }}</span>
                 </label>
               </div>
             </div>
@@ -34,17 +34,18 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import AppLayout from "./AppLayout.vue";
+import axios from "axios";  
 
 // router and state
 const router = useRouter();
 const selectedSource = ref(localStorage.getItem("selectedSource") || "Athena");
 
 // timestamps
-const athenaTimestamp = ref(localStorage.getItem("AthenaTimestamp"));
-const bloomTimestamp = ref(localStorage.getItem("BloomTimestamp"));
+const bloomTimestamp = ref(localStorage.getItem("BloomTimestamp") || null);
+const athenaTimestamp = ref(localStorage.getItem("AthenaTimestamp") || null);
 
 // radio SVGs
 const selectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,12 +59,8 @@ const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill
 </svg>`;
 
 // select source logic
-const selectSource = async (source) => {
-  if (selectedSource.value === source) return;
-
-  selectedSource.value = source;
-  localStorage.setItem("selectedSource", source);
-
+// Fetch timestamp for a given source
+const fetchTimestamp = async (source) => {
   let url = "";
   if (source === "Athena") {
     url = "http://localhost:3000/api/tables/hourlyenergybybuilding";
@@ -71,20 +68,17 @@ const selectSource = async (source) => {
     url = "http://localhost:3000/api/tables/bloomdate";
   }
 
-
   try {
     const { data } = await axios.get(url);
-
-    console.log("API Response:", data);
-
-    if (data) {
-      localStorage.setItem(`${source}Timestamp`, data);
+    if (data && data.timestamp) {
+      // Save the timestamp to localStorage
+      localStorage.setItem(`${source}Timestamp`, data.timestamp);
 
       // Update the timestamp in the reactive state
       if (source === "Athena") {
-        athenaTimestamp.value = data;
+        athenaTimestamp.value = data.timestamp;
       } else if (source === "Bloom") {
-        bloomTimestamp.value = data;
+        bloomTimestamp.value = data.timestamp;
       }
     } else {
       console.error("No timestamp found in response");
@@ -94,7 +88,11 @@ const selectSource = async (source) => {
   }
 };
 
-
+// Call both endpoints when the page loads (onMounted)
+onMounted(() => {
+  fetchTimestamp("Athena");
+  fetchTimestamp("Bloom");
+});
 // navigation
 const navigateToMain = () => {
   router.push("/main");
