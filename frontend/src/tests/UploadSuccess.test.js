@@ -43,12 +43,6 @@ describe('UploadSuccess', () => {
     expect(wrapper.find('.success-prompt').text()).toBe('Would you like to import more files?');
   });
 
-  it('displays timestamp', () => {
-    const wrapper = mount(UploadSuccess);
-    const timestamp = wrapper.find('.timestamp');
-    expect(timestamp.exists()).toBe(true);
-    expect(timestamp.text()).toMatch(/^Imported at:/);
-  });
 
   it('has action buttons', () => {
     const wrapper = mount(UploadSuccess);

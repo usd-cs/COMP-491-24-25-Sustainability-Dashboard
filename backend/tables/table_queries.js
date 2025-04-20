@@ -1,5 +1,75 @@
 import { query } from '../database_connection.js';
 
+
+
+/**
+ * Get the most recent bloom timestamp from the energy_daily_data table.
+ * @returns {Promise<Object>} The latest created_at timestamp.
+ */
+export const fetchBloom = async () => {
+  const sqlQuery = `
+    SELECT created_at 
+    FROM energy_daily_data 
+    ORDER BY id DESC 
+    LIMIT 1;
+  `;
+
+  try {
+    console.log("Executing bloom timestamp query...");
+
+    const result = await query(sqlQuery);
+    const rows = result.rows || result;
+
+    if (!rows || rows.length === 0) {
+      console.warn("No timestamp found in energy_daily_data.");
+      return { timestamp: null };
+    }
+
+    const timestamp = rows[0].created_at;
+    console.log("Latest bloom timestamp:", timestamp);
+
+    return { timestamp };
+  } catch (error) {
+    console.error("Error fetching bloom timestamp:", error);
+    throw error;
+  }
+};
+
+
+/**
+ * Get the most recent athena timestamp from the athena_hourly_output table.
+ * @returns {Promise<Object>} The latest created_at timestamp.
+ */
+export const fetchAthena = async () => {
+  const sqlQuery = `
+    SELECT created_at 
+    FROM athena_hourly_output
+    ORDER BY id DESC 
+    LIMIT 1;
+  `;
+
+  try {
+    console.log("Executing athena timestamp query...");
+
+    const result = await query(sqlQuery);
+    const rows = result.rows || result;
+
+    if (!rows || rows.length === 0) {
+      console.warn("No timestamp found in athena_hourly_output.");
+      return { timestamp: null };
+    }
+
+    const timestamp = rows[0].created_at;
+    console.log("Latest athena timestamp:", timestamp);
+
+    return { timestamp };
+  } catch (error) {
+    console.error("Error fetching athena timestamp:", error);
+    throw error;
+  }
+};
+
+
 /**
  * Get 30-day average energy metrics for selected columns.
  * @returns {Promise<Object>}
