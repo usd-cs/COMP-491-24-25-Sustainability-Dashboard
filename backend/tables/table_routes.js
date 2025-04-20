@@ -1,11 +1,14 @@
 import { Router } from 'express';
 import { 
+  getAllData, 
   getEnergySummary, 
   getBubbleChart, 
   getAthenaDataForGraph,
   getPieChartData, 
   uploadPieChartCSV,
-  getTreeData 
+  getTreeData,
+  getCombinedWeeklyData,
+  getDailyEnergyData
 } from './table_controller.js';
 import multer from 'multer';
 
@@ -22,6 +25,10 @@ router.get('/getenergy', getEnergySummary);
 
 // GET route for bubble chart data
 router.get('/getbubblechart', getBubbleChart);
+
+// drilldown (daily) must be before the aggregate route
+router.get('/getcombinedweekly/daily', getDailyEnergyData);
+router.get('/getcombinedweekly', getCombinedWeeklyData);
 
 // GET route for Athena data filtered by building name
 router.get('/hourlyenergybybuilding', getAthenaDataForGraph);

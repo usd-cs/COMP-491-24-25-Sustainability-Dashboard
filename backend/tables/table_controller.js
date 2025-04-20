@@ -1,5 +1,12 @@
 import { query } from '../database_connection.js';
-import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables, getTreeVisualizationData } from './table_queries.js';
+import { 
+    get30DayEnergyTotals, 
+    getBubbleChartData, 
+    getAthenaTables, 
+    getTreeVisualizationData,
+    getCombinedWeeklyData as getCombinedWeeklyDataQuery,
+    getDailyEnergyDataQuery  // Remove the 'as' since we want the original name
+} from './table_queries.js';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
@@ -119,6 +126,64 @@ export const getTreeData = async (req, res) => {
     }
   };
 
+/**
+ * Fetch combined weekly data from fuel cell and solar panels
+ */
+export const getCombinedWeeklyData = async (req, res) => {
+    try {
+        const data = await getCombinedWeeklyDataQuery(); // Use renamed import
+        
+        if (!data || data.length === 0) {
+            return res.status(404).json({ 
+                message: 'No combined weekly data available'
+            });
+        }
+        
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Error fetching combined weekly data:', error);
+        res.status(500).json({ 
+            message: 'Failed to retrieve combined weekly data',
+            error: error.message 
+        });
+    }
+};
+
+/**
+ * Fetch daily energy data
+ */
+export const getDailyEnergyData = async (req, res) => {
+    try {
+        const { weekStart } = req.query;
+        console.log('Received request for daily data:', weekStart);
+        
+        if (!weekStart) {
+            return res.status(400).json({ 
+                message: 'Week start date is required',
+                received: req.query 
+            });
+        }
+
+        const data = await getDailyEnergyDataQuery(weekStart);
+        console.log('Daily data query result:', data);
+
+        if (!data) {
+            return res.status(404).json({ 
+                message: 'No data found for the specified week',
+                weekStart: weekStart 
+            });
+        }
+        
+        // Always return an array, even if empty
+        res.status(200).json(data || []);
+    } catch (error) {
+        console.error('Error in getDailyEnergyData:', error);
+        res.status(500).json({ 
+            message: 'Failed to retrieve daily energy data',
+            error: error.message 
+        });
+    }
+};
 
 // Set up the directory where CSV files will be stored
 const uploadDir = path.join(process.cwd(), 'uploads');

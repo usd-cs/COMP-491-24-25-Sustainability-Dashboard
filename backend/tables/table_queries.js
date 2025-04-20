@@ -251,3 +251,139 @@ export const getTreeVisualizationData = async (period) => {
     throw error;
   }
 };
+
+
+/**
+ * Get combined weekly energy production data from both fuel cell and solar panels.
+ * Combines data from energy_daily_data (fuel cell) and athena_hourly_output (solar panels)
+ * grouped by week.
+ * 
+ * @returns {Promise<Array>} Array of objects containing weekly totals for both sources
+ */
+export const getCombinedWeeklyData = async () => {
+  const combinedWeeklyDataQuery = `
+    SELECT
+      COALESCE(fc.week_start, sp.week_start) AS week_start,
+      fc.total_fuelcell_kwh,
+      sp.total_solar_kwh
+    FROM (
+      SELECT 
+        date_trunc('week', Date_Local) AS week_start,
+        SUM(Electricity_Out_kWh) AS total_fuelcell_kwh
+      FROM energy_daily_data
+      GROUP BY week_start
+    ) fc
+    FULL OUTER JOIN (
+      SELECT 
+        date_trunc('week', timestamp) AS week_start,
+        SUM(total_kwh) AS total_solar_kwh
+      FROM athena_hourly_output
+      GROUP BY week_start
+    ) sp
+    ON fc.week_start = sp.week_start
+    ORDER BY week_start;
+  `;
+
+  try {
+    const result = await query(combinedWeeklyDataQuery);
+    const rows = result.rows || result;
+
+    if (!rows || rows.length === 0) {
+      return [{
+        week_start: null,
+        total_fuelcell_kwh: 0,
+        total_solar_kwh: 0
+      }];
+    }
+
+    return rows.map(row => ({
+      week_start: row.week_start,
+      total_fuelcell_kwh: row.total_fuelcell_kwh ? parseFloat(row.total_fuelcell_kwh) : 0,
+      total_solar_kwh: row.total_solar_kwh ? parseFloat(row.total_solar_kwh) : 0
+    }));
+
+  } catch (error) {
+    console.error("Error fetching combined weekly data:", error);
+    throw error;
+  }
+};
+
+/**
+ * Get daily energy data for a specific week.
+ * Combines data from athena_hourly_output (solar panels) and energy_daily_data (fuel cell).
+ * 
+ * @param {string} weekStart - The start date of the week.
+ * @returns {Promise<Array>} Array of objects containing daily totals for both sources.
+ */
+export const getDailyEnergyDataQuery = async (weekStart) => {
+  console.log('Input weekStart:', weekStart);
+
+  const sql = `
+    WITH week_dates AS (
+      SELECT
+        ($1::date + n)              AS day_date,
+        to_char($1::date + n, 'Dy') AS day_name,
+        n + 1                       AS day_number
+      FROM generate_series(0, 6) n
+    ),
+    solar_data AS (
+      SELECT
+        timestamp::date        AS day,
+        SUM(total_kwh)::numeric AS solar_kwh
+      FROM athena_hourly_output
+      WHERE timestamp::date >= $1::date
+        AND timestamp::date <  ($1::date + INTERVAL '7 days')
+      GROUP BY timestamp::date
+    ),
+    fuel_cell_data AS (
+      SELECT
+        date_local::date           AS day,
+        SUM(electricity_out_kwh)::numeric AS fuelcell_kwh
+      FROM energy_daily_data
+      WHERE date_local >= $1::date
+        AND date_local <  ($1::date + INTERVAL '7 days')
+      GROUP BY date_local::date
+    )
+    SELECT
+      wd.day_name,
+      wd.day_number,
+      COALESCE(s.solar_kwh,    0) AS solar_kwh,
+      COALESCE(f.fuelcell_kwh, 0) AS fuelcell_kwh
+    FROM week_dates wd
+    LEFT JOIN solar_data       s ON s.day = wd.day_date
+    LEFT JOIN fuel_cell_data   f ON f.day = wd.day_date
+    ORDER BY wd.day_number;
+  `;
+
+  try {
+    const result = await query(sql, [weekStart]);
+    const rows = result.rows || result;
+
+    console.log('Raw query result:', rows);
+
+    // If DB returned no rows (unlikely now), fall back to zeros
+    if (!rows?.length) {
+      console.log('No data returned, using default values');
+      return Array.from({ length: 7 }, (_, i) => ({
+        day_name: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i],
+        day_number: i + 1,
+        solar_kwh: '0.00',
+        fuelcell_kwh: '0.00'
+      }));
+    }
+
+    // Format and return
+    const processedData = rows.map(r => ({
+      day_name: r.day_name,
+      day_number: +r.day_number,
+      solar_kwh: parseFloat(r.solar_kwh).toFixed(2),
+      fuelcell_kwh: parseFloat(r.fuelcell_kwh).toFixed(2)
+    }));
+
+    console.log('Processed data:', processedData);
+    return processedData;
+  } catch (error) {
+    console.error('Error in getDailyEnergyDataQuery:', error);
+    throw error;
+  }
+};
