@@ -1,10 +1,6 @@
 <template>
   <AppLayout>
     <main class="main-content">
-      <!-- Timestamp section -->
-      <div class="upload-info">
-        Last uploaded: {{ timestamp }}
-      </div>
       <!-- Main visuals -->
       <div class="visual-container">
         <!-- Upper left square -->

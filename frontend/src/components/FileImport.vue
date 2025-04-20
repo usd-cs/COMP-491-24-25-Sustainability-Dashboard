@@ -12,12 +12,12 @@
                 <label class="source-option" @click="selectSource('Athena')">
                   <span class="source-option__label">Athena</span>
                   <span class="source-option__radio" v-html="selectedSource === 'Athena' ? selectedRadioSvg : unselectedRadioSvg"></span>
-                  <span class="source-option__stamp">Last uploaded: {{ athenaTimestamp || 'N/A' }}</span>
+                  <span class="source-option__stamp">Last updated: {{ athenaTimestamp || 'N/A' }}</span>
                 </label>
                 <label class="source-option" @click="selectSource('Bloom')">
                   <span class="source-option__label">Bloom</span>
                   <span class="source-option__radio" v-html="selectedSource === 'Bloom' ? selectedRadioSvg : unselectedRadioSvg"></span>
-                  <span class="source-option__stamp">Last uploaded: {{ bloomTimestamp || 'N/A' }}</span>
+                  <span class="source-option__stamp">Last updated: {{ bloomTimestamp || 'N/A' }}</span>
                 </label>
               </div>
             </div>
@@ -71,20 +71,23 @@ const selectSource = async (source) => {
     url = "http://localhost:3000/api/tables/bloomdate";
   }
 
+
   try {
-    const res = await fetch(url);
-    const data = await res.json();
+    const { data } = await axios.get(url);
 
-    // Assuming 'created_at' exists in each row and is in ISO or readable format
-    const lastRow = data[data.length - 1];
-    const timestamp = lastRow?.created_at || "Unknown";
+    console.log("API Response:", data);
 
-    localStorage.setItem(`${source}Timestamp`, timestamp);
+    if (data) {
+      localStorage.setItem(`${source}Timestamp`, data);
 
-    if (source === "Athena") {
-      athenaTimestamp.value = timestamp;
-    } else if (source === "Bloom") {
-      bloomTimestamp.value = timestamp;
+      // Update the timestamp in the reactive state
+      if (source === "Athena") {
+        athenaTimestamp.value = data;
+      } else if (source === "Bloom") {
+        bloomTimestamp.value = data;
+      }
+    } else {
+      console.error("No timestamp found in response");
     }
   } catch (error) {
     console.error("Failed to fetch timestamp:", error);

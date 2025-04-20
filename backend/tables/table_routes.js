@@ -6,7 +6,7 @@ import {
   getPieChartData, 
   uploadPieChartCSV,
   getTreeData,
-  getAllData
+  getBloomDate
 } from './table_controller.js';
 import multer from 'multer';
 
@@ -19,7 +19,7 @@ router.get('/test', (req, res) => {
 });
 
 // GET route for timestamp for Bloom 
-router.get('/bloomdate', getAllData);
+router.get('/bloomdate', getBloomDate);
 
 // GET route for energy summary
 router.get('/getenergy', getEnergySummary);

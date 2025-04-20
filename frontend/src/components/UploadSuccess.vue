@@ -64,8 +64,8 @@ const navigateToImportPage = () => {
 
 .upload-success-section {
   background-color: #f4f4f4;
-  max-width: 700px;
   margin: 60px auto;
+  width: 900px;
   padding: 30px 20px;
   border-radius: 8px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);

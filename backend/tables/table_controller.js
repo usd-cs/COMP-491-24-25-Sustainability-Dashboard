@@ -1,21 +1,22 @@
 import { query } from '../database_connection.js';
-import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables, getTreeVisualizationData } from './table_queries.js';
+import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables, getTreeVisualizationData, fetchBloom } from './table_queries.js';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 
 /**
- * Fetch all data from `energy_daily_data`
+ * Fetch Bloom Date data
  */
-export const getAllData = async (req, res) => {
+export const getBloomDate = async (req, res) => {
     try {
-        const result = await query('SELECT * FROM public.energy_daily_data');
-        res.status(200).json(result.rows);
+        const data = await fetchBloom();
+        res.status(200).json(data);
     } catch (error) {
-        console.error('Error fetching data:', error.message);
-        res.status(500).json({ message: 'Failed to retrieve data.' });
+        console.error('Error fetching bloom date data:', error);
+        res.status(500).json({ message: 'Failed to retrieve bloom date data.' });
     }
 };
+
 /**
  * Get the final Athena data for the graph - only get the data under timestamp and building name column
  */
