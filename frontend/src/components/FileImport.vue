@@ -59,6 +59,16 @@ const unselectedRadioSvg = `<svg width="19" height="19" viewBox="0 0 19 19" fill
 </svg>`;
 
 // select source logic
+
+const selectSource = (source) => {
+  // Update the selected source
+  selectedSource.value = source;
+  // Store the selected source in localStorage
+  localStorage.setItem("selectedSource", source);
+  
+  // Fetch the timestamps for the selected source
+  fetchTimestamp(source);
+};
 // Fetch timestamp for a given source
 const fetchTimestamp = async (source) => {
   let url = "";
