@@ -1,5 +1,5 @@
-import { query } from '../database_connection.js';
-import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables, getTreeVisualizationData, fetchBloom } from './table_queries.js';
+
+import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables, getTreeVisualizationData, fetchBloom, fetchAthena } from './table_queries.js';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
@@ -14,6 +14,19 @@ export const getBloomDate = async (req, res) => {
     } catch (error) {
         console.error('Error fetching bloom date data:', error);
         res.status(500).json({ message: 'Failed to retrieve bloom date data.' });
+    }
+};
+
+/**
+ * Fetch Athena Date data
+ */
+export const getAthenaDate = async (req, res) => {
+    try {
+        const data = await fetchAthena();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Error fetching athena date data:', error);
+        res.status(500).json({ message: 'Failed to retrieve athena date data.' });
     }
 };
 

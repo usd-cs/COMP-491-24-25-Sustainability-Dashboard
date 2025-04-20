@@ -73,7 +73,7 @@ const selectSource = (source) => {
 const fetchTimestamp = async (source) => {
   let url = "";
   if (source === "Athena") {
-    url = "http://localhost:3000/api/tables/hourlyenergybybuilding";
+    url = "http://localhost:3000/api/tables/athenadate";
   } else if (source === "Bloom") {
     url = "http://localhost:3000/api/tables/bloomdate";
   }
