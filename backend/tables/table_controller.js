@@ -103,17 +103,17 @@ export const getEnergySummary = async (req, res) => {
 };
 
 /**
- * Fetch data for bubble chart
+ * Fetch data for fuel-efficiency scatter plot.
  */
 export const getBubbleChart = async (req, res) => {
     try {
-        const data = await getBubbleChartData();
-        res.status(200).json(data);
+      const data = await getBubbleChartData();
+      res.status(200).json(data);
     } catch (error) {
-        console.error('Error fetching bubble chart data:', error);
-        res.status(500).json({ message: 'Failed to retrieve bubble chart data.' });
+      console.error('Error fetching fuel-efficiency data:', error);
+      res.status(500).json({ message: 'Failed to retrieve fuel-efficiency data.' });
     }
-};
+  };
 
 /**
  * Fetch data for tree visualization.

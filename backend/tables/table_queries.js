@@ -138,42 +138,35 @@ export const get30DayEnergyTotals = async () => {
 };
 
 /**
- * Get all records for Electricity_Out_kWh, Total_Output_Factor_Percent, and Gas_Flow_In_MMBtu.
+ * Get daily fuel efficiency data for scatter plot.
  * @returns {Promise<Array>}
  */
 export const getBubbleChartData = async () => {
   const sqlQuery = `
-    SELECT 
-      AVG(nox_reduction_lbs) as nox_reduction_lbs,
-      AVG(co2_reduction_lbs) as co2_reduction_lbs,
-      AVG(electricity_out_kwh) as electricity_out_kwh,
-      date_local
+    SELECT
+      Date_Local,
+      Gas_Flow_In_Therms,
+      Electricity_Out_kWh
     FROM energy_daily_data
-    WHERE nox_reduction_lbs IS NOT NULL 
-      AND co2_reduction_lbs IS NOT NULL 
-      AND electricity_out_kwh IS NOT NULL
-    GROUP BY date_local
-    ORDER BY date_local DESC;
+    ORDER BY Date_Local;
   `;
 
   try {
     const result = await query(sqlQuery);
-    console.log("Full query result:", result);
-    // Check if result has a 'rows' property; otherwise, assume result is an array of rows
     const rows = result.rows || result;
-    
+
     if (!rows || rows.length === 0) {
-      throw new Error("Query returned no rows.");
+      throw new Error("No fuel-efficiency data found.");
     }
 
+    // Map to numeric values, preserving date
     return rows.map(row => ({
-      nox_reduction_lbs: row.nox_reduction_lbs ? parseFloat(row.nox_reduction_lbs) : 0,
-      co2_reduction_lbs: row.co2_reduction_lbs ? parseFloat(row.co2_reduction_lbs) : 0,
-      electricity_out_kwh: row.electricity_out_kwh ? parseFloat(row.electricity_out_kwh) : 0,
-      date_local: row.date_local
+      date_local: row.date_local,
+      gas_flow_in_therms: parseFloat(row.gas_flow_in_therms),
+      electricity_out_kwh: parseFloat(row.electricity_out_kwh)
     }));
   } catch (error) {
-    console.error("Error fetching bubble chart data:", error);
+    console.error("Error fetching fuel efficiency data:", error);
     throw error;
   }
 };
