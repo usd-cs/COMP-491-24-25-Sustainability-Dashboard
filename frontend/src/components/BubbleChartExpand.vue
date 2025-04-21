@@ -11,20 +11,138 @@
       <strong>Trendline Equation:</strong> {{ trendEquation }}
     </div>
 
-    <!-- Accordion Below Chart -->
+    <!-- 1 · Data Sources -->
     <div class="accordion">
-      <button class="accordion-toggle" @click="isExpanded = !isExpanded">
-        {{ isExpanded ? 'Hide Info' : 'Show Info' }}
-      </button>
-      <div v-if="isExpanded" class="accordion-content">
-        <p>This chart visualizes daily fuel-cell efficiency.</p>
-        <ul>
-          <li>X-Axis: Gas Flow (therms)</li>
-          <li>Y-Axis: Electricity Output (kWh)</li>
-          <li>Trendline: Average kWh per therm conversion rate</li>
-        </ul>
-      </div>
+      <details>
+        <summary>Data Sources</summary>
+        <div class="accordion-content">
+          <p>
+            Every dot comes from the campus fuel‑cell telemetry system. Two values are logged
+            once a day at midnight:
+          </p>
+          <ul>
+            <li><strong>Gas Flow (therms)</strong> – the volume of natural gas consumed in the last 24 h.</li>
+            <li><strong>Electricity Out (kWh)</strong> – the electrical energy delivered in the same 24 h.</li>
+          </ul>
+          <p>
+            A therm is a standard heat unit (≈29.3 kWh of chemical energy). Comparing it with
+            the electricity produced lets facilities staff track how well the fuel cell converts
+            fuel into useful power.
+          </p>
+        </div>
+      </details>
     </div>
+
+    <!-- 2 · Chart Overview & How to Read It -->
+    <div class="accordion">
+      <details>
+        <summary>What the Chart Shows & How to Read It</summary>
+        <div class="accordion-content">
+          <p>
+            Each blue dot is <strong>one day</strong> of fuel‑cell operation. Gas use (therms) is on
+            the&nbsp;X‑axis, electricity produced (kWh) on the&nbsp;Y‑axis.  
+          </p>
+
+          <ul>
+            <li>
+              <strong>Dot position</strong> – The farther right, the more gas was consumed;
+              the higher up, the more electricity was produced.
+              A dot in the upper right corner means the fuel cell is running well.
+            </li>
+            <li>
+              <strong>Cluster shape</strong> – A tight, oval‑shaped cloud signals steady performance;
+              scattered points suggest weather swings, maintenance events, or changes in campus load.
+            </li>
+            <li>
+              <strong>Outliers</strong> – A dot far <em>below</em> the dashed trendline marks a low‑efficiency day;
+              a dot well <em>above</em> highlights an exceptionally efficient day.
+            </li>
+            <li>
+              <strong>Overall drift</strong> – If the whole cloud creeps upward‑left over weeks, efficiency
+              is improving. Sliding downward‑right indicates it’s time for inspection or tune‑up.
+            </li>
+          </ul>
+
+          <p>
+            In short, the position, spread, and movement of the dots turn raw daily logs into an
+            at‑a‑glance health report for the fuel cell.
+          </p>
+        </div>
+      </details>
+    </div>
+
+
+    <!-- 3 · Axes & Trendline -->
+    <div class="accordion">
+      <details>
+        <summary>Axes & Trendline</summary>
+        <div class="accordion-content">
+          <ul>
+            <li><strong>X‑Axis</strong> – Daily natural‑gas input in therms.</li>
+            <li><strong>Y‑Axis</strong> – Daily electricity output in kilowatt‑hours.</li>
+            <li>
+              <strong>Trendline</strong> – A dashed “best‑fit” line through all the dots.
+              Its <em>slope</em> is the average conversion rate:
+              <strong>Efficiency = kWh ÷ therms</strong>.  The full equation appears just above
+              the chart so anyone can do a quick manual check.
+            </li>
+          </ul>
+          <p>
+            A steeper slope (more “rise” per unit of “run”) means the plant
+            is getting more electricity from every therm of gas.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 4 · Hover Tool‑Tip -->
+    <div class="accordion">
+      <details>
+        <summary>Hover Tool‑Tip</summary>
+        <div class="accordion-content">
+          <p>Mouse‑over any dot to see a quick read‑out:</p>
+          <ul>
+            <li><strong>Date</strong> the reading was taken</li>
+            <li><strong>Gas input</strong> (therms)</li>
+            <li><strong>Electricity output</strong> (kWh)</li>
+            <li><strong>Efficiency</strong> = kWh ÷ therms for that specific day</li>
+          </ul>
+          <p>
+            Use the tooltip to gauge whether a particular day sits above or below
+            the long‑term average.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 5 · More Info -->
+    <div class="accordion">
+      <details>
+        <summary>More Info</summary>
+        <div class="accordion-content">
+          <ul>
+            <!-- <li>
+              The fuel cell’s design target is about <strong>50 % electric efficiency</strong>;
+              real‑world results vary with outside temperature and campus demand.
+            </li> -->
+            <li>
+              One therm ≈ <strong>29.3 kWh</strong> of chemical energy.  
+              The best days on the chart convert >15 kWh of that into electricity —
+              the rest leaves as useful heat for hot‑water loops.
+            </li>
+            <li>
+              Tracking daily efficiency helps planners spot fouled filters,
+              catalyst ageing, or control issues long before alarms go off.
+            </li>
+            <li>
+              Higher efficiency means fewer therms burned and lower carbon emissions
+              for every kilowatt‑hour the campus consumes.
+            </li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
   </div>
 </template>
 
@@ -148,27 +266,56 @@ export default {
 </script>
 
 <style scoped>
-.chart-wrapper {
-  position: relative;
-  width: 100%;
+/* ---------- page + wrapper ---------- */
+html,
+body {
   height: 100%;
-  padding: 8px;
+  margin: 0;
   background: #ffffff;
-  border-radius: 8px;
-  box-sizing: border-box;
+}
+
+.chart-wrapper {
+  padding: 20px;
+  background: #f9f9f9;              /* same card look as bar‑chart page */
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  min-height: 100vh;                /* fill viewport; enables inner scroll */
+  overflow-y: auto;
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;             /* 👈 stretch children to full width */
 }
 
+/* ---------- chart area -------------- */
 .chart-container {
   width: 100%;
-  height: 500px;
+  height: 400px;
+  margin-bottom: 20px;
   border-radius: 8px;
   overflow: hidden;
-  z-index: 0;
 }
 
+/* ---------- close button ------------ */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  line-height: 36px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #FF6B6B;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+}
+.close-button:hover { background-color: #FF2C2C; }
+
+/* ---------- trendline text ---------- */
 .trend-equation {
   margin: 12px 0;
   font-size: 16px;
@@ -176,52 +323,23 @@ export default {
   color: #000;
 }
 
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  background-color: #FF6B6B;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  font-size: 18px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-.close-button:hover {
-  background-color: #FF2C2C;
-}
-
-/* Accordion Styles */
+/* ---------- accordions -------------- */
 .accordion {
-  margin-top: 16px;
-  width: 100%;
-  max-width: 800px;
-}
-
-.accordion-toggle {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  text-align: left;
-  background-color: #f0f0f0;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
+  width: 100%;                      /* full width like the bar‑chart page */
+  margin-top: 20px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  color: #003b70;
 }
 
 .accordion-content {
-  padding: 12px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  margin-top: 8px;
-  color: #000;
+  margin-top: 10px;
+  padding-left: 10px;
+  background-color: #ffffff;
 }
 
-.accordion-content p,
-.accordion-content li {
-  color: #000;
-}
+.accordion-content strong { font-weight: 700; }
 </style>
+
