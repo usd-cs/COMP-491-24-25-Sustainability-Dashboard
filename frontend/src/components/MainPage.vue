@@ -52,94 +52,69 @@ defineProps({
 </script>
 
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ---------- reset ---------- */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* ---------- main wrapper ---------- */
+.main-content{
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  padding:10px 20px 20px;          /* ⬆ less top padding than before (was 20px) */
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  flex:1;
 }
 
-.main-content {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* ---------- 2 × 2 grid of charts ---------- */
+.visual-container{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  grid-template-rows:repeat(2,1fr);
+  gap:18px;
+  width:100%;
+  max-width:1400px;
+  margin:-20px auto 0;             /* ⬆ shifts whole grid upward 20 px */
+  padding:20px;
+  height:calc(100vh - 71px - 20px);/* reduced the internal offset (‑20 px)   */
 }
 
-.visual-container {
-  background: transparent;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 18px;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-  height: calc(100vh - 71px - 40px);
-  border-radius: 8px;
+/* individual small‑chart “cards” */
+.visual-section{
+  background:#fff;
+  border:2px solid rgba(0,0,0,.05);
+  box-shadow:0 4px 16px rgba(0,0,0,.1);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;
+  overflow:hidden;
+  position:relative;
+  padding:10px;
+}
+.visual-section>*{width:100%;height:100%;border-radius:inherit;}
+
+/* ---------- bottom wide chart ---------- */
+.bottom-visual-container{
+  display:flex;justify-content:center;
+  width:100%;
+  max-width:1400px;
+  margin:-40px auto 0;             /* ⬆ pulls wide chart up another 10 px     */
+  padding:20px;
+  position:relative;
+  z-index:1;
 }
 
-.visual-section {
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-  border-radius: 8px;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 2px solid rgba(0,0,0,0.05);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+.wide-visual-section{
+  background:#fff;
+  border:2px solid rgba(0,0,0,.05);
+  box-shadow:0 4px 16px rgba(0,0,0,.1);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:400px;
+  overflow:hidden;
+  position:relative;
+  padding:10px;
 }
-
-.visual-section > * {
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-}
-
-.bottom-visual-container {
-    background: transparent;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    box-sizing: border-box;
-    border-radius: 8px;
-    position: relative;
-    z-index: 1; /* Ensure it is above other elements */
-}
-
-.wide-visual-section {
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 400px;
-  overflow: hidden;
-  position: relative;
-  border-radius: 8px;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 2px solid rgba(0,0,0,0.05);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-
-.wide-visual-section > * {
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-}
+.wide-visual-section>*{width:100%;height:100%;border-radius:inherit;}
 </style>
