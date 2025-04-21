@@ -1,111 +1,89 @@
-import { mount } from '@vue/test-utils'
-import LineChart from '@/components/LineChart.vue'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import TreeChart from '@/components/LineChart.vue';
+import axios from 'axios';
+import * as echarts from 'echarts';
 
-/**
- * Dummy chart data used for testing.
- */
-const dummyChartData = {
-  labels: ['January', 'February', 'March', 'April'],
-  datasets: [
-    {
-      label: 'Demo Data',
-      backgroundColor: '#f87979',
-      data: [40, 20, 30, 50]
-    }
-  ]
-}
+// mock axios & echarts
+vi.mock('axios');
+vi.mock('echarts', () => ({ init: vi.fn() }));
 
-/**
- * Dummy chart options used for testing.
- */
-const dummyChartOptions = {}
+const flushPromises = () => new Promise(r => setTimeout(r, 0));
 
-/**
- * Test suite for the LineChart.vue component.
- */
-describe('LineChart.vue', () => {
-    /**
-     * Test that verifies a loading indicator is displayed initially.
-     */
-    it('shows a loading indicator initially', () => {
-        // Mount the component with dummy props.
-        const wrapper = mount(LineChart, {
-            props: {
-                chartData: dummyChartData,
-                chartOptions: dummyChartOptions 
-            }
-        })
-        
-        // Find the element with class "loading" and verify it exists and contains the correct text.
-        const loading = wrapper.find('.loading')
-        expect(loading.exists()).toBe(true)
-        expect(loading.text()).toBe('Loading...')
-    })
+describe('TreeChart.vue', () => {
+  let mockChart;
 
-    /**
-     * Test that checks whether the component correctly receives and displays chart data props.
-     */
-    it('correctly receives and displays chart data props', () => {
-        // Mount the component with dummy props.
-        const wrapper = mount(LineChart, {
-            props: {
-                chartData: dummyChartData,
-                chartOptions: dummyChartOptions
-            }
-        })
+  beforeEach(() => {
+    vi.clearAllMocks();
 
-        // Assert that the component instance properties match the dummy data.
-        expect(wrapper.vm.chartData).toEqual(dummyChartData)
-        expect(wrapper.vm.chartOptions).toEqual(dummyChartOptions)
-    })
+    // stub API
+    axios.get.mockResolvedValue({
+      data: [{ lifetime_energy: '1000', period_energy: '250' }]
+    });
 
-    /**
-     * Test to ensure the component handles empty chart data without errors.
-     */
-    it('handles empty chart data gracefully', () => {
-        // Define empty chart data.
-        const emptyData = {
-            labels: [],
-            datasets: []
-        }
-        
-        // Mount the component with empty chart data and dummy chart options.
-        const wrapper = mount(LineChart, {
-            props: {
-                chartData: emptyData,
-                chartOptions: dummyChartOptions
-            }
-        })
+    // stub chart instance
+    mockChart = { setOption: vi.fn(), resize: vi.fn(), dispose: vi.fn() };
+    echarts.init.mockReturnValue(mockChart);
+  });
 
-        // Verify that empty datasets and labels have been received.
-        expect(wrapper.vm.chartData.datasets).toHaveLength(0)
-        expect(wrapper.vm.chartData.labels).toHaveLength(0)
-    })
+  it('shows loading initially and then hides it after fetch', async () => {
+    const wrapper = mount(TreeChart);
+    // loading spinner shown
+    expect(wrapper.find('.loading').exists()).toBe(true);
 
-    /**
-     * Test that verifies the component updates correctly when the chart data changes.
-     */
-    it('updates when chart data changes', async () => {
-        // Mount the component with initial dummy chart data.
-        const wrapper = mount(LineChart, {
-            props: {
-                chartData: dummyChartData,
-                chartOptions: dummyChartOptions
-            }
-        })
+    await flushPromises();
+    await wrapper.vm.$nextTick();
 
-        // Define new chart data to update the component with.
-        const newData = {
-            labels: ['A', 'B'],
-            datasets: [{
-                label: 'New Data',
-                data: [10, 20]
-            }]
-        }
+    // after data arrives, loading disappears
+    expect(wrapper.find('.loading').exists()).toBe(false);
+    expect(wrapper.find('.error').exists()).toBe(false);
+  });
 
-        // Update props with the new data.
-        await wrapper.setProps({ chartData: newData })
-        // Assert that the component instance reflects the updated chart data.
-        expect(wrapper.vm.chartData).toEqual(newData)
-    })
-})
+  it('fetches data on mount with default period and initializes chart', async () => {
+    mount(TreeChart);
+    await flushPromises();
+
+    // correct endpoint with default "1 year"
+    expect(axios.get).toHaveBeenCalledWith(
+      'http://localhost:3000/api/tables/gettreedata?period=1%20year'
+    );
+
+    // chart should be initialized once
+    expect(echarts.init).toHaveBeenCalled();
+    // options should include our title and series of length 2
+    const opts = mockChart.setOption.mock.calls[0][0];
+    expect(opts.title.text).toBe('Campus Renewable Energy Output');
+    expect(opts.series).toHaveLength(2);
+    // filled portion data is [250], background is [1000]
+    expect(opts.series[0].data).toEqual([250]);
+    expect(opts.series[1].data).toEqual([1000]);
+  });
+
+  it('displays an error message if API fails or data incomplete', async () => {
+    // first test network error
+    axios.get.mockRejectedValueOnce(new Error('Network down'));
+    const wrapper = mount(TreeChart);
+    await flushPromises();
+    expect(wrapper.find('.error').text()).toContain('Network down');
+
+    // then test incomplete payload
+    axios.get.mockResolvedValueOnce({ data: [{}] });
+    await wrapper.vm.fetchData();
+    await flushPromises();
+    expect(wrapper.find('.error').text()).toContain('Incomplete energy data');
+  });
+
+  it('re-fetches when period selection changes', async () => {
+    const wrapper = mount(TreeChart);
+    await flushPromises();
+    vi.clearAllMocks();
+
+    const select = wrapper.find('select');
+    await select.setValue('6 months');
+    // trigger change
+    await flushPromises();
+    expect(axios.get).toHaveBeenCalledWith(
+      'http://localhost:3000/api/tables/gettreedata?period=6%20months'
+    );
+  });
+});
