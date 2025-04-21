@@ -40,7 +40,7 @@
         <div class="accordion-content">
           <p>
             Each blue dot is <strong>one day</strong> of fuel-cell operation. Gas use (therms) is on
-            the&nbsp;X-axis, electricity produced (kWh) on the&nbsp;Y-axis.  
+            the X-axis, electricity produced (kWh) on the Y-axis.
           </p>
 
           <ul>
@@ -88,8 +88,8 @@
             </li>
           </ul>
           <p>
-            A steeper slope (more “rise” per unit of “run”) means the plant
-            is getting more electricity from every therm of gas.
+            A steeper slope (more "rise" per unit of "run") means the plant is getting more
+            electricity from every therm of gas.
           </p>
         </div>
       </details>
@@ -108,8 +108,8 @@
             <li><strong>Efficiency</strong> = kWh ÷ therms for that specific day</li>
           </ul>
           <p>
-            Use the tooltip to gauge whether a particular day sits above or below
-            the long-term average.
+            Use the tooltip to gauge whether a particular day sits above or below the long-term
+            average.
           </p>
         </div>
       </details>
@@ -126,17 +126,16 @@
               real‑world results vary with outside temperature and campus demand.
             </li> -->
             <li>
-              One therm ≈ <strong>29.3 kWh</strong> of chemical energy.  
-              The best days on the chart convert >15 kWh of that into electricity —
-              the rest leaves as useful heat for hot-water loops.
+              One therm ≈ 29.3 kWh of chemical energy. The best days on the chart convert >15 kWh 
+              of that into electricity - the rest leaves as useful heat for hot-water loops.
             </li>
             <li>
               Tracking daily efficiency helps planners spot fouled filters,
               catalyst ageing, or control issues long before alarms go off.
             </li>
             <li>
-              Higher efficiency means fewer therms burned and lower carbon emissions
-              for every kilowatt-hour the campus consumes.
+              Higher efficiency means fewer therms burned and lower carbon emissions for every 
+              kilowatt-hour the campus consumes.
             </li>
           </ul>
         </div>
@@ -189,20 +188,20 @@ export default {
     renderChart() {
       if (!this.chartData.length) return;
 
-      const dates     = this.chartData.map(r => r.date);
+      const dates = this.chartData.map(r => r.date);
       const gasInputs = this.chartData.map(r => r.gas);
-      const outputs   = this.chartData.map(r => r.output);
+      const outputs = this.chartData.map(r => r.output);
 
       // compute linear regression
-      const n     = gasInputs.length;
-      const meanX = gasInputs.reduce((a,b) => a + b, 0) / n;
-      const meanY = outputs.reduce((a,b) => a + b, 0) / n;
+      const n = gasInputs.length;
+      const meanX = gasInputs.reduce((a, b) => a + b, 0) / n;
+      const meanY = outputs.reduce((a, b) => a + b, 0) / n;
       let num = 0, den = 0;
       for (let i = 0; i < n; i++) {
         num += (gasInputs[i] - meanX) * (outputs[i] - meanY);
         den += (gasInputs[i] - meanX) ** 2;
       }
-      const slope     = den === 0 ? 0 : num / den;
+      const slope = den === 0 ? 0 : num / den;
       const intercept = meanY - slope * meanX;
       this.trendEquation = `y = ${slope.toFixed(2)}x + ${intercept.toFixed(2)}`;
 

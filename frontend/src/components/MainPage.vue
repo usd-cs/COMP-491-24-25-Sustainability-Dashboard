@@ -60,14 +60,14 @@ defineProps({
   width:100%;
   max-width:1400px;
   margin:0 auto;
-  padding:10px 20px 20px;          /* ⬆ less top padding than before (was 20px) */
+  padding:10px 20px 20px; /* less top padding than before (was 20px) */
   display:flex;
   flex-direction:column;
   gap:20px;
   flex:1;
 }
 
-/* ---------- 2 × 2 grid of charts ---------- */
+/* ---------- 2 × 2 grid of charts ---------- */
 .visual-container{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -75,9 +75,9 @@ defineProps({
   gap:18px;
   width:100%;
   max-width:1400px;
-  margin:-20px auto 0;             /* ⬆ shifts whole grid upward 20 px */
+  margin:-20px auto 0; /* shifts whole grid upward 20px */
   padding:20px;
-  height:calc(100vh - 71px - 20px);/* reduced the internal offset (‑20 px)   */
+  height:calc(100vh - 71px - 20px); /* reduced the internal offset (-20px) */
 }
 
 /* individual small‑chart “cards” */
@@ -99,7 +99,7 @@ defineProps({
   display:flex;justify-content:center;
   width:100%;
   max-width:1400px;
-  margin:-40px auto 0;             /* ⬆ pulls wide chart up another 10 px     */
+  margin:-40px auto 0; /* pulls wide chart up another 10px */
   padding:20px;
   position:relative;
   z-index:1;

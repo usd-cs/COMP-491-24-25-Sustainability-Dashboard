@@ -11,8 +11,8 @@
         <summary>Data Sources</summary>
         <div class="accordion-content">
           <p>
-            The chart combines live production from&nbsp;<strong>11 on-site solar arrays</strong>
-            (rooftops, and parking canopies).  The chart tracks each inverter's hourly kWh and then sums those readings for the period you're viewing.
+            The chart combines live production from <strong>11 on-site solar arrays</strong>
+            (rooftops, and parking canopies). The chart tracks each inverter's hourly kWh and then sums those readings for the period you're viewing.
           </p>
           <ul>
             <li>Kilowatt-hour (kWh) = energy that powers a 100-W bulb for 10 hours.</li>
@@ -28,12 +28,12 @@
         <div class="accordion-content">
           <p>
             The donut displays <strong>each site's share</strong> of total solar energy for the
-            selected period.  A bigger slice = more kWh produced.
+            selected period. A bigger slice = more kWh produced.
           </p>
           <ul>
             <li><strong>Hover</strong> any slice (or legend) to see the exact kWh and % share.</li>
             <li>
-              <strong>Legend</strong> is split left / right to fit all 11 sites.  Colors match
+              <strong>Legend</strong> is split left/right to fit all 11 sites. Colors match
               slices one-to-one.
             </li>
             <li>
@@ -80,7 +80,7 @@
           <ul>
             <li>
               South-facing roofs generally outperform east/west orientations by
-              <strong>15 20 %</strong> in annual output.
+              <strong>15-20%</strong> in annual output.
             </li>
             <li>
               Parking-lot canopies double as shade structures, cutting cabin
@@ -224,15 +224,15 @@ body {
 /* ---------- wrapper card ---------- */
 .chart-with-details {
   padding: 20px;
-  background: #f9f9f9;        /* light card */
+  background: #f9f9f9; /* light card */
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  min-height: 100vh;          /* fills viewport but can grow taller */
-  overflow-y: auto;           /* card scrolls when content exceeds view */
+  min-height: 100vh; /* fills viewport but can grow taller */
+  overflow-y: auto; /* card scrolls when content exceeds view */
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: stretch;       /* children (chart + accordions) full width */
+  align-items: stretch; /* children (chart + accordions) full width */
 }
 
 /* ---------- chart area -------------- */

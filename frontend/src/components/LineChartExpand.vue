@@ -152,8 +152,7 @@ function updateChart () {
   const option = {
     title: {
       text: 'Campus Renewable Energy Output',
-      subtext:
-        `Lifetime: ${formatNumber(lifetimeEnergy)} kWh   |   ${selectedPeriod.value}: ${formatNumber(periodEnergy)} kWh`,
+      subtext: `Lifetime: ${formatNumber(lifetimeEnergy)} kWh | ${selectedPeriod.value}: ${formatNumber(periodEnergy)} kWh`,
       left: 'center',
       textStyle: { fontSize: 24, color: '#333' },
       subtextStyle: { fontSize: 16, color: '#444', lineHeight: 24 }
