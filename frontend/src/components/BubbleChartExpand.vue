@@ -11,7 +11,7 @@
       <strong>Trendline Equation:</strong> {{ trendEquation }}
     </div>
 
-    <!-- 1 · Data Sources -->
+    <!-- 1. Data Sources -->
     <div class="accordion">
       <details>
         <summary>Data Sources</summary>
@@ -33,7 +33,7 @@
       </details>
     </div>
 
-    <!-- 2 · Chart Overview & How to Read It -->
+    <!-- 2. Chart Overview & How to Read It -->
     <div class="accordion">
       <details>
         <summary>What the Chart Shows & How to Read It</summary>
@@ -46,8 +46,8 @@
           <ul>
             <li>
               <strong>Dot position</strong> - The farther right, the more gas was consumed;
-              the higher up, the more electricity was produced.
-              A dot in the upper right corner means the fuel cell is running well.
+              the higher up, the more electricity was produced. A dot in the upper right corner
+              means the fuel cell is running well.
             </li>
             <li>
               <strong>Cluster shape</strong> - A tight, oval-shaped cloud signals steady performance;
@@ -58,8 +58,9 @@
               a dot well <em>above</em> highlights an exceptionally efficient day.
             </li>
             <li>
-              <strong>Overall drift</strong> - If the whole cloud creeps upward-left over weeks, efficiency
-              is improving. Sliding downward-right indicates it's time for inspection or tune-up.
+              <strong>Overall drift</strong> - If the whole cloud creeps upward-left over weeks,
+              efficiency is improving. Sliding downward-right indicates it's time for inspection
+              or tune-up.
             </li>
           </ul>
 
@@ -71,8 +72,7 @@
       </details>
     </div>
 
-
-    <!-- 3 · Axes & Trendline -->
+    <!-- 3. Axes & Trendline -->
     <div class="accordion">
       <details>
         <summary>Axes & Trendline</summary>
@@ -81,9 +81,9 @@
             <li><strong>X-Axis</strong> - Daily natural-gas input in therms.</li>
             <li><strong>Y-Axis</strong> - Daily electricity output in kilowatt-hours.</li>
             <li>
-              <strong>Trendline</strong> - A dashed “best-fit” line through all the dots.
+              <strong>Trendline</strong> - A dashed "best-fit" line through all the dots.
               Its <em>slope</em> is the average conversion rate:
-              <strong>Efficiency = kWh ÷ therms</strong>.  The full equation appears just above
+              <strong>Efficiency = kWh ÷ therms</strong>. The full equation appears just above
               the chart so anyone can do a quick manual check.
             </li>
           </ul>
@@ -95,7 +95,7 @@
       </details>
     </div>
 
-    <!-- 4 · Hover Tool‑Tip -->
+    <!-- 4. Hover Tool Tip -->
     <div class="accordion">
       <details>
         <summary>Hover Tool Tip</summary>
@@ -115,33 +115,28 @@
       </details>
     </div>
 
-    <!-- 5 · More Info -->
+    <!-- 5. More Info -->
     <div class="accordion">
       <details>
-        <summary>More Info</summary>
+        <summary>More Info</summary>
         <div class="accordion-content">
           <ul>
-            <!-- <li>
-              The fuel cell’s design target is about <strong>50 % electric efficiency</strong>;
-              real‑world results vary with outside temperature and campus demand.
-            </li> -->
             <li>
-              One therm ≈ 29.3 kWh of chemical energy. The best days on the chart convert >15 kWh 
+              One therm ≈ 29.3 kWh of chemical energy. The best days on the chart convert >15 kWh
               of that into electricity - the rest leaves as useful heat for hot-water loops.
             </li>
             <li>
-              Tracking daily efficiency helps planners spot fouled filters,
-              catalyst ageing, or control issues long before alarms go off.
+              Tracking daily efficiency helps planners spot fouled filters, catalyst ageing,
+              or control issues long before alarms go off.
             </li>
             <li>
-              Higher efficiency means fewer therms burned and lower carbon emissions for every 
+              Higher efficiency means fewer therms burned and lower carbon emissions for every
               kilowatt-hour the campus consumes.
             </li>
           </ul>
         </div>
       </details>
     </div>
-
   </div>
 </template>
 
@@ -231,11 +226,7 @@ export default {
           }
         },
         xAxis: { type: 'value', name: 'Gas Flow (therms)' },
-        yAxis: {
-          type: 'value',
-          name: 'Electricity Out (kWh)',
-          min: 0
-        },
+        yAxis: { type: 'value', name: 'Electricity Out (kWh)', min: 0 },
         series: [
           {
             name: 'Daily Output vs Fuel Input',
@@ -265,7 +256,6 @@ export default {
 </script>
 
 <style scoped>
-/* ---------- page + wrapper ---------- */
 html,
 body {
   height: 100%;
@@ -275,18 +265,17 @@ body {
 
 .chart-wrapper {
   padding: 20px;
-  background: #f9f9f9;              /* same card look as bar‑chart page */
+  background: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  min-height: 100vh;                /* fill viewport; enables inner scroll */
+  min-height: 100vh;
   overflow-y: auto;
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: stretch;             /* 👈 stretch children to full width */
+  align-items: stretch;
 }
 
-/* ---------- chart area -------------- */
 .chart-container {
   width: 100%;
   height: 400px;
@@ -295,7 +284,6 @@ body {
   overflow: hidden;
 }
 
-/* ---------- close button ------------ */
 .close-button {
   position: absolute;
   top: 10px;
@@ -314,7 +302,6 @@ body {
 }
 .close-button:hover { background-color: #FF2C2C; }
 
-/* ---------- trendline text ---------- */
 .trend-equation {
   margin: 12px 0;
   font-size: 16px;
@@ -322,9 +309,8 @@ body {
   color: #000;
 }
 
-/* ---------- accordions -------------- */
 .accordion {
-  width: 100%;                      /* full width like the bar‑chart page */
+  width: 100%;
   margin-top: 20px;
   background: #ffffff;
   border: 1px solid #ddd;
@@ -341,4 +327,3 @@ body {
 
 .accordion-content strong { font-weight: 700; }
 </style>
-
