@@ -5,14 +5,104 @@
     </button>
     <div ref="chart" class="chart-container"></div>
 
+    <!-- 1. Data Sources -->
     <div class="accordion">
       <details>
-        <summary>About Energy Production Data</summary>
+        <summary>Data Sources</summary>
         <div class="accordion-content">
-          <p>{{ isDrilldown ? 'Daily' : 'Weekly' }} energy production from:</p>
+          <p>Numbers come from two live campus systems:</p>
           <ul>
-            <li><strong>Fuel Cell:</strong> Energy generated from our campus fuel cell system</li>
-            <li><strong>Solar Panels:</strong> Energy harvested from campus solar installations</li>
+            <li>
+              <strong>Fuel Cell</strong> – A high‑efficiency unit that turns natural gas
+              into electricity <em>and</em> useful heat.  One total is logged for each
+              24‑hour period.
+            </li>
+            <li>
+              <strong>Solar Panels</strong> – Eleven rooftop and parking‑lot arrays that
+              generate power whenever the sun shines.  Output is metered hourly, then
+              rolled up into daily and weekly sums.
+            </li>
+          </ul>
+          <p>
+            Together, these two sources supply the campus’s renewable electricity.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 2. Chart Overview -->
+    <div class="accordion">
+      <details>
+        <summary>What This Chart Shows</summary>
+        <div class="accordion-content">
+          <p>
+            The chart presents a <strong>{{ isDrilldown ? 'daily' : 'weekly' }}</strong>
+            total of electricity produced, measured in kilowatt‑hours (kWh).
+            <i>Reference: Running a typical laptop for ten hours uses roughly 0.5 kWh.</i>
+          </p>
+          <ul>
+            <li><strong>Green bars</strong> = Fuel Cell production for the period.</li>
+            <li><strong>Gold bars</strong> = Solar Panel production for the same period.</li>
+          </ul>
+          <p>
+            Comparing the two colors highlights how steady fuel‑cell output
+            complements the sun‑powered contribution from solar panels.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 3. Understanding Each Bar -->
+    <div class="accordion">
+      <details>
+        <summary>Reading a Bar</summary>
+        <div class="accordion-content">
+          <ul>
+            <li><strong>Height</strong> – taller bars indicate more kWh produced.</li>
+            <li><strong>Value on top</strong> – exact kWh, rounded for quick reading.</li>
+            <li><strong>Tool Tip</strong> – selecting a bar switches to a day‑by‑day view for that specific source and week.</li>
+          </ul>
+          <p>
+            Grouped bars make it easy to spot the leading source each week and to track
+            changes in the energy mix over time.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 4. Drill‑Down Mode -->
+    <div class="accordion">
+      <details>
+        <summary>Drill‑Down Mode</summary>
+        <div class="accordion-content">
+          <p>Click any bar to zoom in:</p>
+          <ul>
+            <li>The X‑axis switches to <strong>Mon–Sun</strong> for that week.</li>
+            <li>Only the chosen source (fuel cell <em>or</em> solar) appears, making daily patterns clearer.</li>
+            <li>
+              Mid‑week peaks and weekend dips often reflect weather, maintenance, or campus demand.
+            </li>
+            <li>Select the “←” button (upper‑right) to return to the four‑week overview.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- 5. More Info -->
+    <div class="accordion">
+      <details>
+        <summary>More Info</summary>
+        <div class="accordion-content">
+          <ul>
+            <li>
+              The fuel cell operates 24/7, providing a stable “base load” even after sunset or during cloudy hours.
+            </li>
+            <li>
+              Weekly totals help facilities staff quickly identify issues—sudden drops can signal maintenance needs.
+            </li>
+            <li>
+              Every kWh from the fuel cell and solar panels replaces grid electricity, lowering campus carbon emissions.
+            </li>
           </ul>
         </div>
       </details>
@@ -326,6 +416,10 @@ html, body, .chart-with-details {
   background-color: white;
 }
 
+html, body {
+  background: #ffffff;     /* global page background */
+}
+
 .chart-with-details {
   padding: 20px;
   background: #f9f9f9;
@@ -333,6 +427,8 @@ html, body, .chart-with-details {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   height: 100%;
   position: relative;
+  min-height: 100vh;       /* full viewport height */
+  overflow-y: auto;        /* enable scrolling within the white area */
 }
 
 .chart-container {
@@ -376,5 +472,9 @@ html, body, .chart-with-details {
 
 .close-btn:hover {
   background-color: #FF2C2C;
+}
+
+.accordion-content strong {
+  font-weight: 700;   /* or 600 if you prefer slightly lighter */
 }
 </style>
