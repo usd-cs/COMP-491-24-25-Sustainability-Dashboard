@@ -210,7 +210,7 @@ export default {
           type: 'category',
           data: this.categories,
           axisLabel: {
-            rotate: 45,
+            rotate: 0, // Changed from 45 to 0
             formatter: (value) => {
               return value.split(',')[0]; // Show just MM/DD - MM/DD
             }
@@ -219,6 +219,10 @@ export default {
         yAxis: {
           type: 'value',
           name: 'Energy (kWh)',
+          max: function(value) {
+            const interval = 30000;  // The scale interval
+            return Math.ceil(value.max / interval) * interval + interval;  // Round up to next interval
+          },
           axisLabel: {
             formatter: (value) => `${value.toLocaleString()} kWh`
           }
