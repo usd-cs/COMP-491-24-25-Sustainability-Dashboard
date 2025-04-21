@@ -123,8 +123,8 @@ function updateChart() {
       }
     },
     grid: {
-      left: 70,
-      right: 70,
+      left: 100,
+      right: 100,  // Increased from 70 to 100
       bottom: 50,
       top: 80
     },
@@ -156,7 +156,7 @@ function updateChart() {
         label: {
           show: true,
           position: 'right',
-          offset: [10, 0],
+          offset: [15, 0],  // Increased x-offset from 10 to 15
           color: '#333',        // Dark label for percentage
           fontSize: 18,
           formatter: () => {
