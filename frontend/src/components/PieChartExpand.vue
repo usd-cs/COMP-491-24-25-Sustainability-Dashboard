@@ -5,16 +5,96 @@
 
     <div ref="chart" class="chart-container"></div>
 
-    <!-- Accordions for Each Slice -->
-    <div v-for="item in chartData" :key="item.name" class="accordion">
+    <!-- 1 · Data Sources -->
+    <div class="accordion">
       <details>
-        <summary>{{ item.name }}</summary>
+        <summary>Data Sources</summary>
         <div class="accordion-content">
-          <p><strong>Value:</strong> {{ item.value }} {{ item.unit }}</p>
-          <p><strong>Percentage:</strong> {{ item.percent }}%</p>
+          <p>
+            The chart combines live production from&nbsp;<strong>11 on‑site solar arrays</strong>
+            (rooftops, and parking canopies).  The chart tracks each inverter’s hourly kWh and then sums those readings for the period you’re viewing.
+          </p>
+          <ul>
+            <li>Kilowatt‑hour (kWh) = energy that powers a 100‑W bulb for 10 hours.</li>
+          </ul>
         </div>
       </details>
     </div>
+
+    <!-- 2 · What the Chart Shows & How to Read It -->
+    <div class="accordion">
+      <details>
+        <summary>What the Chart Shows & How to Read It</summary>
+        <div class="accordion-content">
+          <p>
+            The donut displays <strong>each site’s share</strong> of total solar energy for the
+            selected period.  A bigger slice = more kWh produced.
+          </p>
+          <ul>
+            <li><strong>Hover</strong> any slice (or legend) to see the exact kWh and % share.</li>
+            <li>
+              <strong>Legend</strong> is split left / right to fit all 11 sites.  Colors match
+              slices one‑to‑one.
+            </li>
+            <li>
+              <strong>Emphasis</strong> – click or tap a slice to pop it out slightly and
+              focus on that site (no navigation change).
+            </li>
+          </ul>
+          <p>
+            Use the graphic to spot the heavy hitters (large segments) and the niche
+            contributors (thin slivers) at a glance.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 3 · Why It Matters -->
+    <div class="accordion">
+      <details>
+        <summary>Why It Matters</summary>
+        <div class="accordion-content">
+          <ul>
+            <li>
+              <strong>Performance targeting</strong> – Sites with small shares may need
+              cleaning, shade trimming, or inverter checks. Sites that are not shown in the chart, indicate that the site is not producing energy.
+            </li>
+            <li>
+              <strong>Planning upgrades</strong> – Knowing today’s leaders helps decide
+              where additional panels will have the biggest impact.
+            </li>
+            <li>
+              <strong>Risk diversification</strong> – A balanced donut means no single
+              array failure can erase most of the solar supply.
+            </li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- 4 · More Info / Fun Facts -->
+    <div class="accordion">
+      <details>
+        <summary>More Info</summary>
+        <div class="accordion-content">
+          <ul>
+            <li>
+              South‑facing roofs generally outperform east/west orientations by
+              <strong>15–20 %</strong> in annual output.
+            </li>
+            <li>
+              Parking‑lot canopies double as shade structures, cutting cabin
+              temperatures by up to <strong>25 °F</strong> in summer.
+            </li>
+            <li>
+              Combined, these arrays can offset roughly
+              <strong>1,300 tons CO₂</strong> per year compared with grid power.
+            </li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
   </div>
 </template>
 
@@ -132,40 +212,39 @@ export default {
   }
 };
 </script>
-
 <style scoped>
-html, body, .chart-with-details {
+/* ---------- page backdrop ---------- */
+html,
+body {
   height: 100%;
   margin: 0;
-  background-color: white;
+  background: #ffffff;
 }
+
+/* ---------- wrapper card ---------- */
 .chart-with-details {
   padding: 20px;
-  background: #f9f9f9;
+  background: #f9f9f9;        /* light card */
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  height: 100%;
+  min-height: 100vh;          /* fills viewport but can grow taller */
+  overflow-y: auto;           /* card scrolls when content exceeds view */
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;       /* children (chart + accordions) full width */
 }
+
+/* ---------- chart area -------------- */
 .chart-container {
+  flex: 0 0 400px;            /* fixed 400 px, don’t shrink when accordions open */
   width: 100%;
-  height: 400px;
   margin-bottom: 20px;
-}
-.accordion {
-  margin-top: 16px;
-  background: white;
   border-radius: 8px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  color: #000;
+  overflow: hidden;
 }
-.accordion-content {
-  margin-top: 8px;
-  padding-left: 10px;
-  background-color: white;
-  color: #000;
-}
+
+/* ---------- close button ------------ */
 .close-btn {
   position: absolute;
   top: 10px;
@@ -180,10 +259,26 @@ html, body, .chart-with-details {
   color: #fff;
   border: none;
   cursor: pointer;
-  z-index: 1000;       
-  pointer-events: auto; 
+  z-index: 1000;
 }
-.close-btn:hover {
-  background-color: #FF2C2C;
+.close-btn:hover { background-color: #FF2C2C; }
+
+/* ---------- accordion cards --------- */
+.accordion {
+  width: 100%;
+  margin-top: 20px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  color: #003b70;
 }
+
+.accordion-content {
+  margin-top: 10px;
+  padding-left: 10px;
+  background-color: #ffffff;
+}
+
+.accordion-content strong { font-weight: 700; }
 </style>
