@@ -245,14 +245,8 @@ export const getTreeVisualizationData = async (period) => {
   let interval = "";
   if (period && period.toLowerCase() !== "lifetime") {
     switch (period.toLowerCase()) {
-      case "1 week":
-        interval = "7 days";
-        break;
       case "1 month":
         interval = "30 days";
-        break;
-      case "3 months":
-        interval = "90 days";
         break;
       case "6 months":
         interval = "180 days";
@@ -260,8 +254,14 @@ export const getTreeVisualizationData = async (period) => {
       case "1 year":
         interval = "1 year";
         break;
+      case "2 years":
+        interval = "2 years";
+        break;
+      case "5 years":
+        interval = "5 years";
+        break;
       default:
-        interval = "30 days"; // default is 1 month
+        interval = "1 year"; // Changed default from "30 days" to "1 year"
     }
   }
   
