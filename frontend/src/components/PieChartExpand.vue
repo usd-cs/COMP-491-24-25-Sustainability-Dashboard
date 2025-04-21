@@ -8,14 +8,14 @@
     <!-- 1 · Data Sources -->
     <div class="accordion">
       <details>
-        <summary>Data Sources</summary>
+        <summary>Data Sources</summary>
         <div class="accordion-content">
           <p>
-            The chart combines live production from&nbsp;<strong>11 on‑site solar arrays</strong>
-            (rooftops, and parking canopies).  The chart tracks each inverter’s hourly kWh and then sums those readings for the period you’re viewing.
+            The chart combines live production from&nbsp;<strong>11 on-site solar arrays</strong>
+            (rooftops, and parking canopies).  The chart tracks each inverter's hourly kWh and then sums those readings for the period you're viewing.
           </p>
           <ul>
-            <li>Kilowatt‑hour (kWh) = energy that powers a 100‑W bulb for 10 hours.</li>
+            <li>Kilowatt-hour (kWh) = energy that powers a 100-W bulb for 10 hours.</li>
           </ul>
         </div>
       </details>
@@ -24,20 +24,20 @@
     <!-- 2 · What the Chart Shows & How to Read It -->
     <div class="accordion">
       <details>
-        <summary>What the Chart Shows & How to Read It</summary>
+        <summary>What the Chart Shows & How to Read It</summary>
         <div class="accordion-content">
           <p>
-            The donut displays <strong>each site’s share</strong> of total solar energy for the
-            selected period.  A bigger slice = more kWh produced.
+            The donut displays <strong>each site's share</strong> of total solar energy for the
+            selected period.  A bigger slice = more kWh produced.
           </p>
           <ul>
             <li><strong>Hover</strong> any slice (or legend) to see the exact kWh and % share.</li>
             <li>
               <strong>Legend</strong> is split left / right to fit all 11 sites.  Colors match
-              slices one‑to‑one.
+              slices one-to-one.
             </li>
             <li>
-              <strong>Emphasis</strong> – click or tap a slice to pop it out slightly and
+              <strong>Emphasis</strong> - click or tap a slice to pop it out slightly and
               focus on that site (no navigation change).
             </li>
           </ul>
@@ -52,19 +52,19 @@
     <!-- 3 · Why It Matters -->
     <div class="accordion">
       <details>
-        <summary>Why It Matters</summary>
+        <summary>Why It Matters</summary>
         <div class="accordion-content">
           <ul>
             <li>
-              <strong>Performance targeting</strong> – Sites with small shares may need
+              <strong>Performance targeting</strong> - Sites with small shares may need
               cleaning, shade trimming, or inverter checks. Sites that are not shown in the chart, indicate that the site is not producing energy.
             </li>
             <li>
-              <strong>Planning upgrades</strong> – Knowing today’s leaders helps decide
+              <strong>Planning upgrades</strong> - Knowing today's leaders helps decide
               where additional panels will have the biggest impact.
             </li>
             <li>
-              <strong>Risk diversification</strong> – A balanced donut means no single
+              <strong>Risk diversification</strong> - A balanced donut means no single
               array failure can erase most of the solar supply.
             </li>
           </ul>
@@ -75,20 +75,20 @@
     <!-- 4 · More Info / Fun Facts -->
     <div class="accordion">
       <details>
-        <summary>More Info</summary>
+        <summary>More Info</summary>
         <div class="accordion-content">
           <ul>
             <li>
-              South‑facing roofs generally outperform east/west orientations by
-              <strong>15–20 %</strong> in annual output.
+              South-facing roofs generally outperform east/west orientations by
+              <strong>15 20 %</strong> in annual output.
             </li>
             <li>
-              Parking‑lot canopies double as shade structures, cutting cabin
-              temperatures by up to <strong>25 °F</strong> in summer.
+              Parking-lot canopies double as shade structures, cutting cabin
+              temperatures by up to <strong>25 °F</strong> in summer.
             </li>
             <li>
               Combined, these arrays can offset roughly
-              <strong>1,300 tons CO₂</strong> per year compared with grid power.
+              <strong>1,300 tons CO₂</strong> per year compared with grid power.
             </li>
           </ul>
         </div>

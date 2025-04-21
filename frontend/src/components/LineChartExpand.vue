@@ -14,11 +14,11 @@
         @click.stop
         class="period-select"
       >
-        <option value="1 month">1 Month</option>
-        <option value="6 months">6 Months</option>
-        <option value="1 year">1 Year</option>
-        <option value="2 years">2 Years</option>
-        <option value="5 years">5 Years</option>
+        <option value="1 month">1 Month</option>
+        <option value="6 months">6 Months</option>
+        <option value="1 year">1 Year</option>
+        <option value="2 years">2 Years</option>
+        <option value="5 years">5 Years</option>
         <option value="lifetime">Lifetime</option>
       </select>
     </div>
@@ -32,16 +32,16 @@
     <!-- 1 · Data Sources -->
     <div class="accordion">
       <details>
-        <summary>Data Sources</summary>
+        <summary>Data Sources</summary>
         <div class="accordion-content">
           <p>Two live logs feed the campus energy database:</p>
           <ul>
-            <li><strong>Fuel‑cell log</strong> – one kWh total at the end of each day.</li>
-            <li><strong>Solar‑panel log</strong> – kWh from every array, saved once an hour.</li>
+            <li><strong>Fuel-cell log</strong> - one kWh total at the end of each day.</li>
+            <li><strong>Solar-panel log</strong> - kWh from every array, saved once an hour.</li>
           </ul>
           <p>
             The chart adds up all kWh data points to give the <em>lifetime</em> total and a second
-            total for the time‑frame you pick in the menu above.
+            total for the time-frame you pick in the menu above.
           </p>
         </div>
       </details>
@@ -50,11 +50,11 @@
     <!-- 2 · What the Chart Shows & How to Read It -->
     <div class="accordion">
       <details>
-        <summary>What the Chart Shows & How to Read It</summary>
+        <summary>What the Chart Shows & How to Read It</summary>
         <div class="accordion-content">
           <p>
             The line of leaf icons is like a battery gauge:
-            <strong>pale leaves</strong> mark 100 % of lifetime renewable energy,
+            <strong>pale leaves</strong> mark 100 % of lifetime renewable energy,
             while <strong>bright leaves</strong> fill up to show the share made in the
             period you selected.
           </p>
@@ -70,11 +70,11 @@
     <!-- 3 · Axes & Icons -->
     <div class="accordion">
       <details>
-        <summary>Axes & Icons</summary>
+        <summary>Axes & Icons</summary>
         <div class="accordion-content">
           <ul>
-            <li><strong>X‑axis</strong> – runs from 0 kWh to the lifetime total.</li>
-            <li><strong>Y‑axis</strong> – one bar labelled “Campus”.</li>
+            <li><strong>X-axis</strong> - runs from 0 kWh to the lifetime total.</li>
+            <li><strong>Y-axis</strong> - one bar labelled “Campus”.</li>
             <li>Every leaf stands for the same amount of energy.</li>
           </ul>
           <p>Only the leaves that fit inside the period total are shown in full colour.</p>
@@ -85,11 +85,11 @@
     <!-- 4 · Why It Matters -->
     <div class="accordion">
       <details>
-        <summary>Why It Matters</summary>
+        <summary>Why It Matters</summary>
         <div class="accordion-content">
           <ul>
-            <li>The “1 Year” view shows if we are on track with climate goals.</li>
-            <li>More bright leaves year‑on‑year means our renewable program is expanding.</li>
+            <li>The “1 Year” view shows if we are on track with climate goals.</li>
+            <li>More bright leaves year-on-year means our renewable program is expanding.</li>
           </ul>
         </div>
       </details>

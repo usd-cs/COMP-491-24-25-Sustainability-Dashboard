@@ -14,18 +14,18 @@
     <!-- 1 · Data Sources -->
     <div class="accordion">
       <details>
-        <summary>Data Sources</summary>
+        <summary>Data Sources</summary>
         <div class="accordion-content">
           <p>
-            Every dot comes from the campus fuel‑cell telemetry system. Two values are logged
+            Every dot comes from the campus fuel-cell telemetry system. Two values are logged
             once a day at midnight:
           </p>
           <ul>
-            <li><strong>Gas Flow (therms)</strong> – the volume of natural gas consumed in the last 24 h.</li>
-            <li><strong>Electricity Out (kWh)</strong> – the electrical energy delivered in the same 24 h.</li>
+            <li><strong>Gas Flow (therms)</strong> - the volume of natural gas consumed in the last 24 h.</li>
+            <li><strong>Electricity Out (kWh)</strong> - the electrical energy delivered in the same 24 h.</li>
           </ul>
           <p>
-            A therm is a standard heat unit (≈29.3 kWh of chemical energy). Comparing it with
+            A therm is a standard heat unit (≈29.3 kWh of chemical energy). Comparing it with
             the electricity produced lets facilities staff track how well the fuel cell converts
             fuel into useful power.
           </p>
@@ -36,36 +36,36 @@
     <!-- 2 · Chart Overview & How to Read It -->
     <div class="accordion">
       <details>
-        <summary>What the Chart Shows & How to Read It</summary>
+        <summary>What the Chart Shows & How to Read It</summary>
         <div class="accordion-content">
           <p>
-            Each blue dot is <strong>one day</strong> of fuel‑cell operation. Gas use (therms) is on
-            the&nbsp;X‑axis, electricity produced (kWh) on the&nbsp;Y‑axis.  
+            Each blue dot is <strong>one day</strong> of fuel-cell operation. Gas use (therms) is on
+            the&nbsp;X-axis, electricity produced (kWh) on the&nbsp;Y-axis.  
           </p>
 
           <ul>
             <li>
-              <strong>Dot position</strong> – The farther right, the more gas was consumed;
+              <strong>Dot position</strong> - The farther right, the more gas was consumed;
               the higher up, the more electricity was produced.
               A dot in the upper right corner means the fuel cell is running well.
             </li>
             <li>
-              <strong>Cluster shape</strong> – A tight, oval‑shaped cloud signals steady performance;
+              <strong>Cluster shape</strong> - A tight, oval-shaped cloud signals steady performance;
               scattered points suggest weather swings, maintenance events, or changes in campus load.
             </li>
             <li>
-              <strong>Outliers</strong> – A dot far <em>below</em> the dashed trendline marks a low‑efficiency day;
+              <strong>Outliers</strong> - A dot far <em>below</em> the dashed trendline marks a low-efficiency day;
               a dot well <em>above</em> highlights an exceptionally efficient day.
             </li>
             <li>
-              <strong>Overall drift</strong> – If the whole cloud creeps upward‑left over weeks, efficiency
-              is improving. Sliding downward‑right indicates it’s time for inspection or tune‑up.
+              <strong>Overall drift</strong> - If the whole cloud creeps upward-left over weeks, efficiency
+              is improving. Sliding downward-right indicates it's time for inspection or tune-up.
             </li>
           </ul>
 
           <p>
             In short, the position, spread, and movement of the dots turn raw daily logs into an
-            at‑a‑glance health report for the fuel cell.
+            at-a-glance health report for the fuel cell.
           </p>
         </div>
       </details>
@@ -75,15 +75,15 @@
     <!-- 3 · Axes & Trendline -->
     <div class="accordion">
       <details>
-        <summary>Axes & Trendline</summary>
+        <summary>Axes & Trendline</summary>
         <div class="accordion-content">
           <ul>
-            <li><strong>X‑Axis</strong> – Daily natural‑gas input in therms.</li>
-            <li><strong>Y‑Axis</strong> – Daily electricity output in kilowatt‑hours.</li>
+            <li><strong>X-Axis</strong> - Daily natural-gas input in therms.</li>
+            <li><strong>Y-Axis</strong> - Daily electricity output in kilowatt-hours.</li>
             <li>
-              <strong>Trendline</strong> – A dashed “best‑fit” line through all the dots.
+              <strong>Trendline</strong> - A dashed “best-fit” line through all the dots.
               Its <em>slope</em> is the average conversion rate:
-              <strong>Efficiency = kWh ÷ therms</strong>.  The full equation appears just above
+              <strong>Efficiency = kWh ÷ therms</strong>.  The full equation appears just above
               the chart so anyone can do a quick manual check.
             </li>
           </ul>
@@ -98,18 +98,18 @@
     <!-- 4 · Hover Tool‑Tip -->
     <div class="accordion">
       <details>
-        <summary>Hover Tool‑Tip</summary>
+        <summary>Hover Tool Tip</summary>
         <div class="accordion-content">
-          <p>Mouse‑over any dot to see a quick read‑out:</p>
+          <p>Mouse-over any dot to see a quick read-out:</p>
           <ul>
             <li><strong>Date</strong> the reading was taken</li>
-            <li><strong>Gas input</strong> (therms)</li>
-            <li><strong>Electricity output</strong> (kWh)</li>
-            <li><strong>Efficiency</strong> = kWh ÷ therms for that specific day</li>
+            <li><strong>Gas input</strong> (therms)</li>
+            <li><strong>Electricity output</strong> (kWh)</li>
+            <li><strong>Efficiency</strong> = kWh ÷ therms for that specific day</li>
           </ul>
           <p>
             Use the tooltip to gauge whether a particular day sits above or below
-            the long‑term average.
+            the long-term average.
           </p>
         </div>
       </details>
@@ -126,9 +126,9 @@
               real‑world results vary with outside temperature and campus demand.
             </li> -->
             <li>
-              One therm ≈ <strong>29.3 kWh</strong> of chemical energy.  
-              The best days on the chart convert >15 kWh of that into electricity —
-              the rest leaves as useful heat for hot‑water loops.
+              One therm ≈ <strong>29.3 kWh</strong> of chemical energy.  
+              The best days on the chart convert >15 kWh of that into electricity —
+              the rest leaves as useful heat for hot-water loops.
             </li>
             <li>
               Tracking daily efficiency helps planners spot fouled filters,
@@ -136,7 +136,7 @@
             </li>
             <li>
               Higher efficiency means fewer therms burned and lower carbon emissions
-              for every kilowatt‑hour the campus consumes.
+              for every kilowatt-hour the campus consumes.
             </li>
           </ul>
         </div>

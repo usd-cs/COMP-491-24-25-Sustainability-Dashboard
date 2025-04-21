@@ -1,4 +1,3 @@
-import { query } from '../database_connection.js';
 import { 
     get30DayEnergyTotals, 
     getBubbleChartData, 
