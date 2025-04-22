@@ -111,6 +111,7 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import * as echarts from 'echarts';
 import axios from 'axios';
 
@@ -135,23 +136,24 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    if (this.chartInstance) {
+      this.chartInstance.dispose();
+      this.chartInstance = null;
+    }
   },
   methods: {
     async fetchChartData() {
       try {
         const response = await axios.get('http://localhost:3000/api/tables/getcombinedweekly');
-        // Sort data chronologically and get last 4 weeks
         const data = response.data
           .sort((a, b) => new Date(b.week_start) - new Date(a.week_start))
           .slice(0, 4)
           .reverse();
 
-        // Transform the data into required arrays with formatted dates
         this.categories = data.map(r => {
           const date = new Date(r.week_start);
           const endDate = new Date(date);
           endDate.setDate(date.getDate() + 6);
-          
           return `${date.toLocaleDateString('en-US', {
             month: '2-digit',
             day: '2-digit'
@@ -176,8 +178,10 @@ export default {
         this.chartInstance.dispose();
         this.chartInstance = null;
       }
-      
-      this.chartInstance = echarts.init(this.$refs.chart);
+
+      // markRaw to prevent Vue from proxying ECharts internals
+      this.chartInstance = markRaw(echarts.init(this.$refs.chart));
+
       const options = {
         title: {
           text: this.title,
@@ -210,18 +214,18 @@ export default {
           type: 'category',
           data: this.categories,
           axisLabel: {
-            rotate: 0, // Changed from 45 to 0
+            rotate: 0,
             formatter: (value) => {
-              return value.split(',')[0]; // Show just MM/DD - MM/DD
+              return value.split(',')[0];
             }
           }
         },
         yAxis: {
           type: 'value',
           name: 'Energy (kWh)',
-          max: function(value) {
-            const interval = 30000;  // The scale interval
-            return Math.ceil(value.max / interval) * interval + interval;  // Round up to next interval
+          max: (value) => {
+            const interval = 30000;
+            return Math.ceil(value.max / interval) * interval + interval;
           },
           axisLabel: {
             formatter: (value) => `${value.toLocaleString()} kWh`
@@ -252,70 +256,47 @@ export default {
           }
         ]
       };
-      
+
       this.chartInstance.setOption(options);
-      
-      // Add click handler for drilldown
+
       this.chartInstance.on('click', (params) => {
-        console.log('Click event triggered:', params);
         const weekStart = this.weekDates[params.dataIndex];
         const source = params.seriesName;
-        
+
         this.isDrilldown = true;
         this.selectedWeek = weekStart;
         this.selectedSource = source;
-        
-        // Force chart disposal and re-creation for drilldown
+
         if (this.chartInstance) {
           this.chartInstance.dispose();
           this.chartInstance = null;
         }
-        
+
         this.renderDrilldown(weekStart, source);
       });
     },
 
     async renderDrilldown(weekStart, source) {
       try {
-        console.log('Rendering drilldown for:', { weekStart, source });
-        
-        const response = await axios.get(`http://localhost:3000/api/tables/getcombinedweekly/daily`, {
-          params: { weekStart }
-        });
+        const response = await axios.get(
+          'http://localhost:3000/api/tables/getcombinedweekly/daily',
+          { params: { weekStart } }
+        );
 
-        console.log('API Response:', {
-          status: response.status,
-          headers: response.headers,
-          data: response.data
-        });
-
-        if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
-          console.error('Invalid or empty data received');
-          return;
-        }
-
-        // Sort data by day number
-        const sortedData = [...response.data].sort((a, b) => 
+        const sortedData = [...response.data].sort((a, b) =>
           (parseInt(a.day_number) || 0) - (parseInt(b.day_number) || 0)
         );
 
-        console.log('Sorted daily data:', sortedData);
-
-        // Create new chart instance for drilldown view
         if (this.chartInstance) {
           this.chartInstance.dispose();
           this.chartInstance = null;
         }
 
-        this.chartInstance = echarts.init(this.$refs.chart);
+        this.chartInstance = markRaw(echarts.init(this.$refs.chart));
 
-        const dataValues = sortedData.map(d => {
-          const value = source === 'Fuel Cell' ? d.fuelcell_kwh : d.solar_kwh;
-          console.log(`Processing ${d.day_name}: ${value}`);
-          return Number(value || 0).toFixed(2);
-        });
-
-        console.log('Processed data values:', dataValues);
+        const dataValues = sortedData.map(d =>
+          Number(source === 'Fuel Cell' ? d.fuelcell_kwh : d.solar_kwh || 0).toFixed(2)
+        );
 
         const startDate = new Date(weekStart);
         const endDate = new Date(startDate);
@@ -335,7 +316,8 @@ export default {
           },
           tooltip: {
             trigger: 'axis',
-            formatter: (params) => `${params[0].name}: ${Number(params[0].value).toLocaleString()} kWh`
+            formatter: (params) =>
+              `${params[0].name}: ${Number(params[0].value).toLocaleString()} kWh`
           },
           grid: {
             top: 80,
@@ -360,8 +342,8 @@ export default {
             name: source,
             type: 'bar',
             data: dataValues,
-            itemStyle: { 
-              color: source === 'Fuel Cell' ? '#91CC75' : '#FAC858' 
+            itemStyle: {
+              color: source === 'Fuel Cell' ? '#91CC75' : '#FAC858'
             },
             label: {
               show: true,
@@ -370,8 +352,7 @@ export default {
             }
           }]
         };
-        
-        console.log('Setting chart options:', drilldownOptions);
+
         this.chartInstance.setOption(drilldownOptions);
       } catch (error) {
         console.error('Error rendering drilldown:', error);
