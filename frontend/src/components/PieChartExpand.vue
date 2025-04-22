@@ -1,17 +1,87 @@
 <template>
   <div class="chart-with-details">
-    <!-- X Button to close and navigate back -->
+    <!-- Close Button -->
     <button class="close-btn" @click="navigateBack">X</button>
 
     <div ref="chart" class="chart-container"></div>
 
-    <!-- Accordions for Each Pie Slice -->
-    <div v-for="item in chartData" :key="item.name" class="accordion">
+    <!-- 1. Data Sources -->
+    <div class="accordion">
       <details>
-        <summary>{{ item.name }}</summary>
+        <summary>Data Sources</summary>
         <div class="accordion-content">
-          <p><strong>Value:</strong> {{ item.value }} {{ item.unit }}</p>
-          <p><strong>Percentage:</strong> {{ item.percent }}%</p>
+          <p>
+            The chart combines live production from <strong>11 on-site solar arrays</strong>
+            (rooftops and parking canopies). It tracks each inverter’s hourly kWh and then
+            sums those readings for the period you’re viewing.
+          </p>
+          <ul>
+            <li>Kilowatt-hour (kWh) = energy that powers a 100-W bulb for 10 hours.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- 2. What the Chart Shows & How to Read It -->
+    <div class="accordion">
+      <details>
+        <summary>What the Chart Shows & How to Read It</summary>
+        <div class="accordion-content">
+          <p>
+            The donut displays <strong>each site’s share</strong> of total solar energy for the
+            selected period. A bigger slice = more kWh produced.
+          </p>
+          <ul>
+            <li><strong>Hover</strong> any slice (or legend) to see the exact kWh and % share.</li>
+            <li><strong>Legend</strong> is split left/right to fit all 11 sites. Colors match slices.</li>
+            <li><strong>Emphasis</strong> - click or tap a slice to pop it out slightly and focus.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- 3. Why It Matters -->
+    <div class="accordion">
+      <details>
+        <summary>Why It Matters</summary>
+        <div class="accordion-content">
+          <ul>
+            <li>
+              <strong>Performance targeting</strong> - Sites with small shares may need
+              cleaning, shade trimming, or inverter checks.
+            </li>
+            <li>
+              <strong>Planning upgrades</strong> - Knowing today’s leaders helps decide
+              where additional panels will have the biggest impact.
+            </li>
+            <li>
+              <strong>Risk diversification</strong> - A balanced donut means no single
+              array failure can erase most of the solar supply.
+            </li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- 4. More Info / Fun Facts -->
+    <div class="accordion">
+      <details>
+        <summary>More Info / Fun Facts</summary>
+        <div class="accordion-content">
+          <ul>
+            <li>
+              South-facing roofs generally outperform east/west orientations by
+              <strong>15-20%</strong> in annual output.
+            </li>
+            <li>
+              Parking-lot canopies double as shade structures, cutting cabin
+              temperatures by up to <strong>25 °F</strong> in summer.
+            </li>
+            <li>
+              Combined, these arrays can offset roughly
+              <strong>1,300 tons CO₂</strong> per year compared with grid power.
+            </li>
+          </ul>
         </div>
       </details>
     </div>
@@ -27,8 +97,8 @@ export default {
   data() {
     return {
       chartData: [],
-      title: 'Emissions Production Distribution',
-      chartInstance: null,
+      title: 'Solar Energy Contributions by Site',
+      chartInstance: null
     };
   },
   mounted() {
@@ -39,157 +109,125 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    navigateBack() {
+      this.$router.push('/main');
+    },
     async fetchChartData() {
       try {
-        const response = await axios.get('http://localhost:3000/api/tables/getenergy');
-        const data = response.data;
-
-        this.chartData = [
-          {
-            name: 'CO₂ Production',
-            value: parseFloat(data.co2_production_lbs),
-            percent: 0,
-            itemStyle: { color: '#FF6B6B' },
-            unit: 'lbs',
-          },
-          {
-            name: 'Electricity Production',
-            value: parseFloat(data.electricity_out_kwh),
-            percent: 0,
-            itemStyle: { color: '#4ECDC4' },
-            unit: 'kWh',
-          },
-          {
-            name: 'Gas Flow',
-            value: parseFloat(data.gas_flow_in_therms),
-            percent: 0,
-            itemStyle: { color: '#45B7D1' },
-            unit: 'therms',
-          },
-        ];
-
-        const total = this.chartData.reduce((sum, item) => sum + item.value, 0);
-        this.chartData.forEach(item => {
-          item.percent = ((item.value / total) * 100).toFixed(2);
+        const { data } = await axios.get('http://localhost:3000/api/tables/energy/solar/contributions');
+        this.chartData = data.map(r => ({
+          name: r.site,
+          value: parseFloat(r.total_kwh.toFixed(2)),
+          percent: 0,
+          unit: 'kWh'
+        }));
+        const total = this.chartData.reduce((sum, itm) => sum + itm.value, 0);
+        this.chartData.forEach(itm => {
+          itm.percent = ((itm.value / total) * 100).toFixed(2);
         });
-
         this.renderChart();
       } catch (error) {
-        console.error('Error fetching chart data:', error);
+        console.error('Error fetching solar contributions:', error);
       }
     },
     renderChart() {
+      const names = this.chartData.map(i => i.name);
+      const mid = Math.ceil(names.length / 2);
+      const leftNames = names.slice(0, mid);
+      const rightNames = names.slice(mid);
+
       this.chartInstance = echarts.init(this.$refs.chart);
       this.chartInstance.setOption({
+        color: [
+          '#5470C6', '#91CC75', '#FAC858', '#EE6666',
+          '#73C0DE', '#3BA272', '#FC8452', '#9A60B4',
+          '#5A9BD4', '#50C878', '#E377C2', '#7F7F7F',
+          '#BCBD22', '#17BECF'
+        ],
         title: {
           text: this.title,
           left: 'center',
-          top: '5%',
+          top: '2%'
         },
         tooltip: {
           trigger: 'item',
-          formatter: (params) => {
-            return `${params.name}: ${params.value} ${params.data.unit} (${params.percent}%)`;
-          },
+          formatter: '{b}: {c} kWh ({d}%)'
         },
-        legend: {
-          orient: 'horizontal',
-          bottom: '5%',
-          left: 'center',
-        },
-        series: [
-          {
-            name: 'Emissions',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            center: ['50%', '50%'],
-            startAngle: 45,
-            label: {
-              show: true,
-              formatter: '{b}: {d}%',
-              position: 'outside',
-            },
-            labelLine: {
-              length: 10,
-              length2: 10,
-              smooth: true,
-              minTurnAngle: 45,
-            },
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)',
-              },
-            },
-            data: this.chartData,
-          },
+        legend: [
+          { orient: 'vertical', left: '20%', top: '30%', data: leftNames },
+          { orient: 'vertical', right: '20%', top: '30%', data: rightNames }
         ],
+        series: [{
+          name: 'Solar Output',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['50%', '55%'],
+          avoidLabelOverlap: false,
+          label: { show: false },
+          labelLine: { show: false },
+          emphasis: {
+            label: { show: true, fontSize: 14, fontWeight: 'bold' },
+            itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)' }
+          },
+          data: this.chartData
+        }]
       });
     },
     handleResize() {
-      if (this.chartInstance) {
-        this.chartInstance.resize();
-      }
-    },
-    navigateBack() {
-      this.$router.push('/main');
+      if (this.chartInstance) this.chartInstance.resize();
     }
   }
 };
 </script>
 
 <style scoped>
-html, body, .chart-with-details {
-  height: 100%;
-  margin: 0;
-  background-color: white;
-}
-
 .chart-with-details {
   padding: 20px;
   background: #f9f9f9;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  height: 100%;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  min-height: 100vh;
+  overflow-y: auto;
   position: relative;
-}
-
-.chart-container {
-  width: 100%;
-  height: 400px;
-  margin-bottom: 20px;
-}
-
-.accordion {
-  margin-top: 20px;
-  background: white;
-  border-radius: 8px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  color: #003b70;
-}
-
-.accordion-content {
-  margin-top: 10px;
-  padding-left: 10px;
-  background-color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .close-btn {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #FF6B6B;
-  color: white;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  background: #FF6B6B;
+  color: #fff;
   border: none;
-  padding: 8px 12px;
-  font-size: 18px;
   border-radius: 50%;
   cursor: pointer;
+  z-index: 1000;
 }
 
-.close-btn:hover {
-  background-color: #FF2C2C;
+.chart-container {
+  flex: 0 0 400px;
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.accordion {
+  width: 100%;
+  margin-top: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  color: #003b70;
+}
+
+.accordion-content {
+  margin-top: 10px;
+  padding-left: 10px;
 }
 </style>

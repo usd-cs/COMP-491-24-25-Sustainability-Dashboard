@@ -1,99 +1,96 @@
+// frontend/src/tests/BarChart.test.js
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import BarChart from '../components/BarChart.vue';
+import BarChart from '@/components/BarChart.vue';
 import axios from 'axios';
- 
 import * as echarts from 'echarts';
 
-const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
-
-// Mock axios
 vi.mock('axios');
+vi.mock('echarts', () => ({ init: vi.fn() }));
 
-// Mock echarts
-vi.mock('echarts', () => ({
-  init: vi.fn(() => ({
-    setOption: vi.fn(),
-    resize: vi.fn(),
-    dispose: vi.fn(),
-  })),
-}));
+const flushPromises = () => new Promise(r => setTimeout(r, 0));
 
 describe('BarChart.vue', () => {
-  let wrapper;
-  const mockData = {
-    total_output_factor_percent: '75.5',
-    ac_efficiency_lhv_percent: '80.2',
-    nox_production_lbs: '120.3',
-    so2_reduction_lbs: '45.6'
-  };
+  let mockInstance;
+  const fakeWeeklyData = [
+    { week_start: '2025-01-01', total_fuelcell_kwh: '1000', total_solar_kwh: '500' },
+    { week_start: '2025-01-08', total_fuelcell_kwh: '1100', total_solar_kwh: '600' },
+    { week_start: '2025-01-15', total_fuelcell_kwh: '1200', total_solar_kwh: '700' },
+    { week_start: '2025-01-22', total_fuelcell_kwh: '1300', total_solar_kwh: '800' }
+  ];
 
   beforeEach(() => {
-    axios.get.mockResolvedValue({ data: mockData }); // Mock successful API call
-    wrapper = mount(BarChart);
+    // First call returns the weekly data
+    axios.get.mockResolvedValue({ data: fakeWeeklyData });
+
+    mockInstance = {
+      setOption: vi.fn(),
+      resize: vi.fn(),
+      dispose: vi.fn(),
+      on: vi.fn((evt, cb) => {
+        mockInstance._handlers = mockInstance._handlers || {};
+        mockInstance._handlers[evt] = cb;
+      })
+    };
+    echarts.init.mockReturnValue(mockInstance);
+    vi.spyOn(window, 'addEventListener');
+    vi.spyOn(window, 'removeEventListener');
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
-  it('renders the chart container', () => {
-    expect(wrapper.find('.chart-container').exists()).toBe(true);
-  });
-
-  it('fetches chart data on mount', async () => {
-    await flushPromises();
-    await wrapper.vm.$nextTick(); // Wait for the next tick to ensure data is fetched
-
-    // Ensure the API was called and the correct data is assigned
-    expect(axios.get).toHaveBeenCalledWith('http://localhost:3000/api/tables/getenergy');
-    
-     // Expected labels based on headerToDbColumnMap
-     const expectedLabels = [
-      'Output Factor',
-      'AC Efficiency',
-      'NOₓ Production',
-      'SO₂ Reduction'
-    ];
-
-    // Expected data based on mockData and mapping
-    const expectedData = [
-      75.5,  // total_output_factor_percent
-      80.2,  // ac_efficiency_lhv_percent
-      120.3, // nox_production_lbs
-      45.6   // so2_reduction_lbs
-    ];
-
-    expect(wrapper.vm.chartLabels).toEqual(expectedLabels);
-    expect(wrapper.vm.chartData.map(Number)).toEqual(expectedData);
-    expect(echarts.init).toHaveBeenCalled();
-  });
-
-  it('handles errors when fetching data', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    // Mock a failed API call
-    axios.get.mockRejectedValueOnce(new Error('Network Error'));
-
-    // Trigger the data fetch
-    await wrapper.vm.fetchChartData();
+  it('processes API data into ascending weekDates, fuelCell, solarPanels, and exact categories', async () => {
+    const wrapper = mount(BarChart);
     await flushPromises();
 
-    // Wait for the next tick to ensure component has processed the error
-    await wrapper.vm.$nextTick();
-
-    expect(consoleSpy).toHaveBeenCalledWith('Error fetching chart data:', expect.any(Error));
-
-    // Ensure chartData takes in the data from the uploaded file database 
-    expect(wrapper.vm.chartData).toEqual([]);
-
-    // Verify that chartLabels are still set to their default values
-    expect(wrapper.vm.chartLabels).toEqual([
-      'Output Factor',
-      'AC Efficiency',
-      'NOₓ Production',
-      'SO₂ Reduction'
+    // weekDates should match the fake data in order
+    expect(wrapper.vm.weekDates).toEqual([
+      '2025-01-01',
+      '2025-01-08',
+      '2025-01-15',
+      '2025-01-22'
     ]);
 
-    consoleSpy.mockRestore();
+    // fuelCell & solarPanels formatted as strings with two decimals
+    expect(wrapper.vm.fuelCell).toEqual(['1000.00', '1100.00', '1200.00', '1300.00']);
+    expect(wrapper.vm.solarPanels).toEqual(['500.00', '600.00', '700.00', '800.00']);
+
+    // categories should be "MM/DD - MM/DD" with exactly +6 days
+    const expectedCategories = wrapper.vm.weekDates.map(ws => {
+      const d = new Date(ws);
+      const start = d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+      const e = new Date(d);
+      e.setDate(d.getDate() + 6);
+      const end = e.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+      return `${start} - ${end}`;
+    });
+    expect(wrapper.vm.categories).toEqual(expectedCategories);
+  });
+
+  it('emits drilldown with correct weekStart when a bar is clicked', async () => {
+    const wrapper = mount(BarChart);
+    await flushPromises();
+
+    // simulate clicking the second bar (dataIndex = 1)
+    mockInstance._handlers.click({
+      seriesName: 'Solar Panels',
+      dataIndex: 1
+    });
+
+    const emitted = wrapper.emitted('drilldown');
+    expect(emitted).toHaveLength(1);
+    expect(emitted[0][0]).toEqual({
+      seriesName: 'Solar Panels',
+      weekStart: '2025-01-08'
+    });
+  });
+
+  it('removes the resize listener on unmount', async () => {
+    const wrapper = mount(BarChart);
+    await flushPromises();
+    wrapper.unmount();
+    expect(window.removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
   });
 });

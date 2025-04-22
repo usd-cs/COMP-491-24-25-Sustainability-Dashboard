@@ -1,99 +1,106 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import PieChart from '../components/PieChart.vue';
-import * as echarts from 'echarts';
+import PieChart from '@/components/PieChart.vue';
 import axios from 'axios';
+import * as echarts from 'echarts';
 
-// Setup mock for window object with all required methods
-global.window = {
-    devicePixelRatio: 1,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn()
-};
-
-// Create a mock chart instance
-const mockChartInstance = {
-    setOption: vi.fn(),
-    resize: vi.fn(),
-    dispose: vi.fn()
-};
-
-// Mock echarts with more complete implementation
-vi.mock('echarts', () => ({
-    init: vi.fn(() => mockChartInstance),
-    use: vi.fn(),
-    getInstanceByDom: vi.fn()
-}));
-
-// Mock axios
+// --- Mocks ---
 vi.mock('axios');
+vi.mock('echarts', () => ({ init: vi.fn() }));
+
+// helper to wait for all promises to resolve
+const flushPromises = () => new Promise(r => setTimeout(r, 0));
 
 describe('PieChart.vue', () => {
-    let wrapper;
+  let mockChart;
 
-    beforeEach(() => {
-        // Reset all mocks before each test
-        vi.clearAllMocks();
-        
-        // Mock API response
-        axios.get.mockResolvedValue({ 
-            data: {
-                co2_production_lbs: '100',
-                electricity_out_kwh: '100',
-                so2_reduction_lbs: '100'
-            }
-        });
+  const fakeData = [
+    { site: 'Array A', total_kwh: 123.4567 },
+    { site: 'Array B', total_kwh:  78.9123 },
+    { site: 'Array C', total_kwh:  50.0000 }
+  ];
 
-        // Create element mock for chart container
-        document.body.innerHTML = '<div id="chart-container"></div>';
-        
-        // Mount component
-        wrapper = mount(PieChart);
-    });
+  beforeEach(() => {
+    // reset mocks
+    vi.clearAllMocks();
+    // stub API
+    axios.get.mockResolvedValue({ data: fakeData });
+    // stub echarts instance
+    mockChart = { setOption: vi.fn(), resize: vi.fn(), dispose: vi.fn() };
+    echarts.init.mockReturnValue(mockChart);
+    // spy on resize listener
+    vi.spyOn(window, 'addEventListener');
+    vi.spyOn(window, 'removeEventListener');
+  });
 
-    afterEach(() => {
-        // Clean up after each test
-        if (wrapper && wrapper.unmount) {
-            wrapper.unmount();
-        }
-        vi.clearAllMocks();
-        document.body.innerHTML = '';
-    });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-    it('renders the chart container', () => {
-        expect(wrapper.find('.chart-container').exists()).toBe(true);
-    });
+  it('fetches data and transforms chartData correctly', async () => {
+    const wrapper = mount(PieChart);
+    await flushPromises();
 
-    it('makes the correct API call on mount', async () => {
-        await wrapper.vm.$nextTick();
-        expect(axios.get).toHaveBeenCalledWith('http://localhost:3000/api/tables/getenergy');
-    });
+    // correct API endpoint
+    expect(axios.get).toHaveBeenCalledWith(
+      'http://localhost:3000/api/tables/energy/solar/contributions'
+    );
 
-    it('initializes echarts with basic chart options', async () => {
-        await wrapper.vm.$nextTick();
-        expect(echarts.init).toHaveBeenCalled();
-        
-        const options = mockChartInstance.setOption.mock.calls[0][0];
-        expect(options.title.text).toBe('Emissions Production Distribution');
-        expect(options.series[0].type).toBe('pie');
-    });
+    // chartData should have name & value (rounded to 2 decimals)
+    expect(wrapper.vm.chartData).toEqual([
+      { name: 'Array A', value: 123.46 },
+      { name: 'Array B', value:  78.91 },
+      { name: 'Array C', value:  50.00 }
+    ]);
+  });
 
-    it('handles API errors gracefully', async () => {
-        const consoleErrorSpy = vi.spyOn(console, 'error');
-        axios.get.mockRejectedValueOnce(new Error('API Error'));
-        
-        const errorWrapper = mount(PieChart);
-        await errorWrapper.vm.$nextTick();
+  it('renders the pie chart with proper legend splitting and data', async () => {
+    const wrapper = mount(PieChart);
+    await flushPromises();
 
-        expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(errorWrapper.vm.chartData).toEqual([]);
-        
-        errorWrapper.unmount();
-    });
+    // echarts.init called with the chart container
+    expect(echarts.init).toHaveBeenCalledWith(wrapper.vm.$refs.chart);
 
-    it('adds and removes resize event listener', () => {
-        expect(window.addEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
-        wrapper.unmount();
-        expect(window.removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
-    });
+    // grab the options passed into setOption
+    const opts = mockChart.setOption.mock.calls[0][0];
+
+    // title
+    expect(opts.title.text).toBe('Solar Energy Contributions by Site');
+
+    // legend data splits in half
+    const names = fakeData.map(i => i.site);
+    const mid = Math.ceil(names.length / 2);
+    expect(opts.legend[0].data).toEqual(names.slice(0, mid));
+    expect(opts.legend[1].data).toEqual(names.slice(mid));
+
+    // series data is chartData
+    expect(opts.series[0].data).toEqual(wrapper.vm.chartData);
+
+    // tooltip format
+    expect(opts.tooltip.formatter).toBe('{b}: {c} kWh ({d}%)');
+  });
+
+  it('adds and removes resize listener', () => {
+    const wrapper = mount(PieChart);
+    expect(window.addEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
+
+    wrapper.unmount();
+    expect(window.removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
+  });
+
+  it('handles API errors gracefully', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    axios.get.mockRejectedValueOnce(new Error('Network fail'));
+
+    const wrapper = mount(PieChart);
+    await flushPromises();
+
+    // no crash, chartData remains empty
+    expect(wrapper.vm.chartData).toEqual([]);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error fetching solar contributions:',
+      expect.any(Error)
+    );
+    consoleSpy.mockRestore();
+  });
 });

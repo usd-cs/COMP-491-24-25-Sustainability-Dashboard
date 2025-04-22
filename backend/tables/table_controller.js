@@ -1,5 +1,14 @@
-
-import { get30DayEnergyTotals, getBubbleChartData, getAthenaTables, getTreeVisualizationData, fetchBloom, fetchAthena } from './table_queries.js';
+import { 
+    get30DayEnergyTotals, 
+    getBubbleChartData, 
+    getAthenaTables, 
+    getTreeVisualizationData,
+    getCombinedWeeklyData as getCombinedWeeklyDataQuery,
+    getDailyEnergyDataQuery,
+    fetchBloom,
+    fetchAthena, 
+    getSolarContributionsData
+} from './table_queries.js';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
@@ -94,17 +103,17 @@ export const getEnergySummary = async (req, res) => {
 };
 
 /**
- * Fetch data for bubble chart
+ * Fetch data for fuel-efficiency scatter plot.
  */
 export const getBubbleChart = async (req, res) => {
     try {
-        const data = await getBubbleChartData();
-        res.status(200).json(data);
+      const data = await getBubbleChartData();
+      res.status(200).json(data);
     } catch (error) {
-        console.error('Error fetching bubble chart data:', error);
-        res.status(500).json({ message: 'Failed to retrieve bubble chart data.' });
+      console.error('Error fetching fuel-efficiency data:', error);
+      res.status(500).json({ message: 'Failed to retrieve fuel-efficiency data.' });
     }
-};
+  };
 
 /**
  * Fetch data for tree visualization.
@@ -133,6 +142,64 @@ export const getTreeData = async (req, res) => {
     }
   };
 
+/**
+ * Fetch combined weekly data from fuel cell and solar panels
+ */
+export const getCombinedWeeklyData = async (req, res) => {
+    try {
+        const data = await getCombinedWeeklyDataQuery(); // Use renamed import
+        
+        if (!data || data.length === 0) {
+            return res.status(404).json({ 
+                message: 'No combined weekly data available'
+            });
+        }
+        
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Error fetching combined weekly data:', error);
+        res.status(500).json({ 
+            message: 'Failed to retrieve combined weekly data',
+            error: error.message 
+        });
+    }
+};
+
+/**
+ * Fetch daily energy data
+ */
+export const getDailyEnergyData = async (req, res) => {
+    try {
+        const { weekStart } = req.query;
+        console.log('Received request for daily data:', weekStart);
+        
+        if (!weekStart) {
+            return res.status(400).json({ 
+                message: 'Week start date is required',
+                received: req.query 
+            });
+        }
+
+        const data = await getDailyEnergyDataQuery(weekStart);
+        console.log('Daily data query result:', data);
+
+        if (!data) {
+            return res.status(404).json({ 
+                message: 'No data found for the specified week',
+                weekStart: weekStart 
+            });
+        }
+        
+        // Always return an array, even if empty
+        res.status(200).json(data || []);
+    } catch (error) {
+        console.error('Error in getDailyEnergyData:', error);
+        res.status(500).json({ 
+            message: 'Failed to retrieve daily energy data',
+            error: error.message 
+        });
+    }
+};
 
 // Set up the directory where CSV files will be stored
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -177,3 +244,23 @@ export const getPieChartData = async (req, res) => {
         res.status(500).json({ message: 'Failed to retrieve XLSX file.' });
     }
 };
+
+
+/**
+ * Fetch total solar kWh by site for donut chart.
+ */
+export const getSolarContributions = async (req, res) => {
+    try {
+      const data = await getSolarContributionsData();
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: 'No solar contribution data available' });
+      }
+      res.status(200).json(data);
+    } catch (error) {
+      console.error('Error fetching solar contributions:', error);
+      res.status(500).json({
+        message: 'Failed to retrieve solar contributions',
+        error: error.message
+      });
+    }
+  };

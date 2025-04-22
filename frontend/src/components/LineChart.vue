@@ -9,11 +9,11 @@
         @click.stop 
         class="period-select"
       >
-        <option value="1 week">1 Week</option>
         <option value="1 month">1 Month</option>
-        <option value="3 months">3 Months</option>
         <option value="6 months">6 Months</option>
         <option value="1 year">1 Year</option>
+        <option value="2 years">2 Years</option>
+        <option value="5 years">5 Years</option>
         <option value="lifetime">Lifetime</option>
       </select>
     </div>
@@ -37,7 +37,7 @@ const pictorialIcon = 'image://' + outputIcon;
 const chartContainer = ref(null);
 const loading = ref(true);
 const error = ref(null);
-const selectedPeriod = ref("1 month"); // default is "1 month"
+const selectedPeriod = ref("1 year"); // Changed default from "1 month" to "1 year"
 
 // Chart instance and energy values
 let chart = null;
@@ -75,14 +75,14 @@ async function fetchData() {
 }
 
 function updateChart() {
-  const formattedLifetime = lifetimeEnergy.toLocaleString();
-  const formattedPeriod = periodEnergy.toLocaleString();
+  // Add a format helper function
+  const formatNumber = (num) => Math.round(num).toLocaleString('en-US');
 
   const option = {
     // Title with dark text
     title: {
       text: 'Campus Renewable Energy Output',
-      subtext: `Lifetime: ${formattedLifetime} kWh  |  ${selectedPeriod.value} : ${formattedPeriod} kWh`,
+      subtext: `Lifetime: ${formatNumber(lifetimeEnergy)} kWh  |  ${selectedPeriod.value}: ${formatNumber(periodEnergy)} kWh`,
       left: 'center',
       textStyle: {
         color: '#333',     // Darker text
@@ -98,7 +98,10 @@ function updateChart() {
     tooltip: {
       trigger: 'axis',
       textStyle: { color: '#333' },
-      formatter: '{b}: {c} kWh'
+      formatter: (params) => {
+        const value = Math.round(params[0].data);
+        return `${params[0].name}: ${value.toLocaleString('en-US')} kWh`;
+      }
     },
     // White background
     backgroundColor: '#fff',
@@ -123,8 +126,8 @@ function updateChart() {
       }
     },
     grid: {
-      left: 70,
-      right: 70,
+      left: 100,
+      right: 100,  // Increased from 70 to 100
       bottom: 50,
       top: 80
     },
@@ -156,12 +159,12 @@ function updateChart() {
         label: {
           show: true,
           position: 'right',
-          offset: [10, 0],
+          offset: [15, 0],  // Increased x-offset from 10 to 15
           color: '#333',        // Dark label for percentage
           fontSize: 18,
           formatter: () => {
             const percent = (periodEnergy / lifetimeEnergy) * 100;
-            return `${percent.toFixed(1)} %`;
+            return `${Math.round(percent)} %`;
           }
         }
       }

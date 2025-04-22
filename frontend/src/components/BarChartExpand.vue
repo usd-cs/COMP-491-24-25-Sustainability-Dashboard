@@ -1,16 +1,109 @@
 <template>
   <div class="chart-with-details">
-    <!-- X Button to close and navigate back -->
-    <button class="close-btn" @click="navigateBack">X</button>
-
+    <button class="close-btn" @click="handleBackClick">
+      {{ isDrilldown ? '←' : 'X' }}
+    </button>
     <div ref="chart" class="chart-container"></div>
 
-    <!-- Accordions for Each Column -->
-    <div v-for="(label, index) in chartLabels" :key="index" class="accordion">
+    <!-- 1. Data Sources -->
+    <div class="accordion">
       <details>
-        <summary>{{ label }}</summary>
+        <summary>Data Sources</summary>
         <div class="accordion-content">
-          <p>{{ getColumnInfo(label) }}</p>
+          <p>Numbers come from two live campus systems:</p>
+          <ul>
+            <li>
+              <strong>Fuel Cell</strong> - A high-efficiency unit that turns natural gas
+              into electricity <em>and</em> useful heat.  One total is logged for each
+              24-hour period.
+            </li>
+            <li>
+              <strong>Solar Panels</strong> - Eleven rooftop and parking-lot arrays that
+              generate power whenever the sun shines.  Output is metered hourly, then
+              rolled up into daily and weekly sums.
+            </li>
+          </ul>
+          <p>
+            Together, these two sources supply the campus's renewable electricity.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 2. Chart Overview -->
+    <div class="accordion">
+      <details>
+        <summary>What This Chart Shows</summary>
+        <div class="accordion-content">
+          <p>
+            The chart presents a <strong>{{ isDrilldown ? 'daily' : 'weekly' }}</strong>
+            total of electricity produced, measured in kilowatt-hours (kWh).
+            <i>Reference: Running a typical laptop for ten hours uses roughly 0.5 kWh.</i>
+          </p>
+          <ul>
+            <li><strong>Green bars</strong> = Fuel Cell production for the period.</li>
+            <li><strong>Gold bars</strong> = Solar Panel production for the same period.</li>
+          </ul>
+          <p>
+            Comparing the two colors highlights how steady fuel-cell output
+            complements the sun-powered contribution from solar panels.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 3. Understanding Each Bar -->
+    <div class="accordion">
+      <details>
+        <summary>Reading a Bar</summary>
+        <div class="accordion-content">
+          <ul>
+            <li><strong>Height</strong> - taller bars indicate more kWh produced.</li>
+            <li><strong>Value on top</strong> - exact kWh, rounded for quick reading.</li>
+            <li><strong>Tool Tip</strong> - selecting a bar switches to a day-by-day view for that specific source and week.</li>
+          </ul>
+          <p>
+            Grouped bars make it easy to spot the leading source each week and to track
+            changes in the energy mix over time.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 4. Drill‑Down Mode -->
+    <div class="accordion">
+      <details>
+        <summary>Drill-Down Mode</summary>
+        <div class="accordion-content">
+          <p>Click any bar to zoom in:</p>
+          <ul>
+            <li>The X-axis switches to <strong>Mon-Sun</strong> for that week.</li>
+            <li>Only the chosen source (fuel cell <em>or</em> solar) appears, making daily patterns clearer.</li>
+            <li>
+              Mid-week peaks and weekend dips often reflect weather, maintenance, or campus demand.
+            </li>
+            <li>Select the “←” button (upper-right) to return to the four-week overview.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- 5. More Info -->
+    <div class="accordion">
+      <details>
+        <summary>More Info</summary>
+        <div class="accordion-content">
+          <ul>
+            <li>
+              The fuel cell operates 24/7, providing a stable “base load” even after sunset or during cloudy hours.
+            </li>
+            <li>
+              Weekly totals help facilities staff quickly identify issues—sudden drops can signal maintenance needs.
+            </li>
+            <li>
+              Every kWh from the fuel cell and solar panels replaces grid electricity, lowering campus carbon emissions.
+            </li>
+          </ul>
         </div>
       </details>
     </div>
@@ -25,21 +118,19 @@ export default {
   name: 'BarChartWithAccordion',
   data() {
     return {
-      // Mapping of headers to database columns
-      headerToDbColumnMap: {
-        'Output Factor': 'total_output_factor_percent',
-        'AC Efficiency': 'ac_efficiency_lhv_percent',
-        'NOₓ Production': 'nox_production_lbs',
-        'SO₂ Reduction': 'so2_reduction_lbs',
-      },
-      chartData: [],
-      chartLabels: [],
-      title: 'Energy Production & Emissions',
       chartInstance: null,
+      categories: [],
+      weekDates: [],
+      fuelCell: [],
+      solarPanels: [],
+      title: 'Last 4 Weeks Energy Production',
+      isDrilldown: false,
+      selectedWeek: null,
+      selectedSource: null
     };
   },
   mounted() {
-    this.fetchChartData(); // Fetch data on mount
+    this.fetchChartData();
     window.addEventListener('resize', this.handleResize);
   },
   beforeUnmount() {
@@ -48,65 +139,265 @@ export default {
   methods: {
     async fetchChartData() {
       try {
-        const response = await axios.get('http://localhost:3000/api/tables/getenergy');
-        const data = response.data;
+        const response = await axios.get('http://localhost:3000/api/tables/getcombinedweekly');
+        // Sort data chronologically and get last 4 weeks
+        const data = response.data
+          .sort((a, b) => new Date(b.week_start) - new Date(a.week_start))
+          .slice(0, 4)
+          .reverse();
 
-        this.chartLabels = Object.keys(this.headerToDbColumnMap);
-
-        // Map the fetched data to the chart data
-        this.chartData = this.chartLabels.map(label => {
-          const dbColumn = this.headerToDbColumnMap[label];
-          return data[dbColumn] || 0; // If value not found, default to 0
+        // Transform the data into required arrays with formatted dates
+        this.categories = data.map(r => {
+          const date = new Date(r.week_start);
+          const endDate = new Date(date);
+          endDate.setDate(date.getDate() + 6);
+          
+          return `${date.toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit'
+          })} - ${endDate.toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit'
+          })}`;
         });
+        
+        this.weekDates = data.map(r => r.week_start);
+        this.fuelCell = data.map(r => Number(r.total_fuelcell_kwh).toFixed(2));
+        this.solarPanels = data.map(r => Number(r.total_solar_kwh).toFixed(2));
 
         this.renderChart();
       } catch (error) {
-        console.error('Error fetching chart data:', error);
-        this.chartData = [];  // Reset data on error
+        console.error('Error fetching weekly energy data:', error);
       }
     },
 
     renderChart() {
+      if (this.chartInstance) {
+        this.chartInstance.dispose();
+        this.chartInstance = null;
+      }
+      
       this.chartInstance = echarts.init(this.$refs.chart);
       const options = {
         title: {
           text: this.title,
           left: 'center',
-          top: '5%', // Adjusted to avoid cutting off the title
+          top: '0%'
         },
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          formatter: (params) => {
+            let result = `${params[0].name}<br/>`;
+            params.forEach(param => {
+              result += `${param.seriesName}: ${param.value} kWh<br/>`;
+            });
+            return result;
+          }
+        },
+        legend: {
+          data: ['Fuel Cell', 'Solar Panels'],
+          top: 30
         },
         grid: {
-          top: 80, // Increased the top margin to prevent cutoff at the top
-          left: 20,
-          right: 20,
-          bottom: 30,
-          containLabel: true,  // ensures labels are never clipped
+          top: 80,
+          left: 30,
+          right: 30,
+          bottom: 40,
+          containLabel: true
         },
         xAxis: {
           type: 'category',
-          data: this.chartLabels,
+          data: this.categories,
           axisLabel: {
-            rotate: 38
+            rotate: 0, // Changed from 45 to 0
+            formatter: (value) => {
+              return value.split(',')[0]; // Show just MM/DD - MM/DD
+            }
           }
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          name: 'Energy (kWh)',
+          max: function(value) {
+            const interval = 30000;  // The scale interval
+            return Math.ceil(value.max / interval) * interval + interval;  // Round up to next interval
+          },
+          axisLabel: {
+            formatter: (value) => `${value.toLocaleString()} kWh`
+          }
         },
         series: [
           {
-            name: 'Value',
+            name: 'Fuel Cell',
             type: 'bar',
-            data: this.chartData,
-            barWidth: '50%',
-            itemStyle: {
-              color: '#4caf50'
+            data: this.fuelCell,
+            itemStyle: { color: '#91CC75' },
+            label: {
+              show: true,
+              position: 'top',
+              formatter: (params) => `${Number(params.value).toLocaleString()}`
+            }
+          },
+          {
+            name: 'Solar Panels',
+            type: 'bar',
+            data: this.solarPanels,
+            itemStyle: { color: '#FAC858' },
+            label: {
+              show: true,
+              position: 'top',
+              formatter: (params) => `${Number(params.value).toLocaleString()}`
             }
           }
         ]
       };
+      
       this.chartInstance.setOption(options);
+      
+      // Add click handler for drilldown
+      this.chartInstance.on('click', (params) => {
+        console.log('Click event triggered:', params);
+        const weekStart = this.weekDates[params.dataIndex];
+        const source = params.seriesName;
+        
+        this.isDrilldown = true;
+        this.selectedWeek = weekStart;
+        this.selectedSource = source;
+        
+        // Force chart disposal and re-creation for drilldown
+        if (this.chartInstance) {
+          this.chartInstance.dispose();
+          this.chartInstance = null;
+        }
+        
+        this.renderDrilldown(weekStart, source);
+      });
+    },
+
+    async renderDrilldown(weekStart, source) {
+      try {
+        console.log('Rendering drilldown for:', { weekStart, source });
+        
+        const response = await axios.get(`http://localhost:3000/api/tables/getcombinedweekly/daily`, {
+          params: { weekStart }
+        });
+
+        console.log('API Response:', {
+          status: response.status,
+          headers: response.headers,
+          data: response.data
+        });
+
+        if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+          console.error('Invalid or empty data received');
+          return;
+        }
+
+        // Sort data by day number
+        const sortedData = [...response.data].sort((a, b) => 
+          (parseInt(a.day_number) || 0) - (parseInt(b.day_number) || 0)
+        );
+
+        console.log('Sorted daily data:', sortedData);
+
+        // Create new chart instance for drilldown view
+        if (this.chartInstance) {
+          this.chartInstance.dispose();
+          this.chartInstance = null;
+        }
+
+        this.chartInstance = echarts.init(this.$refs.chart);
+
+        const dataValues = sortedData.map(d => {
+          const value = source === 'Fuel Cell' ? d.fuelcell_kwh : d.solar_kwh;
+          console.log(`Processing ${d.day_name}: ${value}`);
+          return Number(value || 0).toFixed(2);
+        });
+
+        console.log('Processed data values:', dataValues);
+
+        const startDate = new Date(weekStart);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+
+        const drilldownOptions = {
+          title: {
+            text: `${source} Daily Production (${startDate.toLocaleDateString('en-US', {
+              month: '2-digit',
+              day: '2-digit'
+            })} - ${endDate.toLocaleDateString('en-US', {
+              month: '2-digit',
+              day: '2-digit'
+            })})`,
+            left: 'center',
+            top: '5%'
+          },
+          tooltip: {
+            trigger: 'axis',
+            formatter: (params) => `${params[0].name}: ${Number(params[0].value).toLocaleString()} kWh`
+          },
+          grid: {
+            top: 80,
+            left: 50,
+            right: 30,
+            bottom: 40,
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: sortedData.map(d => d.day_name),
+            axisLabel: { rotate: 0 }
+          },
+          yAxis: {
+            type: 'value',
+            name: 'Energy (kWh)',
+            axisLabel: {
+              formatter: (value) => `${value.toLocaleString()} kWh`
+            }
+          },
+          series: [{
+            name: source,
+            type: 'bar',
+            data: dataValues,
+            itemStyle: { 
+              color: source === 'Fuel Cell' ? '#91CC75' : '#FAC858' 
+            },
+            label: {
+              show: true,
+              position: 'top',
+              formatter: (params) => Number(params.value).toLocaleString()
+            }
+          }]
+        };
+        
+        console.log('Setting chart options:', drilldownOptions);
+        this.chartInstance.setOption(drilldownOptions);
+      } catch (error) {
+        console.error('Error rendering drilldown:', error);
+        if (error.response) {
+          console.error('API Error:', {
+            status: error.response.status,
+            statusText: error.response.statusText,
+            data: error.response.data
+          });
+        }
+      }
+    },
+
+    handleBackClick() {
+      if (this.isDrilldown) {
+        this.isDrilldown = false;
+        this.selectedWeek = null;
+        this.selectedSource = null;
+        if (this.chartInstance) {
+          this.chartInstance.dispose();
+          this.chartInstance = null;
+        }
+        this.fetchChartData();
+      } else {
+        this.navigateBack();
+      }
     },
 
     handleResize() {
@@ -115,12 +406,6 @@ export default {
       }
     },
 
-    // Get info for each column
-    getColumnInfo(label) {
-      return `The value of ${label} is based on the corresponding data from the database. For more details, refer to the specific metrics related to the ${label}.`;
-    },
-
-    // Redirect to the /main route
     navigateBack() {
       this.$router.push('/main');
     }
@@ -135,6 +420,10 @@ html, body, .chart-with-details {
   background-color: white;
 }
 
+html, body {
+  background: #ffffff;     /* global page background */
+}
+
 .chart-with-details {
   padding: 20px;
   background: #f9f9f9;
@@ -142,6 +431,8 @@ html, body, .chart-with-details {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   height: 100%;
   position: relative;
+  min-height: 100vh;       /* full viewport height */
+  overflow-y: auto;        /* enable scrolling within the white area */
 }
 
 .chart-container {
@@ -166,19 +457,28 @@ html, body, .chart-with-details {
 }
 
 .close-btn {
-  position: fixed;
+  position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #FF6B6B;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  line-height: 36px;
+  text-align: center;
   border-radius: 50%;
+  background-color: #FF6B6B;
+  color: #fff;
+  border: none;
   cursor: pointer;
+  z-index: 1000;       
+  pointer-events: auto; 
 }
 
 .close-btn:hover {
   background-color: #FF2C2C;
+}
+
+.accordion-content strong {
+  font-weight: 700;   /* or 600 if you prefer slightly lighter */
 }
 </style>
