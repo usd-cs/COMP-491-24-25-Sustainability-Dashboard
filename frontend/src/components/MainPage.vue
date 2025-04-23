@@ -26,7 +26,6 @@
           <LineChart/>
         </div>
       </div>
-
     </main>
   </AppLayout> 
 </template>
@@ -100,8 +99,12 @@ defineProps({
 .visual-section>*{width:100%;height:100%;border-radius:inherit;}
 
 .sources-wrapper {
+  display: flex; justify-content: center;
   margin-top: -40px;
+  margin: -40px auto 0;
   width: 100%;
+  max-width: 1400px;
+  position: relative;
 }
 
 

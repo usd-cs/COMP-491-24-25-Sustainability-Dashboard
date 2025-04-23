@@ -102,8 +102,8 @@ const navigateToGraph = (buildingName) => {
 }
  
 .sources__content {
-  padding: 24px;
-  width: 100%
+  padding: 20px;
+  width: 100%;
 }
 
 
