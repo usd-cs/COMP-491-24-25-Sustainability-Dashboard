@@ -6,10 +6,15 @@
     <div class="compare-section">
       <button v-if="!showDropdown" @click="toggleDropdown">Compare</button>
       <div v-else>
-        <select v-model="selectedBuilding2" @change="updateBuilding2">
+        <select v-model="selectedBuilding2" @change="toggleBuilding">
           <option disabled value="">Select a building</option>
-          <option v-for="building in buildings" :key="building.name" :value="building.name">
-            {{ building.name }}
+          <option 
+            v-for="building in buildings"
+            :key="building.name"
+            :value="building.name"
+            :class="{ 'highlighted': displayedBuildings.includes(building.name) }"
+            >
+            {{ building.name }} <span v-if="displayedBuildings.includes(building.name)">✔</span>
           </option>
         </select>
       </div>
@@ -31,6 +36,7 @@ const hasData = ref(false); // Notify user if data is not available
 const errorMessage = ref('');
 const showDropdown = ref(false); // Controls the visibility of the dropdown
 const selectedBuilding2 = ref(''); // Stores the second building name
+const displayedBuildings = ref([]); //  reactive property to track the buildings currently displayed on the chart.
 const buildings = ref([
   { name: "Alcala Borrego" },
   { name: "Alcala Laguna" },
@@ -48,45 +54,84 @@ const buildings = ref([
 const toggleDropdown = () => {
   showDropdown.value = true;
 };
+const isBuildingDisplayed = (buildingName) => {
+  const chartInstance = echarts.getInstanceByDom(chart.value);
+  if (chartInstance) {
+    const option = chartInstance.getOption();
+    return option.series.some(series => series.name === `Electricity Out (${buildingName})`);
+  }
+  return false;
+};
 // Function to format the building name for the URL
 const formatBuildingName = (name) => {
   return name.toLowerCase().replace(/\s+/g, "_"); // Convert to lowercase and replace spaces with underscores
 };
 
-const updateBuilding2 = async () => {
+const toggleBuilding = async () => {
   if (!selectedBuilding2.value) return;
 
-  const formattedName = formatBuildingName(selectedBuilding2.value); // Format the building name
-
-  try {
-    // Fetch data for the second building
-    const response2 = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
-      params: { buildingName: formattedName } // Pass selected building name as a query parameter
-    });
-    const data2 = response2.data;
-
-    // Extract electricity output data for the second building
-    const electricityOut2 = data2.map(row => row.energy_output || 0); // Use 0 if missing
-
-    // Update the chart with the second building's data
+  const buildingName = selectedBuilding2.value;
+  
+  // Check if the building is already displayed
+  if (displayedBuildings.value.includes(buildingName)) {
+    // Remove the building from the chart
     const chartInstance = echarts.getInstanceByDom(chart.value);
     if (chartInstance) {
       const option = chartInstance.getOption();
-      option.series.push({
-        data: electricityOut2,
-        type: 'line',
-        smooth: true,
-        name: `Electricity Out (${selectedBuilding2.value})`,
-        lineStyle: {
-          type: 'dashed' // Optional: Make the line dashed for distinction
-        }
-      });
-      chartInstance.setOption(option);
+      
+      // Filter out the series for this building
+      const updatedSeries = option.series.filter(
+        series => series.name !== `Electricity Out (${buildingName})`
+      );
+      
+      // Update the chart
+      chartInstance.setOption({ ...option, series: updatedSeries }, true);
+      
+      // Remove from displayedBuildings
+      displayedBuildings.value = displayedBuildings.value.filter(
+        building => building !== buildingName
+      );
     }
-  } catch (error) {
-    console.error('Error fetching data for the second building:', error);
-    errorMessage.value = `Error fetching data: ${error.response ? error.response.data.message : error.message}`;
+  } else {
+    // Add the building to the chart
+    const formattedName = formatBuildingName(buildingName);
+    
+    try {
+      // Fetch data for the building
+      const response = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
+        params: { buildingName: formattedName }
+      });
+      const data = response.data;
+      
+      // Extract electricity output data
+      const electricityOut = data.map(row => row.energy_output || 0);
+      
+      // Add to chart
+      const chartInstance = echarts.getInstanceByDom(chart.value);
+      if (chartInstance) {
+        const option = chartInstance.getOption();
+        option.series.push({
+          data: electricityOut,
+          type: 'line',
+          smooth: true,
+          name: `Electricity Out (${buildingName})`,
+          lineStyle: {
+            type: 'dashed'
+          }
+        });
+        
+        chartInstance.setOption(option);
+        
+        // Add to displayedBuildings
+        displayedBuildings.value.push(buildingName);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   }
+  
+  // Reset selection
+  selectedBuilding2.value = '';
 };
 
 onMounted(async () => {
@@ -222,6 +267,11 @@ select {
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
+}
+
+.highlighted {
+  font-weight: bold;
+  color: green;
 }
 </style>
 
