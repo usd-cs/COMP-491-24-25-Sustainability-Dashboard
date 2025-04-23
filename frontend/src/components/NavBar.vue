@@ -7,10 +7,8 @@
           </a>
         </div>
         <ul class="nav-items">
-          <li class="navLi"><router-link to="/main" class="navLink" active-class="active" @click.prevent="navigateToMain">Summary</router-link></li>
-          <li class="navLi"><router-link to="/sources" class="navLink" active-class="active" @click.prevent="navigateToSources">Sources</router-link></li>
-          <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active" @click.prevent="navigateToInitiatives">Initiatives</router-link></li>
-          <li class="navLi"><router-link to="/select" class="navLink" active-class="active" @click.prevent="navigateToSelect">Upload</router-link></li>
+          <li class="navLi"><router-link to="/main" class="navLink" @click.prevent="navigateToMain">Sustainability Dashboard</router-link></li>
+          
         </ul>
         <!-- logout button separated -->
         <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
@@ -18,11 +16,16 @@
     </header>
 </template>
 
+
 <script setup>
 /**
  * @file MainPage.vue
  * @description This Vue component represents the main dashboard page. It includes a header, navigation sidebar, and placeholders for dashboard visuals and data upload functionality.
  */
+
+ /**
+  * <li class="navLi"><router-link to="/select" active-class="active" @click.prevent="navigateToSelect">Upload</router-link></li>
+  */
 
 import { useRouter, useRoute } from 'vue-router'; // Import Vue Router for navigation
 

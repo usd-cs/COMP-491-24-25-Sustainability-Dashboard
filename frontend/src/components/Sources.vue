@@ -43,7 +43,7 @@ import AppLayout from "./AppLayout.vue";
 const router = useRouter();
 
 const activeFilter = ref("solar"); // Starting with 'solar'
-const filters = ["all", "electricity", "fuelcell", "solar"];
+const filters = ["all", "fuelcell", "solar"];
 
 // Function to format the filter text
 const formatFilterText = (filter) => {
@@ -54,17 +54,17 @@ const formatFilterText = (filter) => {
 };
 
 const buildings = [
-  { name: "Alcala Borrego", types: ["electricity", "solar"] },
-  { name: "Alcala Laguna", types: ["electricity", "solar"] },
-  { name: "Camino Hall", types: ["electricity", "solar"] },
-  { name: "Copley Library", types: ["electricity", "solar"] },
-  { name: "Founders Hall", types: ["electricity", "solar"] },
-  { name: "Jenny Craig Pavilion", types: ["electricity", "solar"] },
-  { name: "Kroc", types: ["electricity", "fuelcell"] },
-  { name: "Manchester A", types: ["electricity", "solar"] },
-  { name: "Manchester B", types: ["electricity", "solar"] },
-  { name: "Soles", types: ["electricity", "solar"] },
-  { name: "West Parking", types: ["solar", "fuelcell"] },
+  { name: "Alcala Borrego", types: ["solar"] },
+  { name: "Alcala Laguna", types: ["solar"] },
+  { name: "Camino Hall", types: ["solar"] },
+  { name: "Copley Library", types: ["solar"] },
+  { name: "Founders Hall", types: ["solar"] },
+  { name: "Jenny Craig Pavilion", types: ["solar"] },
+  { name: "Kroc", types: ["fuelcell"] },
+  { name: "Manchester A", types: ["solar"] },
+  { name: "Manchester B", types: ["solar"] },
+  { name: "Soles", types: ["solar"] },
+  { name: "West Parking", types: ["fuelcell"] },
 ];
 
 // Computed property to filter buildings based on selected filter

@@ -1,5 +1,7 @@
 <template>
   <div class="chart-wrapper">
+    <!-- Close (X) Button -->
+<button class="close-button" @click="goBack">X</button>
     <div v-if="!hasData">No data available for the selected building.</div>
     <div v-else ref="chart" class="chart-container"></div>
     <!-- Add the Compare button and dropdown -->
@@ -22,6 +24,7 @@ import { onMounted, ref, nextTick } from 'vue';
 import { useRoute } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
+import router from '@/router/router';
 
 const route = useRoute();
 const buildingName = route.query.buildingName; // Retrieve the building name from query parameters
@@ -44,6 +47,11 @@ const buildings = ref([
   { name: "Soles" },
   { name: "West Parking" }
 ]);
+
+const goBack = () => {
+  console.log('go back')
+  router.push('/main');
+};
 
 const toggleDropdown = () => {
   showDropdown.value = true;
@@ -183,6 +191,7 @@ onMounted(async () => {
 
 <style scoped>
 .chart-wrapper {
+  position: relative;
   width: 100%;
   height: 100%;
   padding: 0;
@@ -200,6 +209,24 @@ onMounted(async () => {
   width: 100%;
   height: 80%;
 }
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.close-button:hover {
+  color: #000;
+}
+
 
 .compare-section {
   margin-top: 20px;

@@ -23,6 +23,9 @@
           <LineChart/>
         </div>
       </div>
+      <div>
+        <Sources/>
+      </div>
     </main>
   </AppLayout> 
 </template>
@@ -35,6 +38,7 @@ import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
 import PieChart from './PieChart.vue';
 import LineChart from './LineChart.vue';
+import Sources from './Sources.vue';
 
 const router = useRouter();
 
