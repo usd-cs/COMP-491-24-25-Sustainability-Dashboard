@@ -74,7 +74,7 @@ describe('SourcesGraph.vue', () => {
 
     await flushPromises();
 
-    const button = wrapper.find('button');
+    const button = wrapper.find('button.comp-btn');
     await button.trigger('click');
 
     expect(wrapper.find('select').exists()).toBe(true);
@@ -86,7 +86,7 @@ describe('SourcesGraph.vue', () => {
     await flushPromises();
 
     // Show dropdown
-    await wrapper.find('button').trigger('click');
+    await wrapper.find('button.comp-btn').trigger('click');
 
     // Select second building
     const select = wrapper.find('select');
