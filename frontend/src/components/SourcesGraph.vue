@@ -103,8 +103,18 @@ const toggleBuilding = async () => {
       });
       const data = response.data;
       
-      // Extract electricity output data
-      const electricityOut = data.map(row => row.energy_output || 0);
+       // Sort data by UTC hour and minute (starting at 12AM) and extract electricity output
+       const sortedData = data.slice().sort((a, b) => {
+        const dateA = new Date(a.timestamp);
+        const dateB = new Date(b.timestamp);
+        const hourA = dateA.getUTCHours();
+        const hourB = dateB.getUTCHours();
+        if (hourA === hourB) {
+          return dateA.getUTCMinutes() - dateB.getUTCMinutes();
+        }
+        return hourA - hourB;
+      });
+      const electricityOut = sortedData.map(row => row.energy_output || 0);
       
       // Add to chart
       const chartInstance = echarts.getInstanceByDom(chart.value);
@@ -157,8 +167,18 @@ onMounted(async () => {
     hasData.value = true; // Set hasData to true if data is available
 
     // Extract timestamps and electricity output data
-    const timestamps = data.map(row => row.timestamp);
-    const electricityOut = data.map(row => row.energy_output || 0); // Use 0 if missing
+    const sortedData = data.slice().sort((a, b) => {
+      const dateA = new Date(a.timestamp);
+      const dateB = new Date(b.timestamp);
+      const hourA = dateA.getUTCHours();
+      const hourB = dateB.getUTCHours();
+      if (hourA === hourB) {
+          return dateA.getUTCMinutes() - dateB.getUTCMinutes();
+      }
+      return hourA - hourB;
+    });
+    const timestamps = sortedData.map(row => row.timestamp);
+    const electricityOut = sortedData.map(row => row.energy_output || 0); // Use 0 if missing
 
     // Wait for the DOM to be updated before initializing the chart
     await nextTick();
@@ -199,7 +219,16 @@ onMounted(async () => {
         name: 'Timestamp',
         axisLabel: {
           rotate: 45,
-          formatter: value => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          formatter: value => {
+              const date = new Date(value);
+              let hours = date.getUTCHours();
+              const minutes = date.getUTCMinutes();
+              const ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12;
+              const minuteStr = minutes < 10 ? '0' + minutes : minutes;
+              return `${hours}:${minuteStr}${ampm}`;
+          }
         }
       },
       yAxis: {
