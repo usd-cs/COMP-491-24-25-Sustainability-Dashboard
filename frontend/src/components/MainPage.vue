@@ -18,7 +18,7 @@
         <!-- Lower right square -->
         <div class="visual-section"></div>
       </div>
-      <div>
+      <div class="sources-wrapper">
         <Sources/>
       </div>
       <div class="bottom-visual-container">
@@ -68,8 +68,8 @@ defineProps({
   padding:10px 20px 20px; /* less top padding than before (was 20px) */
   display:flex;
   flex-direction:column;
-  gap:20px;
   flex:1;
+  gap:10px
 }
 
 /* ---------- 2 × 2 grid of charts ---------- */
@@ -98,6 +98,12 @@ defineProps({
   padding:10px;
 }
 .visual-section>*{width:100%;height:100%;border-radius:inherit;}
+
+.sources-wrapper {
+  margin-top: -40px;
+  width: 100%;
+}
+
 
 /* ---------- bottom wide chart ---------- */
 .bottom-visual-container{

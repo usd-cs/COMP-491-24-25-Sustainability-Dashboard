@@ -39,7 +39,7 @@ import AppLayout from "./AppLayout.vue";
 
 const router = useRouter();
 
-const activeFilter = ref("solar"); // Starting with 'solar'
+const activeFilter = ref("all"); 
 const filters = ["all", "fuelcell", "solar"];
 
 // Function to format the filter text
@@ -103,13 +103,14 @@ const navigateToGraph = (buildingName) => {
  
 .sources__content {
   padding: 24px;
+  width: 100%
 }
 
 
 .sources__panel-inner {
   background-color: white;
   padding: 24px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .sources__filters {
@@ -137,13 +138,13 @@ const navigateToGraph = (buildingName) => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
-  
+  min-height: 330px;
 }
 
 .sources__building-card {
   background-color: #c7dbf1;
   padding: 16px;
-  border-radius: 4px;
+  border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   height: 80px;
