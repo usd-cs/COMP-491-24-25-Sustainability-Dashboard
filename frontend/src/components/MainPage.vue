@@ -18,14 +18,15 @@
         <!-- Lower right square -->
         <div class="visual-section"></div>
       </div>
+      <div>
+        <Sources/>
+      </div>
       <div class="bottom-visual-container">
         <div class="wide-visual-section" role="button" @click="navigateToLineChart">
           <LineChart/>
         </div>
       </div>
-      <div>
-        <Sources/>
-      </div>
+
     </main>
   </AppLayout> 
 </template>

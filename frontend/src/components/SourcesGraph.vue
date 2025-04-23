@@ -49,8 +49,7 @@ const buildings = ref([
 ]);
 
 const goBack = () => {
-  console.log('go back')
-  router.push('/main');
+  history.length ? history.back() : (window.location.href = '/');
 };
 
 const toggleDropdown = () => {
@@ -208,6 +207,7 @@ onMounted(async () => {
 .chart-container {
   width: 100%;
   height: 80%;
+  margin-top: 20px;
 }
 
 .close-button {
