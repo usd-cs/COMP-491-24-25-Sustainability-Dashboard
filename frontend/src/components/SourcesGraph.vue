@@ -65,8 +65,7 @@ const updateBuilding2 = async () => {
     });
     const data2 = response2.data;
 
-    // Extract timestamps and electricity output data for the second building
-    const timestamps2 = data2.map(row => row.timestamp);
+    // Extract electricity output data for the second building
     const electricityOut2 = data2.map(row => row.energy_output || 0); // Use 0 if missing
 
     // Update the chart with the second building's data
