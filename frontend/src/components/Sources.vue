@@ -1,5 +1,4 @@
 <template>
-  <AppLayout>
     <main class="sources__content">
       <section class="sources__panel">
         <div class="sources__panel-inner">
@@ -26,13 +25,11 @@
               @click="navigateToGraph(building.name)"
             >
               <h3 class="sources__building-name">{{ building.name }}</h3>
-              <p class="sources__building-type">Type: {{ building.types.join(', ') }}</p>
             </article>
           </section>
         </div>
       </section>
     </main>
-  </AppLayout>
 </template>
 
 <script setup>
@@ -108,11 +105,6 @@ const navigateToGraph = (buildingName) => {
   padding: 24px;
 }
 
-.sources__panel {
-  background-color: #003b70;
-  padding: 24px;
-  border-radius: 4px;
-}
 
 .sources__panel-inner {
   background-color: white;
@@ -145,14 +137,16 @@ const navigateToGraph = (buildingName) => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+  
 }
 
 .sources__building-card {
-  background-color: white;
+  background-color: #c7dbf1;
   padding: 16px;
   border-radius: 4px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  height: 80px;
 }
 
 .sources__building-name {
