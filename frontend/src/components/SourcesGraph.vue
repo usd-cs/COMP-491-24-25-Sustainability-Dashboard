@@ -1,10 +1,11 @@
 <template>
   <div class="chart-wrapper">
+    <button class="close-btn" @click="navigateBack">X</button>
     <div v-if="!hasData">No data available for the selected building.</div>
     <div v-else ref="chart" class="chart-container"></div>
     <!-- Add the Compare button and dropdown -->
     <div class="compare-section">
-      <button v-if="!showDropdown" @click="toggleDropdown">Compare</button>
+      <button v-if="!showDropdown" class="comp-btn" @click="toggleDropdown">Compare</button>
       <div v-else>
         <select v-model="selectedBuilding2" @change="toggleBuilding">
           <option disabled value="">Select a building</option>
@@ -24,11 +25,15 @@
 
 <script setup>
 import { onMounted, ref, nextTick } from 'vue';
-import { useRoute } from "vue-router";
+import { useRoute,useRouter } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
 
 const route = useRoute();
+const router = useRouter();
+const navigateBack = () => {
+  router.push('/sources');
+};
 const buildingName = route.query.buildingName; // Retrieve the building name from query parameters
 
 const chart = ref(null);
@@ -197,11 +202,7 @@ onMounted(async () => {
       title: {
         text: 'Electricity Output Over Time', // Chart title
         left: 'center', // Center the title horizontally
-        top: 'top', // Position the title at the top
-        textStyle: {
-          fontSize: 16, // Adjust font size
-          fontWeight: 'bold'
-      }
+        top: '0%' // Position the title at the top
     },
       tooltip: {
         trigger: 'axis',
@@ -258,7 +259,7 @@ onMounted(async () => {
 .chart-wrapper {
   width: 100%;
   height: 100%;
-  padding: 0;
+  padding-top: 20px;
   box-sizing: border-box;
   overflow: hidden;
   border-radius: 8px; /* Match your box rounding */
@@ -279,7 +280,7 @@ onMounted(async () => {
   text-align: center;
 }
 
-button {
+.comp-btn {
   padding: 10px 20px;
   background-color: #003b70;
   color: white;
@@ -288,8 +289,11 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.comp-btn:hover {
   background-color: #00509e;
+}
+.close-btn:hover {
+  background: #e05555;
 }
 
 select {
@@ -301,6 +305,22 @@ select {
 .highlighted {
   font-weight: bold;
   color: green;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FF6B6B;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
 }
 </style>
 
