@@ -117,6 +117,7 @@ const navigateToGraph = (buildingName) => {
   background-color: white;
   padding: 24px;
   border-radius: 4px;
+  min-height: 500px;
 }
 
 .sources__filters {
