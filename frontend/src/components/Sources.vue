@@ -76,9 +76,6 @@ const filteredBuildings = computed(() => {
   return buildings.filter(b => b.types.includes(activeFilter.value)); // Filter buildings based on the active type
 });
 
-// Selected building
-const selectedBuilding = ref(null);
-
 // Function to select a building and display its graph
 const navigateToGraph = (buildingName) => {
   const formattedName = buildingName.toLowerCase().replace(/\s+/g, "_"); // Format the building name

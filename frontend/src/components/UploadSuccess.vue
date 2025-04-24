@@ -25,13 +25,6 @@
 import { useRouter } from 'vue-router';
 import AppLayout from './AppLayout.vue';
 
-import { ref } from 'vue';
-
-// Function to handle file import
-const handleFileImport = () => {
-  const now = new Date();
-};
-
 /**
  * @file UploadSuccess.vue
  * @description Component to display a success message after a file is successfully uploaded.

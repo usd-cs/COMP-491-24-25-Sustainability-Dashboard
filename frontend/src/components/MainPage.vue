@@ -36,7 +36,6 @@ import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
 import PieChart from './PieChart.vue';
 import LineChart from './LineChart.vue';
-import Sources from './Sources.vue';
 import UploadButton from './UploadButton.vue';
 
 const router = useRouter();

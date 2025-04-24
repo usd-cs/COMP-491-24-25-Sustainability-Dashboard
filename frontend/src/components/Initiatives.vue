@@ -1,20 +1,15 @@
 <template>
     <AppLayout>
       <main class="initiatives__content">
-     
       </main>
     </AppLayout>
     <UploadButton/>
   </template>
   
   <script setup>
-  import { ref, computed } from "vue";
-  import { useRouter } from "vue-router";
   import AppLayout from "./AppLayout.vue";
 import UploadButton from "./UploadButton.vue";
   
-  const router = useRouter();
-
   </script>
   
   <style scoped>

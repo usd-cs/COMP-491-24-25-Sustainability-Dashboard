@@ -28,13 +28,10 @@ import { onMounted, ref, nextTick } from 'vue';
 import { useRoute,useRouter } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
-import router from '@/router/router';
 
 const route = useRoute();
 const router = useRouter();
-const navigateBack = () => {
-  router.push('/sources');
-};
+
 const buildingName = route.query.buildingName; // Retrieve the building name from query parameters
 
 const chart = ref(null);

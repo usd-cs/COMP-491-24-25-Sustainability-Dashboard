@@ -47,8 +47,6 @@ const isActive = (path) => {
  * Navigate to the data upload page.
  * Triggered when the "Upload Data" button in the sidebar is clicked.
  */
- const navigateToSelect = () => router.push('/select');
-
 const navigateToMain = () => {
   router.push('/main');
 };

@@ -19,12 +19,11 @@ vi.mock('vue-router', () => {
 })
 
 describe('Sources.vue', () => {
-  let getByText, getAllByText
+  let getByText
 
   beforeEach(() => {
     const utils = render(Sources)
     getByText = utils.getByText
-    getAllByText = utils.getAllByText
   })
 
   it('renders the logo and nav items', () => {
