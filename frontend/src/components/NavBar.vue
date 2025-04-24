@@ -7,8 +7,15 @@
           </a>
         </div>
         <ul class="nav-items">
-          <li class="navLi"><router-link to="/main" class="navLink" @click.prevent="navigateToMain">Sustainability Dashboard</router-link></li>
-          
+          <li :class="['navLi', isActive('/main') ? 'active-tab' : '']">
+            <router-link to="/main" class="navLink" @click.prevent="navigateToMain">Dashboard</router-link>
+          </li>
+          <li :class="['navLi', isActive('/sources') ? 'active-tab' : '']">
+            <router-link to="/sources" class="navLink" @click.prevent="navigateToSources">Sources</router-link>
+          </li>
+          <li :class="['navLi', isActive('/initiatives') ? 'active-tab' : '']">
+            <router-link to="/initiatives" class="navLink" @click.prevent="navigateToInitiatives">Initiatives</router-link>
+          </li>
         </ul>
         <!-- logout button separated -->
         <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
@@ -65,6 +72,12 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
+
+.active-tab {
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom: 3px solid #004785;
+}
+
 .nav-menu {
     position: fixed; /* Fix the navigation bar at the top */
     top: 0; 

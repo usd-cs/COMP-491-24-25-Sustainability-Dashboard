@@ -1,4 +1,5 @@
 <template>
+  <AppLayout>
     <main class="sources__content">
       <section class="sources__panel">
         <div class="sources__panel-inner">
@@ -30,6 +31,7 @@
         </div>
       </section>
     </main>
+  </AppLayout>
 </template>
 
 <script setup>

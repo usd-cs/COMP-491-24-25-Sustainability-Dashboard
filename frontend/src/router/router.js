@@ -7,6 +7,7 @@ import FileImport from "@/components/FileImport.vue";
 import Sources from "@/components/Sources.vue";
 import SourcesGraph from "@/components/SourcesGraph.vue";
 import Contact from "@/components/Contact.vue";
+import Initiatives from "@/components/Initiatives.vue";
 
 /* expanded / drill-down charts */
 import BarChartExpand from "@/components/BarChartExpand.vue";
@@ -49,7 +50,8 @@ const routes = [
 
   /* misc utility pages */
   { path: "/sources-graph", component: SourcesGraph },
-  { path: "/contact", component: Contact }
+  { path: "/contact", component: Contact },
+  { path: "/initiatives", component: Initiatives}
 ];
 
 /**
