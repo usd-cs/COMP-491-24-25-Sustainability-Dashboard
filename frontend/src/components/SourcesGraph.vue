@@ -1,7 +1,6 @@
 <template>
   <div class="chart-wrapper">
-    <!-- Close (X) Button -->
-<button class="close-button" @click="goBack">X</button>
+<button class="close-btn" @click="navigateBack">X</button>
     <div v-if="!hasData">No data available for the selected building.</div>
     <div v-else ref="chart" class="chart-container"></div>
     <!-- Add the Compare button and dropdown -->
@@ -48,7 +47,7 @@ const buildings = ref([
   { name: "West Parking" }
 ]);
 
-const goBack = () => {
+const navigateBack = () => {
   history.length ? history.back() : (window.location.href = '/');
 };
 
