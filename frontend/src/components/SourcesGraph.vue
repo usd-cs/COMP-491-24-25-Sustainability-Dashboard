@@ -1,16 +1,21 @@
 <template>
   <div class="chart-wrapper">
-<button class="close-btn" @click="navigateBack">X</button>
+    <button class="close-btn" @click="navigateBack">X</button>
     <div v-if="!hasData">No data available for the selected building.</div>
     <div v-else ref="chart" class="chart-container"></div>
     <!-- Add the Compare button and dropdown -->
     <div class="compare-section">
-      <button v-if="!showDropdown" @click="toggleDropdown">Compare</button>
+      <button v-if="!showDropdown" class="comp-btn" @click="toggleDropdown">Compare</button>
       <div v-else>
-        <select v-model="selectedBuilding2" @change="updateBuilding2">
+        <select v-model="selectedBuilding2" @change="toggleBuilding">
           <option disabled value="">Select a building</option>
-          <option v-for="building in buildings" :key="building.name" :value="building.name">
-            {{ building.name }}
+          <option 
+            v-for="building in buildings"
+            :key="building.name"
+            :value="building.name"
+            :class="{ 'highlighted': displayedBuildings.includes(building.name) }"
+            >
+            {{ building.name }} <span v-if="displayedBuildings.includes(building.name)">✔</span>
           </option>
         </select>
       </div>
@@ -20,12 +25,16 @@
 
 <script setup>
 import { onMounted, ref, nextTick } from 'vue';
-import { useRoute } from "vue-router";
+import { useRoute,useRouter } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
 import router from '@/router/router';
 
 const route = useRoute();
+const router = useRouter();
+const navigateBack = () => {
+  router.push('/sources');
+};
 const buildingName = route.query.buildingName; // Retrieve the building name from query parameters
 
 const chart = ref(null);
@@ -33,6 +42,7 @@ const hasData = ref(false); // Notify user if data is not available
 const errorMessage = ref('');
 const showDropdown = ref(false); // Controls the visibility of the dropdown
 const selectedBuilding2 = ref(''); // Stores the second building name
+const displayedBuildings = ref([]); //  reactive property to track the buildings currently displayed on the chart.
 const buildings = ref([
   { name: "Alcala Borrego" },
   { name: "Alcala Laguna" },
@@ -54,46 +64,94 @@ const navigateBack = () => {
 const toggleDropdown = () => {
   showDropdown.value = true;
 };
+const isBuildingDisplayed = (buildingName) => {
+  const chartInstance = echarts.getInstanceByDom(chart.value);
+  if (chartInstance) {
+    const option = chartInstance.getOption();
+    return option.series.some(series => series.name === `Electricity Out (${buildingName})`);
+  }
+  return false;
+};
 // Function to format the building name for the URL
 const formatBuildingName = (name) => {
   return name.toLowerCase().replace(/\s+/g, "_"); // Convert to lowercase and replace spaces with underscores
 };
 
-const updateBuilding2 = async () => {
+const toggleBuilding = async () => {
   if (!selectedBuilding2.value) return;
 
-  const formattedName = formatBuildingName(selectedBuilding2.value); // Format the building name
-
-  try {
-    // Fetch data for the second building
-    const response2 = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
-      params: { buildingName: formattedName } // Pass selected building name as a query parameter
-    });
-    const data2 = response2.data;
-
-    // Extract timestamps and electricity output data for the second building
-    const timestamps2 = data2.map(row => row.timestamp);
-    const electricityOut2 = data2.map(row => row.energy_output || 0); // Use 0 if missing
-
-    // Update the chart with the second building's data
+  const buildingName = selectedBuilding2.value;
+  
+  // Check if the building is already displayed
+  if (displayedBuildings.value.includes(buildingName)) {
+    // Remove the building from the chart
     const chartInstance = echarts.getInstanceByDom(chart.value);
     if (chartInstance) {
       const option = chartInstance.getOption();
-      option.series.push({
-        data: electricityOut2,
-        type: 'line',
-        smooth: true,
-        name: `Electricity Out (${selectedBuilding2.value})`,
-        lineStyle: {
-          type: 'dashed' // Optional: Make the line dashed for distinction
-        }
-      });
-      chartInstance.setOption(option);
+      
+      // Filter out the series for this building
+      const updatedSeries = option.series.filter(
+        series => series.name !== `Electricity Out (${buildingName})`
+      );
+      
+      // Update the chart
+      chartInstance.setOption({ ...option, series: updatedSeries }, true);
+      
+      // Remove from displayedBuildings
+      displayedBuildings.value = displayedBuildings.value.filter(
+        building => building !== buildingName
+      );
     }
-  } catch (error) {
-    console.error('Error fetching data for the second building:', error);
-    errorMessage.value = `Error fetching data: ${error.response ? error.response.data.message : error.message}`;
+  } else {
+    // Add the building to the chart
+    const formattedName = formatBuildingName(buildingName);
+    
+    try {
+      // Fetch data for the building
+      const response = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
+        params: { buildingName: formattedName }
+      });
+      const data = response.data;
+      
+       // Sort data by UTC hour and minute (starting at 12AM) and extract electricity output
+       const sortedData = data.slice().sort((a, b) => {
+        const dateA = new Date(a.timestamp);
+        const dateB = new Date(b.timestamp);
+        const hourA = dateA.getUTCHours();
+        const hourB = dateB.getUTCHours();
+        if (hourA === hourB) {
+          return dateA.getUTCMinutes() - dateB.getUTCMinutes();
+        }
+        return hourA - hourB;
+      });
+      const electricityOut = sortedData.map(row => row.energy_output || 0);
+      
+      // Add to chart
+      const chartInstance = echarts.getInstanceByDom(chart.value);
+      if (chartInstance) {
+        const option = chartInstance.getOption();
+        option.series.push({
+          data: electricityOut,
+          type: 'line',
+          smooth: true,
+          name: `Electricity Out (${buildingName})`,
+          lineStyle: {
+            type: 'dashed'
+          }
+        });
+        
+        chartInstance.setOption(option);
+        
+        // Add to displayedBuildings
+        displayedBuildings.value.push(buildingName);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   }
+  
+  // Reset selection
+  selectedBuilding2.value = '';
 };
 
 onMounted(async () => {
@@ -119,8 +177,18 @@ onMounted(async () => {
     hasData.value = true; // Set hasData to true if data is available
 
     // Extract timestamps and electricity output data
-    const timestamps = data.map(row => row.timestamp);
-    const electricityOut = data.map(row => row.energy_output || 0); // Use 0 if missing
+    const sortedData = data.slice().sort((a, b) => {
+      const dateA = new Date(a.timestamp);
+      const dateB = new Date(b.timestamp);
+      const hourA = dateA.getUTCHours();
+      const hourB = dateB.getUTCHours();
+      if (hourA === hourB) {
+          return dateA.getUTCMinutes() - dateB.getUTCMinutes();
+      }
+      return hourA - hourB;
+    });
+    const timestamps = sortedData.map(row => row.timestamp);
+    const electricityOut = sortedData.map(row => row.energy_output || 0); // Use 0 if missing
 
     // Wait for the DOM to be updated before initializing the chart
     await nextTick();
@@ -139,11 +207,7 @@ onMounted(async () => {
       title: {
         text: 'Electricity Output Over Time', // Chart title
         left: 'center', // Center the title horizontally
-        top: 'top', // Position the title at the top
-        textStyle: {
-          fontSize: 16, // Adjust font size
-          fontWeight: 'bold'
-      }
+        top: '0%' // Position the title at the top
     },
       tooltip: {
         trigger: 'axis',
@@ -161,7 +225,16 @@ onMounted(async () => {
         name: 'Timestamp',
         axisLabel: {
           rotate: 45,
-          formatter: value => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          formatter: value => {
+              const date = new Date(value);
+              let hours = date.getUTCHours();
+              const minutes = date.getUTCMinutes();
+              const ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12;
+              const minuteStr = minutes < 10 ? '0' + minutes : minutes;
+              return `${hours}:${minuteStr}${ampm}`;
+          }
         }
       },
       yAxis: {
@@ -192,7 +265,7 @@ onMounted(async () => {
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 0;
+  padding-top: 20px;
   box-sizing: border-box;
   overflow: hidden;
   border-radius: 8px; /* Match your box rounding */
@@ -232,7 +305,7 @@ onMounted(async () => {
   text-align: center;
 }
 
-button {
+.comp-btn {
   padding: 10px 20px;
   background-color: #003b70;
   color: white;
@@ -241,14 +314,38 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.comp-btn:hover {
   background-color: #00509e;
+}
+.close-btn:hover {
+  background: #e05555;
 }
 
 select {
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
+}
+
+.highlighted {
+  font-weight: bold;
+  color: green;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FF6B6B;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
 }
 </style>
 
