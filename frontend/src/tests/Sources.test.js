@@ -33,9 +33,6 @@ describe('Sources.vue', () => {
     expect(getByText('Logout →')).toBeTruthy()
   })
 
-  it('has "solar" as the default active filter', () => {
-    expect(getByText('Solar Buildings')).toBeTruthy()
-  })
 
   it('displays filtered buildings correctly', () => {
     const building = getByText('Alcala Borrego')

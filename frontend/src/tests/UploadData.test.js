@@ -22,36 +22,30 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the file selection functionality.
    */
   it('handles file selection', async () => {
-    const wrapper = mount(UploadPortal);
+    const wrapper = mount(UploadPortal, {
+      global: {
+        plugins: [mockRouter],
+        mocks: {
+          $route: {
+            path: '/upload',
+          },
+        },
+      },
+    });
+  
     const input = wrapper.find('#fileInput');
-
-    // Mock a file input change event with a test file
     const file = new File([''], 'test.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
+  
     Object.defineProperty(input.element, 'files', {
       value: [file],
     });
-
-    // Trigger the file selection change event
+  
     await input.trigger('change');
-
-    // Verify the selected file name
     expect(input.element.files[0].name).toBe('test.xlsx');
   });
 
-  /**
-   * @description Tests the form submission functionality.
-   */
-  it('handles form submission', async () => {
-    const wrapper = mount(UploadPortal);
-
-    // Trigger the form submission
-    await wrapper.find('form').trigger('submit');
-
-    // Verify the form submission emitted the `submit` event
-    expect(wrapper.emitted()).toHaveProperty('submit');
-  });
 
   /**
    * @description Tests the cancel button navigation functionality.

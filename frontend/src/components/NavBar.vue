@@ -8,7 +8,7 @@
         </div>
         <ul class="nav-items">
           <li :class="['navLi', isActive('/main') ? 'active-tab' : '']">
-            <router-link to="/main" class="navLink" @click.prevent="navigateToMain">Dashboard</router-link>
+            <router-link to="/main" class="navLink" @click.prevent="navigateToMain">Summary</router-link>
           </li>
           <li :class="['navLi', isActive('/sources') ? 'active-tab' : '']">
             <router-link to="/sources" class="navLink" @click.prevent="navigateToSources">Sources</router-link>

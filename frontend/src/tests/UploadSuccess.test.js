@@ -1,6 +1,16 @@
 import { mount } from '@vue/test-utils';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import UploadSuccess from '../components/UploadSuccess.vue';
+
+// ✅ Mock vue-router's useRoute and useRouter
+vi.mock('vue-router', () => ({
+  useRoute: () => ({
+    path: '/success',
+  }),
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
 
 describe('UploadSuccess', () => {
   it('renders correctly', () => {
@@ -42,7 +52,6 @@ describe('UploadSuccess', () => {
     expect(wrapper.find('.success-detail').text()).toBe('Imported file successfully');
     expect(wrapper.find('.success-prompt').text()).toBe('Would you like to import more files?');
   });
-
 
   it('has action buttons', () => {
     const wrapper = mount(UploadSuccess);

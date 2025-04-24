@@ -1,11 +1,22 @@
 import { mount } from '@vue/test-utils';  
-import axios from 'axios';
 import { vi } from 'vitest';
 import { nextTick } from 'vue';
 import UploadData from '../components/UploadData.vue'; 
+import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';
 
-// Mock axios
+// Mocking axios
 vi.mock('axios');
+
+// Mocking useRoute and useRouter hooks
+vi.mock('vue-router', () => ({
+  useRoute: () => ({
+    path: '/upload', // Simulate a path in the route object
+  }),
+  useRouter: () => ({
+    push: vi.fn() // Mock the router's push method
+  })
+}));
 
 // Helper function to create a valid FileList
 function createFileList(file) {
@@ -22,9 +33,20 @@ describe('UploadData.vue', () => {
   beforeEach(() => {
     // Clear any previous mock implementations
     vi.clearAllMocks();
-    
+
     // Reset the wrapper
-    wrapper = null;
+    wrapper = mount(UploadData, {
+      global: {
+        mocks: {
+          $route: {
+            path: '/upload', // or whatever your component expects
+          },
+          $router: {
+            push: vi.fn(),
+          },
+        },
+      },
+    });
   });
 
   test.each([
