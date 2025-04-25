@@ -92,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
 import axios from 'axios';
 import outputIcon from '@/assets/output-onlinepngtools.png';
@@ -208,8 +208,23 @@ function navigateBack() {
   history.length ? history.back() : (window.location.href = '/');
 }
 
-onMounted(fetchData);
-onUnmounted(() => chart && chart.dispose());
+function resizeHandler() {
+  if (chart) chart.resize();
+}
+
+onMounted(async () => {
+  await nextTick();
+  window.addEventListener('resize', resizeHandler);
+  fetchData();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', resizeHandler);
+  if (chart) {
+    chart.dispose();
+    chart = null;
+  }
+});
 </script>
 
 <style scoped>
@@ -218,51 +233,20 @@ onUnmounted(() => chart && chart.dispose());
   background: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  min-height: 100vh;
+  height: 100vh;
   overflow-y: auto;
   position: relative;
   display: flex;
   flex-direction: column;
 }
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  background: #FF6B6B;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 1000;
-}
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.period-label {
-  font: 400 14px/1.4 Inter, sans-serif;
-  color: #333;
-}
-.period-select {
-  background: transparent;
-  color: #333;
-  font: 400 14px/1.4 Inter, sans-serif;
-  border: 1px solid #333;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-}
+
 .chart-container {
   width: 100%;
-  height: calc(100% - 60px);
+  flex: 1;
   position: relative;
   background: #fff;
 }
+
 .loading, .error {
   position: absolute;
   top: 50%;
@@ -283,5 +267,58 @@ onUnmounted(() => chart && chart.dispose());
 .accordion-content {
   margin-top: 10px;
   padding-left: 10px;
+}
+
+.controls {
+  width: 100%;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.period-label {
+  font: 400 14px Inter, sans-serif;
+  color: #333;
+}
+
+.period-select {
+  background-color: transparent;
+  color: #333;
+  font: 400 14px Inter, sans-serif;
+  border: 1px solid #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  appearance: none;
+}
+
+.period-select:hover {
+  background-color: #f1f1f1;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  line-height: 36px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #FF6B6B;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;       
+  pointer-events: auto; 
+}
+
+.close-btn:hover {
+  background-color: #FF2C2C;
 }
 </style>
