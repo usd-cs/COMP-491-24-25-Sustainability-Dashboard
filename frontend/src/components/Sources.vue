@@ -53,17 +53,20 @@ const formatFilterText = (filter) => {
 };
 
 const buildings = [
+  // Solar Panel Buildings (11)
   { name: "Alcala Borrego", types: ["solar"] },
   { name: "Alcala Laguna", types: ["solar"] },
   { name: "Camino Hall", types: ["solar"] },
   { name: "Copley Library", types: ["solar"] },
   { name: "Founders Hall", types: ["solar"] },
   { name: "Jenny Craig Pavilion", types: ["solar"] },
-  { name: "Kroc", types: ["fuelcell"] },
+  { name: "Kroc", types: ["solar"] },
   { name: "Manchester A", types: ["solar"] },
   { name: "Manchester B", types: ["solar"] },
-  { name: "Soles", types: ["solar"] },
-  { name: "West Parking", types: ["fuelcell"] },
+  { name: "Soles/MRH", types: ["solar"] },
+  { name: "West Parking", types: ["solar"] },
+  // Fuel Cell Building (Placeholder)
+  { name: "Bloom Fuel Cell", types: ["fuelcell"], disabled: true }
 ];
 
 // Computed property to filter buildings based on selected filter
@@ -79,8 +82,15 @@ const selectedBuilding = ref(null);
 
 // Function to select a building and display its graph
 const navigateToGraph = (buildingName) => {
-  const formattedName = buildingName.toLowerCase().replace(/\s+/g, "_"); // Format the building name
-  router.push({ path: `/sources-graph`, query: { buildingName: formattedName } }); // Navigate to /sources-graph with query params
+  // Special case for Soles/MRH
+  if (buildingName === "Soles/MRH") {
+    router.push({ path: '/sources-graph', query: { buildingName: 'soles' } });
+    return;
+  }
+  
+  // Default formatting for other buildings
+  const formattedName = buildingName.toLowerCase().replace(/\s+/g, "_");
+  router.push({ path: '/sources-graph', query: { buildingName: formattedName } });
 };
 
 </script>

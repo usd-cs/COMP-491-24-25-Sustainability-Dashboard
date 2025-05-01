@@ -42,6 +42,8 @@ const errorMessage = ref('');
 const showDropdown = ref(false); // Controls the visibility of the dropdown
 const selectedBuilding2 = ref(''); // Stores the second building name
 const displayedBuildings = ref([]); //  reactive property to track the buildings currently displayed on the chart.
+
+// Update buildings array to include dbName for special cases
 const buildings = ref([
   { name: "Alcala Borrego" },
   { name: "Alcala Laguna" },
@@ -52,8 +54,9 @@ const buildings = ref([
   { name: "Kroc" },
   { name: "Manchester A" },
   { name: "Manchester B" },
-  { name: "Soles" },
-  { name: "West Parking" }
+  { name: "Soles/MRH", dbName: "soles" },
+  { name: "West Parking" },
+  { name: "Bloom Fuel Cell", disabled: true }
 ]);
 
 const toggleDropdown = () => {
@@ -67,44 +70,95 @@ const isBuildingDisplayed = (buildingName) => {
   }
   return false;
 };
-// Function to format the building name for the URL
+// Function to format the building name for database queries
 const formatBuildingName = (name) => {
-  return name.toLowerCase().replace(/\s+/g, "_"); // Convert to lowercase and replace spaces with underscores
+  const mappings = {
+    'Soles/MRH': 'soles',
+    'Jenny Craig Pavilion': 'jenny_craig_pavilion',
+    // Add any other special cases here
+  };
+
+  // Check if we have a special mapping for this building
+  if (mappings[name]) {
+    return mappings[name];
+  }
+
+  // Default formatting for other buildings
+  return name.toLowerCase().replace(/\s+/g, '_');
 };
 
+// Add this helper function at the top of your script
+const getDisplayName = (dbName) => {
+  // Find the building with matching name or dbName
+  const building = buildings.value.find(b => 
+    b.dbName === dbName || 
+    formatBuildingName(b.name) === dbName
+  );
+  return building ? building.name : dbName;
+};
+
+// Add this helper function after your existing imports
+const updateChartTitle = (chartInstance, buildings) => {
+  const option = chartInstance.getOption();
+  const title = buildings.length > 1 
+    ? `Comparing: ${buildings.join(' vs ')}`
+    : `Electricity Output: ${buildings[0]}`;
+    
+  option.title = {
+    text: title,
+    left: 'center',
+    top: '0%',
+    textStyle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#003b70'
+    }
+  };
+  
+  chartInstance.setOption(option);
+};
+
+// Modify the toggleBuilding function to update the title
 const toggleBuilding = async () => {
   if (!selectedBuilding2.value) return;
 
-  const buildingName = selectedBuilding2.value;
+  const building = buildings.value.find(b => b.name === selectedBuilding2.value);
+  const queryName = building.dbName || formatBuildingName(building.name);
   
   // Check if the building is already displayed
-  if (displayedBuildings.value.includes(buildingName)) {
+  if (displayedBuildings.value.includes(building.name)) {
     // Remove the building from the chart
     const chartInstance = echarts.getInstanceByDom(chart.value);
     if (chartInstance) {
       const option = chartInstance.getOption();
       
-      // Filter out the series for this building
-      const updatedSeries = option.series.filter(
-        series => series.name !== `Electricity Out (${buildingName})`
+      // Find the index of the series to remove
+      const seriesIndex = option.series.findIndex(
+        series => series.name === `Electricity Out (${building.name})`
       );
       
-      // Update the chart
-      chartInstance.setOption({ ...option, series: updatedSeries }, true);
-      
-      // Remove from displayedBuildings
-      displayedBuildings.value = displayedBuildings.value.filter(
-        building => building !== buildingName
-      );
+      if (seriesIndex !== -1) {
+        // Remove the series
+        option.series.splice(seriesIndex, 1);
+        
+        // Update the chart with the modified series
+        chartInstance.clear();  // Clear the existing chart
+        chartInstance.setOption(option);
+        
+        // Remove from displayedBuildings
+        displayedBuildings.value = displayedBuildings.value.filter(
+          name => name !== building.name
+        );
+        
+        // Update the title after removing the building
+        updateChartTitle(chartInstance, displayedBuildings.value);
+      }
     }
   } else {
-    // Add the building to the chart
-    const formattedName = formatBuildingName(buildingName);
-    
     try {
-      // Fetch data for the building
+      // Use queryName for the API request
       const response = await axios.get(`http://localhost:3000/api/tables/hourlyenergybybuilding`, {
-        params: { buildingName: formattedName }
+        params: { buildingName: queryName }
       });
       const data = response.data;
       
@@ -129,7 +183,7 @@ const toggleBuilding = async () => {
           data: electricityOut,
           type: 'line',
           smooth: true,
-          name: `Electricity Out (${buildingName})`,
+          name: `Electricity Out (${building.name})`,
           lineStyle: {
             type: 'dashed'
           }
@@ -138,7 +192,10 @@ const toggleBuilding = async () => {
         chartInstance.setOption(option);
         
         // Add to displayedBuildings
-        displayedBuildings.value.push(buildingName);
+        displayedBuildings.value.push(building.name);
+        
+        // Update the title after adding the building
+        updateChartTitle(chartInstance, displayedBuildings.value);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -149,6 +206,7 @@ const toggleBuilding = async () => {
   selectedBuilding2.value = '';
 };
 
+// Update the initial chart creation in onMounted
 onMounted(async () => {
   if (!buildingName) {
     console.warn('No building selected.');
@@ -200,10 +258,15 @@ onMounted(async () => {
     // Configure the chart
     const option = {
       title: {
-        text: 'Electricity Output Over Time', // Chart title
-        left: 'center', // Center the title horizontally
-        top: '0%' // Position the title at the top
-    },
+        text: `Electricity Output: ${getDisplayName(buildingName)}`, // Use the formatted display name
+        left: 'center',
+        top: '0%',
+        textStyle: {
+          fontSize: 16,
+          fontWeight: 'bold',
+          color: '#003b70'
+        }
+      },
       tooltip: {
         trigger: 'axis',
         formatter: params => {
@@ -234,7 +297,8 @@ onMounted(async () => {
       },
       yAxis: {
         type: 'value',
-        name: 'Electricity (kWh)'
+        name: 'Electricity (kWh)',
+        min: 0  // Set minimum value to 0
       },
       series: [
         {
@@ -246,6 +310,9 @@ onMounted(async () => {
         }
       ]
     };
+
+    // Initialize displayedBuildings with the proper display name
+    displayedBuildings.value = [getDisplayName(buildingName)];
 
     chartInstance.setOption(option); // Set the chart option
   } catch (error) {
@@ -278,34 +345,84 @@ onMounted(async () => {
 .compare-section {
   margin-top: 20px;
   text-align: center;
+  min-width: 200px;
 }
 
 .comp-btn {
-  padding: 10px 20px;
-  background-color: #003b70;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  padding: 8px 16px;
+  background-color: #fff;
+  color: #003b70;
+  border: 2px solid #003b70;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .comp-btn:hover {
-  background-color: #00509e;
+  background-color: #003b70;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
+
+.comp-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 .close-btn:hover {
   background: #e05555;
 }
 
 select {
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  padding: 8px 16px;
+  background-color: #fff;
+  color: #003b70;
+  border: 2px solid #003b70;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-width: 200px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23003b70%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 30px;
+}
+
+select:hover {
+  border-color: #003b70;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+select:focus {
+  outline: none;
+  border-color: #003b70;
+  box-shadow: 0 0 0 3px rgba(0,59,112,0.2);
+}
+
+option {
+  padding: 8px;
+  color: #003b70;
+}
+
+option:checked {
+  background-color: #003b70;
+  color: white;
 }
 
 .highlighted {
-  font-weight: bold;
-  color: green;
+  color: #003b70;
+  font-weight: 600;
+  background-color: rgba(0,59,112,0.1);
 }
+
 .close-btn {
   position: absolute;
   top: 10px;
