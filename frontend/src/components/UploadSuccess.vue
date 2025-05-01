@@ -42,7 +42,7 @@ const handleFileImport = () => {
  * Navigates to the main dashboard page.
  */
 const navigateToMainPage = () => {
-  router.push('/main');
+  router.push('/');
 };
 
 /**
