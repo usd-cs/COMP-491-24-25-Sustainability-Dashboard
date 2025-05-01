@@ -98,7 +98,7 @@ describe('BarChartExpand.vue', () => {
 
     // Overview mode → X should go to /main
     await wrapper.find('button.close-btn').trigger('click');
-    expect(routerPush).toHaveBeenCalledWith('/main');
+    expect(routerPush).toHaveBeenCalledWith('/');
 
     // Now simulate we are in drilldown
     wrapper.vm.isDrilldown = true;

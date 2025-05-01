@@ -388,7 +388,7 @@ export default {
     },
 
     navigateBack() {
-      this.$router.push('/main');
+      this.$router.push('/');
     }
   }
 };

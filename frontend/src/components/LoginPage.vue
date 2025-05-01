@@ -69,7 +69,7 @@ const handleSubmit = async () => {
     if (response.status === 200) {
       alert(response.data.message); // Show success message
       localStorage.setItem('userId', response.data.user.user_id); // Save user ID in localStorage
-      router.push('/main'); // Redirect to MainPage.vue
+      router.push('/select'); // Redirect to MainPage.vue
     }
   } catch (error) {
     // Handle error responses

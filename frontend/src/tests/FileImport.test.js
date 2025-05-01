@@ -6,7 +6,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/main', name: 'Main' },
+    { path: '/', name: 'Main' },
     { path: '/upload', name: 'Upload' }
   ]
 });
@@ -49,6 +49,6 @@ describe('FileImport.vue', () => {
     });
     
     await wrapper.find('.file-import__cancel').trigger('click');
-    expect(router.push).toHaveBeenCalledWith('/main');
+    expect(router.push).toHaveBeenCalledWith('/');
   });
 });

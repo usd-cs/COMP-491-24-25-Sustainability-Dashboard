@@ -68,7 +68,7 @@ vi.spyOn(mockRouter, 'push');
     await wrapper.find('.cancel-btn').trigger('click');
 
     // Verify navigation to the main page
-    expect(mockRouter.push).toHaveBeenCalledWith('/main');
+    expect(mockRouter.push).toHaveBeenCalledWith('/');
   });
 
   /**

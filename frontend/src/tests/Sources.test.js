@@ -1,31 +1,36 @@
 import { render, fireEvent } from '@testing-library/vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import Sources from '../components/Sources.vue'
 
+const routes = [
+  { path: '/', component: { template: '<div>Summary</div>' } },
+  { path: '/sources', component: { template: '<div>Sources</div>' } },
+  { path: '/initiatives', component: { template: '<div>Initiatives</div>' } },
+  { path: '/sources-graph', component: { template: '<div>Graph</div>' } }
+];
 
-// Mock router
-const push = vi.fn()
-
-vi.mock('vue-router', () => {
-  return {
-    useRouter: () => ({
-      push
-    }),
-    useRoute: () => ({
-      path: '/mock-path', // Mocked route path
-      query: {} // Mocked query parameters
-    })
-  }
-})
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
 
 describe('Sources.vue', () => {
-  let getByText, getAllByText
+  let getByText, getAllByText;
+  let pushSpy;
 
-  beforeEach(() => {
-    const utils = render(Sources)
+  beforeEach(async() => {
+    pushSpy = vi.spyOn(router, 'push');
+    const utils = render(Sources, {
+      global: {
+        plugins: [router]
+      }
+    });
     getByText = utils.getByText
     getAllByText = utils.getAllByText
-  })
+    // Wait for the router to be ready
+    await router.isReady();
+  });
 
   it('renders the logo and nav items', () => {
     expect(getByText('Summary')).toBeTruthy()
@@ -46,29 +51,29 @@ describe('Sources.vue', () => {
   })
 
   it('navigates to building graph on card click', async () => {
-    const card = getByText('Alcala Borrego')
-    await fireEvent.click(card)
-    expect(push).toHaveBeenCalledWith({
+    const card = getByText('Alcala Borrego');
+    await fireEvent.click(card);
+    expect(pushSpy).toHaveBeenCalledWith({
       path: '/sources-graph',
       query: { buildingName: 'alcala_borrego' }
-    })
-  })
+    });
+  });
 
   it('navigates via nav buttons', async () => {
     await fireEvent.click(getByText('Summary'))
-    expect(push).toHaveBeenCalledWith('/main')
+    expect(pushSpy).toHaveBeenCalledWith('/')
 
     await fireEvent.click(getByText('Sources'))
-    expect(push).toHaveBeenCalledWith('/sources')
+    expect(pushSpy).toHaveBeenCalledWith('/sources')
 
     await fireEvent.click(getByText('Initiatives'))
-    expect(push).toHaveBeenCalledWith('/initiatives')
+    expect(pushSpy).toHaveBeenCalledWith('/initiatives')
 
   })
 
   it('logs out when logout button is clicked', async () => {
     const logoutBtn = getByText('Logout →')
     await fireEvent.click(logoutBtn)
-    expect(push).toHaveBeenCalledWith('/')
+    expect(pushSpy).toHaveBeenCalledWith('/')
   })
 })

@@ -163,7 +163,7 @@ export default {
   },
   methods: {
     navigateBack() {
-      this.$router.push('/main');
+      this.$router.push('/');
     },
     async fetchChartData() {
       try {
