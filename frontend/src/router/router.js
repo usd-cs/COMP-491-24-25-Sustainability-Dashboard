@@ -33,7 +33,7 @@ import LineChartExpand from "@/components/LineChartExpand.vue";
  * @type {Array<{ path: string, component: Object, [props]?: Object }>}
  */
 const routes = [
-  { path: "/main", component: MainPage },
+  { path: "/", component: MainPage },
   { path: "/login", component: LoginPage },
 
   /* data ingestion */
