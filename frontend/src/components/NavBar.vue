@@ -7,10 +7,10 @@
           </a>
         </div>
         <ul class="nav-items">
-          <li class="navLi"><router-link to="/" class="navLink" active-class="active" @click.prevent="navigateToMain">Summary</router-link></li>
-          <li class="navLi"><router-link to="/sources" class="navLink" active-class="active" @click.prevent="navigateToSources">Sources</router-link></li>
-          <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active" @click.prevent="navigateToInitiatives">Initiatives</router-link></li>
-          <li class="navLi"><router-link to="/login" class="navLink" active-class="active" @click.prevent="navigateToSelect">Upload</router-link></li>
+          <li class="navLi"><router-link to="/" class="navLink" active-class="active">Summary</router-link></li>
+          <li class="navLi"><router-link to="/sources" class="navLink" active-class="active">Sources</router-link></li>
+          <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active">Initiatives</router-link></li>
+          <li class="navLi"><router-link to="/login" class="navLink" active-class="active">Upload</router-link></li>
         </ul>
         <!-- logout button separated -->
         <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
@@ -28,29 +28,6 @@ import { useRouter, useRoute } from 'vue-router'; // Import Vue Router for navig
 
 const router = useRouter();
 const route = useRoute();
-
-const isActive = (path) => {
-  return route.path === path;
-};
-
-/**
- * Navigate to the data upload page.
- * Triggered when the "Upload Data" button in the sidebar is clicked.
- */
- const navigateToSelect = () => router.push('/select');
-
-const navigateToMain = () => {
-  router.push('/main');
-};
-
-const navigateToSources = () => {
-  router.push('/sources');
-};
-
-const navigateToInitiatives = () => {
-  router.push('/initiatives');
-};
-
 
 /**
  * Handle user logout.
