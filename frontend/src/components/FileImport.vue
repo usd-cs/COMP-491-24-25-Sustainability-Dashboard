@@ -105,7 +105,7 @@ onMounted(() => {
 });
 // navigation
 const navigateToMain = () => {
-  router.push("/main");
+  router.push("/");
 };
 
 const navigateToUpload = () => {

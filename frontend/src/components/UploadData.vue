@@ -142,7 +142,7 @@ const handleFileSelect = (event) => {
 };
 
 const handleCancel = () => {
-  router.push('/main');
+  router.push('/');
 };
 
 const handleBack = () => {
