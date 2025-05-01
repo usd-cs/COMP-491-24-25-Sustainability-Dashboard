@@ -7,7 +7,7 @@
           </a>
         </div>
         <ul class="nav-items">
-          <li class="navLi"><router-link to="/main" class="navLink" active-class="active" @click.prevent="navigateToMain">Summary</router-link></li>
+          <li class="navLi"><router-link to="/" class="navLink" active-class="active" @click.prevent="navigateToMain">Summary</router-link></li>
           <li class="navLi"><router-link to="/sources" class="navLink" active-class="active" @click.prevent="navigateToSources">Sources</router-link></li>
           <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active" @click.prevent="navigateToInitiatives">Initiatives</router-link></li>
           <li class="navLi"><router-link to="/login" class="navLink" active-class="active" @click.prevent="navigateToSelect">Upload</router-link></li>
