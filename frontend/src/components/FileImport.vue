@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import AppLayout from "./AppLayout.vue";
 import axios from "axios";  

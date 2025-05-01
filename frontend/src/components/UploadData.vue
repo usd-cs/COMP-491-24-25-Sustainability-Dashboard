@@ -31,6 +31,31 @@
               <p class="file-format-info">
                 Importing requires a {{ selectedSource === 'Athena' ? 'CSV' : 'Microsoft Excel (.xlsx)' }} file.
               </p>
+              <!-- Athena-specific instructions -->
+              <div v-if="selectedSource === 'Athena'" class="athena-settings">
+                <h3>Athena File Settings:</h3>
+                <ol>
+                  <li>Navigate to <strong>“all_meters_1_week_hourly”</strong> to edit</li>
+                  <li>Export As Data (<strong>.csv</strong>)</li>
+                  <li>Set to desired reporting range</li>
+                  <li>Check:
+                    <ul>
+                      <li>Combine Result Rows Into A Single Table</li>
+                      <li>Combine Results Into One Row Per Timestamp</li>
+                    </ul>
+                  </li>
+                </ol>
+              </div>
+
+              <!-- Bloom-specific instructions -->
+              <div v-if="selectedSource === 'Bloom'" class="source-settings">
+                <h3>Bloom File Settings:</h3>
+                <ol>
+                  <li>Reports &gt; Data Extract</li>
+                  <li>Time Interval: Select <strong>Daily</strong></li>
+                  <li>Timeframe: Select desired timeframe</li>
+                </ol>
+              </div>
             </div>
           </div>
           
@@ -152,6 +177,32 @@ const handleBack = () => {
 </script>
 
 <style scoped>
+
+.athena-settings {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e8f1fa;
+  border-left: 4px solid #003b70;
+  color: #003b70;
+}
+
+.athena-settings h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.source-settings {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e8f1fa;
+  border-left: 4px solid #003b70;
+  color: #003b70;
+}
+
+.source-settings h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
 
 .upload-portal {
   display: flex;
