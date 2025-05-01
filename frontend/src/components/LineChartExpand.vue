@@ -205,7 +205,7 @@ function updateChart() {
 }
 
 function navigateBack() {
-  history.length ? history.back() : (window.location.href = '/');
+  this.$router.push('/');
 }
 
 function resizeHandler() {
