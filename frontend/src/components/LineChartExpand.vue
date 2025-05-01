@@ -93,6 +93,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
 import * as echarts from 'echarts';
 import axios from 'axios';
 import outputIcon from '@/assets/output-onlinepngtools.png';
@@ -204,10 +205,6 @@ function updateChart() {
   }
 }
 
-function navigateBack() {
-  this.$router.push('/');
-}
-
 function resizeHandler() {
   if (chart) chart.resize();
 }
@@ -225,6 +222,11 @@ onUnmounted(() => {
     chart = null;
   }
 });
+
+const router = useRouter();
+const navigateBack = () => {
+  router.push("/");
+};
 </script>
 
 <style scoped>
