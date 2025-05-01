@@ -66,7 +66,7 @@ describe('PieChartWithAccordion.vue', () => {
       global: { mocks: { $router: { push } } }
     });
     wrapper.vm.navigateBack();
-    expect(push).toHaveBeenCalledWith('/main');
+    expect(push).toHaveBeenCalledWith('/');
   });
 
   it('adds and removes resize listener', () => {

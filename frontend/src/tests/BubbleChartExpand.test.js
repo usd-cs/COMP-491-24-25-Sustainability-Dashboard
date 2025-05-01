@@ -59,13 +59,13 @@ describe('BubbleChartExpand.vue', () => {
     expect(mockInstance.setOption).toHaveBeenCalled();
   });
 
-  it('navigateBack pushes to /main', () => {
+  it('navigateBack pushes to /', () => {
     const mockPush = vi.fn();
     const wrapper = mount(BubbleChartExpand, {
       global: { mocks: { $router: { push: mockPush } } }
     });
     wrapper.vm.navigateBack();
-    expect(mockPush).toHaveBeenCalledWith('/main');
+    expect(mockPush).toHaveBeenCalledWith('/');
   });
 
   it('cleans up resize listener on unmount', () => {
