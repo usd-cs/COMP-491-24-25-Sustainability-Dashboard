@@ -1,3 +1,7 @@
+/**
+ * @file UploadSuccess.test.js
+ * @description Unit tests for the `UploadSuccess` component using Vitest and Vue Test Utils.
+ */
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import UploadSuccess from '../components/UploadSuccess.vue';
