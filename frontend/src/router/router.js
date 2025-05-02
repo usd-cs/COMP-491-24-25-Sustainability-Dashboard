@@ -32,11 +32,11 @@ import LineChartExpand from "@/components/LineChartExpand.vue";
  * @type {Array<{ path: string, component: Object, [props]?: Object }>}
  */
 const routes = [
+  /* Landing page*/
   { path: "/", component: MainPage },
-  { path: "/login", component: LoginPage },
 
   /* data ingestion */
-  { path: "/sources", component: Sources },
+  { path: "/login", component: LoginPage },
   { path: "/select", component: FileImport },
   { path: "/upload", component: UploadData },
   { path: "/upload-success", component: UploadSuccess },
@@ -48,6 +48,7 @@ const routes = [
   { path: "/line-chart", component: LineChartExpand },
 
   /* misc utility pages */
+  { path: "/sources", component: Sources },
   { path: "/sources-graph", component: SourcesGraph },
   { path: "/initiatives", component: Initiatives }
 ];
