@@ -7,7 +7,6 @@ import FileImport from "@/components/FileImport.vue";
 import Sources from "@/components/Sources.vue";
 import SourcesGraph from "@/components/SourcesGraph.vue";
 import Initiatives from "@/components/Initiatives.vue";
-import Contact from "@/components/Contact.vue";
 
 /* expanded / drill-down charts */
 import BarChartExpand from "@/components/BarChartExpand.vue";
@@ -24,20 +23,28 @@ import LineChartExpand from "@/components/LineChartExpand.vue";
 /**
  * Route definitions
  *
- * - `/`               → Login page
- * - `/main`           → Main dashboard
+ * - `/`           → Main dashboard
+ * - `/sources`        → Sources tab
+ * - `/initiatives`    → Initiatives tab
+ * - `/login`          → Upload tab
+ * - `/select`         → File selection page
  * - `/upload`         → Data-upload form
  * - `/upload-success` → Upload confirmation
- * - plus drill-down pages for each chart and other utility pages
+ * - `/bar-chart`      → Expanded bar chart
+ * - `/pie-chart`      → Expanded pie chart
+ * - `/line-chart`     → Expanded line chart
+ * - `/bubble-chart`   → Expanded bubble chart
+ * - `/sources-graph`  → Individual buildings graph
+
  *
  * @type {Array<{ path: string, component: Object, [props]?: Object }>}
  */
 const routes = [
+  /* Landing page*/
   { path: "/", component: MainPage },
-  { path: "/login", component: LoginPage },
 
   /* data ingestion */
-  { path: "/sources", component: Sources },
+  { path: "/login", component: LoginPage },
   { path: "/select", component: FileImport },
   { path: "/upload", component: UploadData },
   { path: "/upload-success", component: UploadSuccess },
@@ -49,9 +56,9 @@ const routes = [
   { path: "/line-chart", component: LineChartExpand },
 
   /* misc utility pages */
+  { path: "/sources", component: Sources },
   { path: "/sources-graph", component: SourcesGraph },
-  { path: "/initiatives", component: Initiatives },
-  { path: "/contact", component: Contact }
+  { path: "/initiatives", component: Initiatives }
 ];
 
 /**

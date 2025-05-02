@@ -1,6 +1,10 @@
+/**
+ * @file UploadPortal.test.js
+ * @description Unit tests for the `UploadData` component using Vitest and Vue Test Utils.
+ */
 import { mount } from '@vue/test-utils';  
 import axios from 'axios';
-import { vi } from 'vitest';
+import { expect,vi } from 'vitest';
 import { nextTick } from 'vue';
 import UploadData from '../components/UploadData.vue'; 
 
@@ -39,7 +43,17 @@ describe('UploadData.vue', () => {
     Storage.prototype.getItem = getItemMock;
 
     // Mount component after setting up localStorage
-    wrapper = mount(UploadData);
+    wrapper = mount(UploadData, {
+      global: {
+          stubs: {
+              AppLayout: {
+                  template: '<div><slot /></div>'
+              },
+              NavBar: true,
+              'router-link': true
+          }
+      }
+    });
     await nextTick();
 
     // Create a mock file

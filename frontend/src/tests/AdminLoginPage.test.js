@@ -4,10 +4,7 @@
  */
 
 import { mount } from '@vue/test-utils';
-
 import { createRouter, createWebHistory } from 'vue-router';
-import { createTestingPinia } from '@pinia/testing';
-
 import { describe, it, expect } from 'vitest';
 import AdminLoginPage from '../components/LoginPage.vue';
 
@@ -31,7 +28,16 @@ describe('AdminLoginPage', () => {
    * @description Tests if the component renders correctly.
    */
   it('renders correctly', () => {
-    const wrapper = mount(AdminLoginPage);
+    const wrapper = mount(AdminLoginPage, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
     expect(wrapper.exists()).toBe(true); // Check if the component mounts correctly
     expect(wrapper.find('.login-form').exists()).toBe(true); // Ensure root class exists
     expect(wrapper.find('.form-title').text()).toContain('administrative login'); // Check header title
@@ -41,7 +47,16 @@ describe('AdminLoginPage', () => {
    * @description Tests if the email and password input fields are present.
    */
   it('has email and password inputs', () => {
-    const wrapper = mount(AdminLoginPage);
+    const wrapper = mount(AdminLoginPage, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
     expect(wrapper.find('#email').exists()).toBe(true); // Check for email input
     expect(wrapper.find('#password').exists()).toBe(true); // Check for password input
   });
@@ -50,7 +65,16 @@ describe('AdminLoginPage', () => {
    * @description Tests if the v-model bindings update correctly when input values change.
    */
   it('updates v-model when input changes', async () => {
-    const wrapper = mount(AdminLoginPage);
+    const wrapper = mount(AdminLoginPage, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
 
     // Test email input
     const emailInput = wrapper.find('#email');
@@ -67,7 +91,16 @@ describe('AdminLoginPage', () => {
    * @description Tests if the form submits correctly with email and password values.
    */
   it('submits form with email and password', async () => {
-    const wrapper = mount(AdminLoginPage);
+    const wrapper = mount(AdminLoginPage, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
 
     // Simulate input values
     const emailInput = wrapper.find('#email');
@@ -88,7 +121,16 @@ describe('AdminLoginPage', () => {
    * @description Tests if the login page fills the viewport height.
    */
   it('fills viewport height', async () => {
-    const wrapper = mount(AdminLoginPage);
+    const wrapper = mount(AdminLoginPage, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
 
     // Check computed style of the root element
     const loginPage = wrapper.find('.login-form');

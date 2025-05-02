@@ -10,24 +10,33 @@
           <li class="navLi"><router-link to="/" class="navLink" active-class="active">Summary</router-link></li>
           <li class="navLi"><router-link to="/sources" class="navLink" active-class="active">Sources</router-link></li>
           <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active">Initiatives</router-link></li>
-          <li class="navLi"><router-link to="/login" class="navLink" active-class="active">Upload</router-link></li>
+          <li class="navLi"><router-link to="/login" class="navLink" :class="{ active: isUploadRoute }">Upload</router-link></li>
         </ul>
         <!-- logout button separated -->
-        <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
+        <button v-if="logOutOption" class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
       </div>
     </header>
 </template>
 
 <script setup>
 /**
- * @file MainPage.vue
- * @description This Vue component represents the main dashboard page. It includes a header, navigation sidebar, and placeholders for dashboard visuals and data upload functionality.
+ * @file Navbar.vue
+ * @description This Vue component represents the header/navigation menu. It includes the USD logo and navigation links.
  */
 
 import { useRouter, useRoute } from 'vue-router'; // Import Vue Router for navigation
+import { computed } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
+
+const isUploadRoute = computed(() =>
+  ['/login', '/select', '/upload', '/upload-success'].includes(route.path)
+);
+
+const logOutOption = computed(() =>
+  [ '/select', '/upload', '/upload-success'].includes(route.path)
+);
 
 /**
  * Handle user logout.
