@@ -4,18 +4,12 @@
  */
 import { mount } from '@vue/test-utils';  
 import axios from 'axios';
-import { vi } from 'vitest';
+import { expect,vi } from 'vitest';
 import { nextTick } from 'vue';
 import UploadData from '../components/UploadData.vue'; 
 
 // Mock axios
 vi.mock('axios');
-
-// Create a mock Vue Router instance
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [],
-});
 
 // Helper function to create a valid FileList
 function createFileList(file) {
@@ -49,7 +43,17 @@ describe('UploadData.vue', () => {
     Storage.prototype.getItem = getItemMock;
 
     // Mount component after setting up localStorage
-    wrapper = mount(UploadData);
+    wrapper = mount(UploadData, {
+      global: {
+          stubs: {
+              AppLayout: {
+                  template: '<div><slot /></div>'
+              },
+              NavBar: true,
+              'router-link': true
+          }
+      }
+    });
     await nextTick();
 
     // Create a mock file
