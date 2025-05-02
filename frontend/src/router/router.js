@@ -23,11 +23,19 @@ import LineChartExpand from "@/components/LineChartExpand.vue";
 /**
  * Route definitions
  *
- * - `/`               → Login page
- * - `/main`           → Main dashboard
+ * - `/`           → Main dashboard
+ * - `/sources`        → Sources tab
+ * - `/initiatives`    → Initiatives tab
+ * - `/login`          → Upload tab
+ * - `/select`         → File selection page
  * - `/upload`         → Data-upload form
  * - `/upload-success` → Upload confirmation
- * - plus drill-down pages for each chart and other utility pages
+ * - `/bar-chart`      → Expanded bar chart
+ * - `/pie-chart`      → Expanded pie chart
+ * - `/line-chart`     → Expanded line chart
+ * - `/bubble-chart`   → Expanded bubble chart
+ * - `/sources-graph`  → Individual buildings graph
+
  *
  * @type {Array<{ path: string, component: Object, [props]?: Object }>}
  */
