@@ -10,7 +10,7 @@
           <li class="navLi"><router-link to="/" class="navLink" active-class="active">Summary</router-link></li>
           <li class="navLi"><router-link to="/sources" class="navLink" active-class="active">Sources</router-link></li>
           <li class="navLi"><router-link to="/initiatives" class="navLink" active-class="active">Initiatives</router-link></li>
-          <li class="navLi"><router-link to="/login" class="navLink":class="{ active: isUploadRoute }">Upload</router-link></li>
+          <li class="navLi"><router-link to="/login" class="navLink" :class="{ active: isUploadRoute }">Upload</router-link></li>
         </ul>
         <!-- logout button separated -->
         <button v-if="logOutOption" class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
