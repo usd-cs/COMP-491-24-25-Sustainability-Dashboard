@@ -71,18 +71,18 @@ vi.spyOn(mockRouter, 'push');
   });
 
   /**
-   * @description Tests the logout button navigation functionality.
+   * @description Tests the back button navigation functionality.
    */
-  it('handles logout action', async () => {
-    const wrapper = mount(UploadPortal, {
+  it('handles back action', async () => {
+    const wrapper = mount(uploadData, {
       global: {
         plugins: [mockRouter],
       },
     });
 
-    // Trigger the logout button click
-    await wrapper.find('.logout-btn').trigger('click');
+    // Trigger the back button click
+    await wrapper.find('.back-btn').trigger('click');
 
-    // Verify navigation to the login page
-    expect(mockRouter.push).toHaveBeenCalledWith('/');
+    // Verify navigation to the file selection page
+    expect(mockRouter.push).toHaveBeenCalledWith('/select');
   });
