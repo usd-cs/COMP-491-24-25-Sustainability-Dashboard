@@ -6,6 +6,8 @@
         <div class="story-graphic">
           <EmissionsChart v-if="activeStep === 0" />
           <WaterChart v-else-if="activeStep === 1" />
+          <WasteChart v-else-if="activeStep === 2" />
+          <VehicleGraph v-else-if="activeStep === 3" />
         </div>
 
         <!-- scroll “steps” -->
@@ -22,6 +24,18 @@
               </p>
             </div>
           </section>
+          <section class="step" data-step="2">
+            <div class="step-content">
+              <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
+              </p>
+            </div>
+          </section>
+          <section class="step" data-step="3">
+            <div class="step-content">
+              <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
+              </p>
+            </div>
+          </section>
           <!-- TODO: more steps… -->
         </div>
       </div>
@@ -30,11 +44,12 @@
 </template>
 
 <script setup>
-import { useRouter} from 'vue-router';
 import AppLayout from './AppLayout.vue';
 import { ref,onMounted } from 'vue';
 import EmissionsChart from './EmissionsChart.vue';
 import WaterChart from './WaterUsageChart.vue';
+import WasteChart from './WasteChart.vue';
+import VehicleGraph from './VehicleGraph.vue';
 
 const activeStep = ref(0);
 
