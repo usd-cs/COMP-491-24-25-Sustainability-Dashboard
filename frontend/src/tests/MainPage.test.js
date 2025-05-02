@@ -32,12 +32,10 @@ describe('DashboardLayout', () => {
   });
 
   /**
-   * @description Tests if the logout button is present in the layout.
+   * @description Tests if the graph display area is present in the layout.
    */
-  it('has logout button', () => {
+  it('has graph display', () => {
     const wrapper = mount(DashboardLayout);
-    expect(wrapper.find('.logout-btn').exists()).toBe(true); // Verify logout button exists
+    expect(wrapper.find('.visual-container').exists()).toBe(true);
   });
-
-
 });
