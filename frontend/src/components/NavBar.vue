@@ -20,8 +20,8 @@
 
 <script setup>
 /**
- * @file MainPage.vue
- * @description This Vue component represents the main dashboard page. It includes a header, navigation sidebar, and placeholders for dashboard visuals and data upload functionality.
+ * @file Navbar.vue
+ * @description This Vue component represents the header/navigation menu. It includes the USD logo and navigation links.
  */
 
 import { useRouter, useRoute } from 'vue-router'; // Import Vue Router for navigation
