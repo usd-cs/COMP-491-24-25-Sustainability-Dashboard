@@ -13,7 +13,7 @@ const option = {
     text: 'Types of Vehicles in Fleet',
     left: 'center'
   },
-  color: ['#BDBDBD', '#9E9E9E', '#757575', '#424242'], // gray variants
+  color: ['#757575','#424242','#BDBDBD', '#9E9E9E'], // gray variants
   tooltip: {
     trigger: 'axis',
     axisPointer: {
