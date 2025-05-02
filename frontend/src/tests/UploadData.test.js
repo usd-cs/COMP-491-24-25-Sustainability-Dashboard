@@ -22,7 +22,11 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the file selection functionality.
    */
   it('handles file selection', async () => {
-    const wrapper = mount(uploadData);
+    const wrapper = mount(uploadData, {
+        global: {
+            plugins: [mockRouter],
+        },
+    });
     const input = wrapper.find('#fileInput');
 
     // Mock a file input change event with a test file
@@ -44,7 +48,11 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the form submission functionality.
    */
   it('handles form submission', async () => {
-    const wrapper = mount(uploadData);
+    const wrapper = mount(uploadData, {
+      global: {
+          plugins: [mockRouter],
+      },
+    });
 
     // Trigger the form submission
     await wrapper.find('form').trigger('submit');
