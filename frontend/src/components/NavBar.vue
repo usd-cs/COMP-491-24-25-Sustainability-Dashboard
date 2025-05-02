@@ -13,7 +13,7 @@
           <li class="navLi"><router-link to="/login" class="navLink":class="{ active: isUploadRoute }">Upload</router-link></li>
         </ul>
         <!-- logout button separated -->
-        <button class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
+        <button v-if="logOutOption" class="logout-btn" @click="handleLogout" tabindex="0">Logout →</button>
       </div>
     </header>
 </template>
@@ -32,6 +32,10 @@ const route = useRoute();
 
 const isUploadRoute = computed(() =>
   ['/login', '/select', '/upload', '/upload-success'].includes(route.path)
+);
+
+const logOutOption = computed(() =>
+  [ '/select', '/upload', '/upload-success'].includes(route.path)
 );
 
 /**
