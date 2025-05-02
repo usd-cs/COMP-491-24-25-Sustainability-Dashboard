@@ -1,13 +1,10 @@
 /**
- * @file DashboardLayout.test.js
- * @description Unit tests for the `DashboardLayout` component using Vitest and Vue Test Utils.
+ * @file MainPage.test.js
+ * @description Unit tests for the `MainPage` component using Vitest and Vue Test Utils.
  */
 
 import { mount } from '@vue/test-utils';
-
 import { createRouter, createWebHistory } from 'vue-router';
-import { createTestingPinia } from '@pinia/testing';
-
 import { describe, it, expect } from 'vitest';
 import DashboardLayout from '../components/MainPage.vue';
 
