@@ -35,7 +35,22 @@ describe('DashboardLayout', () => {
    * @description Tests if the graph display area is present in the layout.
    */
   it('has graph display', () => {
-    const wrapper = mount(DashboardLayout);
+    const wrapper = mount(DashboardLayout, {
+      global: {
+        plugins: [router],
+      },
+    });
     expect(wrapper.find('.visual-container').exists()).toBe(true);
+  });
+  /**
+   * @description Tests if the renewable energy visual is present in the layout.
+   */
+  it('has renewable energy visual', () => {
+    const wrapper = mount(DashboardLayout, {
+      global: {
+        plugins: [router],
+      },
+    });
+    expect(wrapper.find('.bottom-visual-container').exists()).toBe(true);
   });
 });
