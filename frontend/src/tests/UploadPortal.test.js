@@ -11,6 +11,12 @@ import UploadData from '../components/UploadData.vue';
 // Mock axios
 vi.mock('axios');
 
+// Create a mock Vue Router instance
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [],
+});
+
 // Helper function to create a valid FileList
 function createFileList(file) {
   const fileList = { length: 1, 0: file };
