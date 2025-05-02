@@ -16,14 +16,18 @@ const router = createRouter({
 
 
 /**
- * @description Test suite for the `DashboardLayout` component.
+ * @description Test suite for the DashboardLayout.
  */
 describe('DashboardLayout', () => {
   /**
    * @description Tests if the component renders correctly.
    */
-  it('renders correctly', () => {
-    const wrapper = mount(DashboardLayout);
+  it('Main renders correctly', () => {
+    const wrapper = mount(DashboardLayout, {
+      global: {
+        plugins: [router],
+      },
+    });
     expect(wrapper.exists()).toBe(true); // Check if the component mounts correctly
   });
 
