@@ -1,6 +1,6 @@
 /**
- * @file UploadPortal.test.js
- * @description Unit tests for the `UploadPortal` component using Vitest and Vue Test Utils.
+ * @file UploadData.test.js
+ * @description Unit tests for the `UploadData` component using Vitest and Vue Test Utils.
  */
 
 import { mount } from '@vue/test-utils';
@@ -23,7 +23,7 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the file selection functionality.
    */
   it('handles file selection', async () => {
-    const wrapper = mount(UploadPortal);
+    const wrapper = mount(uploadData);
     const input = wrapper.find('#fileInput');
 
     // Mock a file input change event with a test file
@@ -45,7 +45,7 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the form submission functionality.
    */
   it('handles form submission', async () => {
-    const wrapper = mount(UploadPortal);
+    const wrapper = mount(uploadData);
 
     // Trigger the form submission
     await wrapper.find('form').trigger('submit');
@@ -58,7 +58,7 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the cancel button navigation functionality.
    */
   it('handles cancel action', async () => {
-    const wrapper = mount(UploadPortal, {
+    const wrapper = mount(uploadData, {
       global: {
         plugins: [mockRouter],
       },
