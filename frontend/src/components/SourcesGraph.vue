@@ -269,6 +269,85 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Styles for screens larger than 768px (tablets and desktops) */
+@media (min-width: 768px) {
+  .chart-wrapper {
+    padding-top: 40px;  /* Adjust for larger screens */
+  }
+
+  .chart-container {
+    height: 70%;  /* Take up less space on bigger screens */
+  }
+
+  .accordion-section {
+    margin-top: 20px;
+  }
+}
+
+/* Styles for small screens like phones (max-width 768px) */
+@media (max-width: 768px) {
+  .chart-wrapper {
+    padding-top: 10px;  /* Less padding on smaller screens */
+    padding-bottom: 20px; /* Add some padding at the bottom */
+  }
+
+  .chart-container {
+    height: 60%;  /* Make the chart take less space on small screens */
+  }
+
+  .accordion-section {
+    margin-top: 8px;
+    width: 100%; /* Make the accordion section take up the full width */
+  }
+
+  .comp-btn {
+    padding: 8px 15px; /* Make the compare button smaller */
+  }
+
+  .close-btn {
+    top: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    font-size: 18px; /* Smaller close button */
+  }
+
+  select {
+    font-size: 14px; /* Make the select dropdown smaller */
+  }
+}
+
+/* Styles for very small devices (e.g., iPhone 12) */
+@media (max-width: 375px) {
+  .chart-wrapper {
+    padding-top: 5px;
+    padding-bottom: 10px;
+  }
+
+  .chart-container {
+    height: 50%;  /* Make the chart take even less space on small devices */
+  }
+
+  .accordion-section {
+    margin-top: 4px;
+  }
+
+  .comp-btn {
+    padding: 6px 12px;  /* Smaller padding for mobile */
+  }
+
+  .close-btn {
+    top: 3px;
+    right: 3px;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  select {
+    font-size: 12px; /* Smaller font size for the select dropdown */
+  }
+}
 .chart-wrapper {
   overflow: auto;
   width: 100%;
@@ -286,7 +365,7 @@ onMounted(async () => {
 
 .chart-container {
   width: 100%;
-  height: 80%;
+  height: 70%;
   flex-grow: 1;
 }
 
