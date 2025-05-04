@@ -10,7 +10,6 @@
         id="periodSelect"
         v-model="selectedPeriod"
         @change="fetchData"
-        @click.stop
         class="period-select"
       >
         <option value="1 month">1 Month</option>
@@ -28,62 +27,16 @@
       <div v-if="error" class="error">{{ error }}</div>
     </div>
 
-    <!-- 1. Data Sources -->
-    <div class="accordion">
+    <!-- Data sources and other details (accordion sections) -->
+    <div class="accordion" v-for="(text, index) in accordionData" :key="index">
       <details>
-        <summary>Data Sources</summary>
+        <summary>{{ text.summary }}</summary>
         <div class="accordion-content">
-          <p>Two live logs feed the campus energy database:</p>
-          <ul>
-            <li><strong>Fuel-cell log</strong> - one kWh total at the end of each day.</li>
-            <li><strong>Solar-panel log</strong> - kWh from every array, saved once an hour.</li>
-          </ul>
-        </div>
-      </details>
-    </div>
-
-    <!-- 2. What the Chart Shows & How to Read It -->
-    <div class="accordion">
-      <details>
-        <summary>What the Chart Shows & How to Read It</summary>
-        <div class="accordion-content">
-          <p>
-            The line of leaf icons is like a battery gauge: <strong>pale leaves</strong> mark 100%
-            of lifetime renewable energy, while <strong>bright leaves</strong> fill up to show the
-            share made in the period you selected.
-          </p>
-          <ul>
-            <li>The subtitle above the bar lists both kWh totals.</li>
-            <li>The label at the right end shows that share as a percentage.</li>
-            <li>Change the menu to see how quickly the total has grown.</li>
-          </ul>
-        </div>
-      </details>
-    </div>
-
-    <!-- 3. Axes & Icons -->
-    <div class="accordion">
-      <details>
-        <summary>Axes & Icons</summary>
-        <div class="accordion-content">
-          <ul>
-            <li><strong>X-axis</strong> - runs from 0 kWh to the lifetime total.</li>
-            <li><strong>Y-axis</strong> - one bar labelled "Campus".</li>
-            <li>Every leaf stands for the same amount of energy.</li>
-          </ul>
-          <p>Only the leaves that fit inside the period total are shown in full color.</p>
-        </div>
-      </details>
-    </div>
-
-    <!-- 4. Why It Matters -->
-    <div class="accordion">
-      <details>
-        <summary>Why It Matters</summary>
-        <div class="accordion-content">
-          <ul>
-            <li>The "1 Year" view shows if we are on track with climate goals.</li>
-            <li>More bright leaves year-on-year means our renewable program is expanding.</li>
+          <p v-if="text.content">{{ text.content }}</p>
+          <ul v-if="text.list">
+            <li v-for="(item, idx) in text.list" :key="idx">
+              <strong>{{ item.title }}</strong> - {{ item.description }}
+            </li>
           </ul>
         </div>
       </details>
@@ -106,6 +59,31 @@ const selectedPeriod = ref('1 year');
 let chart = null;
 let lifetimeEnergy = 0;
 let periodEnergy = 0;
+
+const accordionData = [
+  {
+    summary: 'Data Sources',
+    list: [
+      { title: 'Fuel-cell log', description: 'One kWh total at the end of each day.' },
+      { title: 'Solar-panel log', description: 'kWh from every array, saved once an hour.' }
+    ]
+  },
+  {
+    summary: 'What the Chart Shows & How to Read It',
+    content: 'The line of leaf icons is like a battery gauge: pale leaves mark 100% of lifetime renewable energy, while bright leaves fill up to show the share made in the period you selected.'
+  },
+  {
+    summary: 'Axes & Icons',
+    content: 'The X-axis runs from 0 kWh to the lifetime total. The Y-axis represents one bar labelled "Campus". Each leaf stands for the same amount of energy.'
+  },
+  {
+    summary: 'Why It Matters',
+    list: [
+      { title: '', description: 'The "1 Year" view shows if we are on track with climate goals.' },
+      { title: '', description: 'More bright leaves year-on-year means our renewable program is expanding.' }
+    ]
+  }
+];
 
 async function fetchData() {
   try {
@@ -151,7 +129,12 @@ function updateChart() {
       max: lifetimeEnergy,
       splitLine: { show: false },
       axisLine: { lineStyle: { color: '#333' } },
-      axisLabel: { color: '#333', margin: 10 }
+      axisLabel: {
+        color: '#333',
+        margin: 10,
+        rotate: window.innerWidth < 600 ? 45 : 0,  // Rotate labels on smaller screens
+        fontSize: window.innerWidth < 600 ? 10 : 14  // Adjust font size on smaller screens
+      }
     },
     yAxis: {
       data: ['Campus'],
@@ -205,18 +188,14 @@ function updateChart() {
   }
 }
 
-function resizeHandler() {
-  if (chart) chart.resize();
-}
-
 onMounted(async () => {
   await nextTick();
-  window.addEventListener('resize', resizeHandler);
+  window.addEventListener('resize', () => chart.resize());
   fetchData();
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', resizeHandler);
+  window.removeEventListener('resize', () => chart.resize());
   if (chart) {
     chart.dispose();
     chart = null;
@@ -257,6 +236,7 @@ const navigateBack = () => {
   font-size: 1.2em;
 }
 .error { color: #dc3545; }
+
 .accordion {
   width: 100%;
   margin-top: 20px;
@@ -266,6 +246,7 @@ const navigateBack = () => {
   padding: 12px;
   color: #003b70;
 }
+
 .accordion-content {
   margin-top: 10px;
   padding-left: 10px;
@@ -316,8 +297,7 @@ const navigateBack = () => {
   color: #fff;
   border: none;
   cursor: pointer;
-  z-index: 1000;       
-  pointer-events: auto; 
+  z-index: 1000;
 }
 
 .close-btn:hover {
