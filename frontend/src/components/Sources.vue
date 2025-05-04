@@ -96,6 +96,59 @@ const navigateToGraph = (buildingName) => {
 
 /* Sources Content */
 
+@media (max-width: 480px) {
+  .sources__content {
+    padding: 16px;
+  }
+
+  .sources__panel {
+    padding: 16px;
+  }
+
+  .sources__panel-inner {
+    padding: 16px;
+  }
+
+  .sources__filters {
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .sources__filter-btn {
+    font-size: 16px;
+  }
+
+  .sources__grid-title {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .sources__buildings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    width: 100%;
+  }
+
+  .sources__building-card {
+  aspect-ratio: 1 / 1; /* makes each card a square */
+  background-color: #6ea1ce;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+  .sources__building-name {
+    font-size: 16px;
+  }
+}
+
+
 .sources__grid-title {
   font-size: 24px;
   font-weight: 600;
@@ -110,7 +163,7 @@ const navigateToGraph = (buildingName) => {
 .sources__panel {
   background-color: #003b70;
   padding: 24px;
-  border-radius: 9px;
+  border-radius: 8px;
 }
 
 .sources__panel-inner {
@@ -118,6 +171,17 @@ const navigateToGraph = (buildingName) => {
   padding: 24px;
   border-radius: 4px;
   min-height: 500px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 400px) {
+  .sources__building-card {
+    font-size: 14px;
+    padding: 5px;
+  }
+  .sources__buildings-grid {
+    gap: 12px;
+  }
 }
 
 .sources__filters {
