@@ -21,16 +21,15 @@
       </div>
     </div>
     <div class="accordion-section">
-  <button class="accordion-toggle" @click="showAccordion = !showAccordion">
-    What does this chart show?
-    <span :class="{ rotated: showAccordion }">▼</span>
-  </button>
-  <div v-show="showAccordion" class="accordion-content">
-    <p><strong>kWh (kilowatt-hour)</strong> is a measure of energy. One kilowatt-hour is the energy used by a 1,000-watt appliance running for one hour.</p>
-    <p>This chart displays the electricity output (in kWh) for the selected building over time, based on hourly data. It helps you visualize trends in energy usage, compare buildings, and identify patterns such as peak usage times.</p>
-  </div>
-</div>
-
+      <button class="accordion-toggle" @click="showAccordion = !showAccordion">
+        What does this chart show?
+        <span :class="{ rotated: showAccordion }">▼</span>
+      </button>
+      <div v-show="showAccordion" class="accordion-content">
+        <p><strong>kWh (kilowatt-hour)</strong> is a measure of energy. One kilowatt-hour is the energy used by a 1,000-watt appliance running for one hour.</p>
+        <p>This chart displays the electricity output (in kWh) for the selected building over time, based on hourly data. It helps you visualize trends in energy usage, compare buildings, and identify patterns such as peak usage times.</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -40,13 +39,12 @@ import { useRoute, useRouter } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
 
-
 const route = useRoute();
 const router = useRouter();
 const navigateBack = () => {
   router.push('/sources');
 };
-const buildingName = route.query.buildingName; // Retrieve the building name from query parameters
+const buildingName = route.query.buildingName;
 const showAccordion = ref(false);
 
 const chart = ref(null);
@@ -75,7 +73,8 @@ const formatBuildingName = (name) =>
 
 const originalBuildingDisplayName = computed(() => {
   const found = buildings.value.find(
-    b => formatBuildingName(b.name) === buildingName
+    b => formatBuildingName(b.name) === buildingName || 
+        (buildingName === 'soles' && b.name === 'Soles/MRH')
   );
   return found ? found.name : buildingName;
 });
@@ -85,7 +84,6 @@ const computedTitle = computed(() => {
   return `Electricity Output - ${names.join(' vs ')}`;
 });
 
-// WATCH for title changes and push into the chart
 watch(computedTitle, (newTitle) => {
   const chartInstance = echarts.getInstanceByDom(chart.value);
   if (chartInstance) {
@@ -99,7 +97,6 @@ const toggleDropdown = () => {
 
 const toggleBuilding = async () => {
   if (!selectedBuilding2.value) return;
-
   const compareName = selectedBuilding2.value;
   const chartInstance = echarts.getInstanceByDom(chart.value);
   if (!chartInstance) return;
@@ -107,16 +104,12 @@ const toggleBuilding = async () => {
   const option = chartInstance.getOption();
 
   if (displayedBuildings.value.includes(compareName)) {
-    // Remove comparison
+    // Remove comparison series
     option.series = option.series.filter(
       s => s.name !== `Electricity Out (${compareName})`
     );
-    // Update legend data
-    option.legend.data = option.series.map(s => s.name);
-    chartInstance.setOption(option, true);
-    displayedBuildings.value = displayedBuildings.value.filter(b => b !== compareName);
   } else {
-    // Add comparison
+    // Add comparison series
     try {
       const formatted = formatBuildingName(compareName);
       const { data } = await axios.get(
@@ -137,14 +130,15 @@ const toggleBuilding = async () => {
         name: `Electricity Out (${compareName})`,
         lineStyle: { type: 'dashed' }
       });
-      // Update legend data
-      option.legend.data = option.series.map(s => s.name);
-      chartInstance.setOption(option, true);
       displayedBuildings.value.push(compareName);
     } catch (err) {
       console.error('Error fetching data:', err);
     }
   }
+
+  // Always update the legend to show all series names
+  option.legend.data = option.series.map(s => s.name);
+  chartInstance.setOption(option, true);
 
   selectedBuilding2.value = '';
 };
@@ -182,6 +176,7 @@ onMounted(async () => {
     }
 
     const chartInstance = echarts.init(chart.value);
+    const initialName = `Electricity Out (${originalBuildingDisplayName.value})`;
     const option = {
       title: {
         text: computedTitle.value,
@@ -193,9 +188,22 @@ onMounted(async () => {
         formatter: params => {
           let tip = `${params[0].axisValue}<br />`;
           params.forEach(p => {
-            tip += `${p.seriesName}: ${p.data} kWh<br />`;
+            tip += `${p.marker} ${p.seriesName}: ${parseFloat(p.data).toFixed(2)} kWh<br />`;
           });
           return tip;
+        }
+      },
+      legend: {
+        show: false,
+        top: '10%',
+        left: 'center',
+        orient: 'horizontal',
+        icon: 'circle',
+        itemGap: 20,
+        data: [initialName],
+        textStyle: {
+          fontSize: 12,
+          color: '#333'
         }
       },
       xAxis: {
@@ -225,7 +233,13 @@ onMounted(async () => {
           type: 'line',
           smooth: true,
           areaStyle: {},
-          name: 'Electricity Out'
+          name: initialName,
+          itemStyle: {
+            borderWidth: 2
+          },
+          emphasis: {
+            focus: 'series'
+          }
         }
       ]
     };
