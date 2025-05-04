@@ -9,10 +9,11 @@
       <div v-else>
         <select v-model="selectedBuilding2" @change="toggleBuilding">
           <option disabled value="">Select a building</option>
-          <option 
+          <option
             v-for="building in buildings"
             :key="building.name"
             :value="building.name"
+            :disabled="building.name === originalBuildingDisplayName"
             :class="{ 'highlighted': displayedBuildings.includes(building.name) }"
           >
             {{ building.name }} <span v-if="displayedBuildings.includes(building.name)">✔</span>
@@ -41,9 +42,8 @@ import axios from 'axios';
 
 const route = useRoute();
 const router = useRouter();
-const navigateBack = () => {
-  router.push('/sources');
-};
+const navigateBack = () => router.push('/sources');
+
 const buildingName = route.query.buildingName;
 const showAccordion = ref(false);
 
@@ -68,27 +68,36 @@ const buildings = ref([
   { name: "West Parking" }
 ]);
 
-const formatBuildingName = (name) =>
+const formatBuildingName = name =>
   name.toLowerCase().replace(/\s+/g, "_");
 
 const originalBuildingDisplayName = computed(() => {
   const found = buildings.value.find(
-    b => formatBuildingName(b.name) === buildingName || 
-        (buildingName === 'soles' && b.name === 'Soles/MRH')
+    b =>
+      formatBuildingName(b.name) === buildingName ||
+      (buildingName === 'soles' && b.name === 'Soles/MRH')
   );
   return found ? found.name : buildingName;
 });
 
+// Break title into lines of up to 5 names each
 const computedTitle = computed(() => {
   const names = [originalBuildingDisplayName.value, ...displayedBuildings.value];
-  return `Electricity Output - ${names.join(' vs ')}`;
+  if (!names.length) return 'Electricity Output';
+  const chunks = [];
+  for (let i = 0; i < names.length; i += 5) {
+    chunks.push(names.slice(i, i + 5));
+  }
+  const lines = chunks.map((chunk, idx) => {
+    const line = chunk.join(' vs ');
+    return idx === 0 ? `Electricity Output - ${line}` : line;
+  });
+  return lines.join('\n vs ');
 });
 
-watch(computedTitle, (newTitle) => {
-  const chartInstance = echarts.getInstanceByDom(chart.value);
-  if (chartInstance) {
-    chartInstance.setOption({ title: { text: newTitle } });
-  }
+watch(computedTitle, newTitle => {
+  const inst = echarts.getInstanceByDom(chart.value);
+  if (inst) inst.setOption({ title: { text: newTitle } });
 });
 
 const toggleDropdown = () => {
@@ -98,18 +107,17 @@ const toggleDropdown = () => {
 const toggleBuilding = async () => {
   if (!selectedBuilding2.value) return;
   const compareName = selectedBuilding2.value;
-  const chartInstance = echarts.getInstanceByDom(chart.value);
-  if (!chartInstance) return;
+  const inst = echarts.getInstanceByDom(chart.value);
+  if (!inst) return;
 
-  const option = chartInstance.getOption();
+  const option = inst.getOption();
 
   if (displayedBuildings.value.includes(compareName)) {
-    // Remove comparison series
     option.series = option.series.filter(
       s => s.name !== `Electricity Out (${compareName})`
     );
+    displayedBuildings.value = displayedBuildings.value.filter(b => b !== compareName);
   } else {
-    // Add comparison series
     try {
       const formatted = formatBuildingName(compareName);
       const { data } = await axios.get(
@@ -118,13 +126,13 @@ const toggleBuilding = async () => {
       );
       const sorted = data.slice().sort((a, b) => {
         const da = new Date(a.timestamp), db = new Date(b.timestamp);
-        return da.getUTCHours() - db.getUTCHours()
-          || da.getUTCMinutes() - db.getUTCMinutes();
+        return da.getUTCHours() - db.getUTCHours() ||
+               da.getUTCMinutes() - db.getUTCMinutes();
       });
-      const electricityOut = sorted.map(r => r.energy_output || 0);
+      const out = sorted.map(r => r.energy_output || 0);
 
       option.series.push({
-        data: electricityOut,
+        data: out,
         type: 'line',
         smooth: true,
         name: `Electricity Out (${compareName})`,
@@ -136,26 +144,22 @@ const toggleBuilding = async () => {
     }
   }
 
-  // Always update the legend to show all series names
   option.legend.data = option.series.map(s => s.name);
-  chartInstance.setOption(option, true);
-
+  inst.setOption(option, true);
   selectedBuilding2.value = '';
 };
 
 onMounted(async () => {
   if (!buildingName) {
-    console.warn('No building selected.');
     errorMessage.value = 'No building selected.';
     return;
   }
-
   try {
     const { data } = await axios.get(
       `http://localhost:3000/api/tables/hourlyenergybybuilding`,
       { params: { buildingName } }
     );
-    if (!data || data.length === 0) {
+    if (!data?.length) {
       hasData.value = false;
       return;
     }
@@ -163,32 +167,37 @@ onMounted(async () => {
 
     const sorted = data.slice().sort((a, b) => {
       const da = new Date(a.timestamp), db = new Date(b.timestamp);
-      return da.getUTCHours() - db.getUTCHours()
-        || da.getUTCMinutes() - db.getUTCMinutes();
+      return da.getUTCHours() - db.getUTCHours() ||
+             da.getUTCMinutes() - db.getUTCMinutes();
     });
     const timestamps = sorted.map(r => r.timestamp);
     const electricityOut = sorted.map(r => r.energy_output || 0);
 
     await nextTick();
-    if (!chart.value) {
-      errorMessage.value = 'Failed to initialize the chart.';
-      return;
-    }
-
-    const chartInstance = echarts.init(chart.value);
+    const inst = echarts.init(chart.value);
     const initialName = `Electricity Out (${originalBuildingDisplayName.value})`;
     const option = {
       title: {
         text: computedTitle.value,
         left: 'center',
-        top: '0%'
+        top: '0%',
       },
       tooltip: {
         trigger: 'axis',
         formatter: params => {
-          let tip = `${params[0].axisValue}<br />`;
+          const date = new Date(params[0].axisValue);
+          const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+          const dd = String(date.getUTCDate()).padStart(2, '0');
+          const yyyy = date.getUTCFullYear();
+          let h = date.getUTCHours();
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          h = h % 12 || 12;
+          const m = String(date.getUTCMinutes()).padStart(2, '0');
+          
+          let tip = `${mm}/${dd}/${yyyy} ${h}:${m}${ampm}<br/>`;
           params.forEach(p => {
-            tip += `${p.marker} ${p.seriesName}: ${parseFloat(p.data).toFixed(2)} kWh<br />`;
+            const buildingName = p.seriesName.match(/\((.*?)\)/)[1];
+            tip += `${p.marker} ${buildingName}: ${parseFloat(p.data).toFixed(2)} kWh<br/>`;
           });
           return tip;
         }
@@ -200,11 +209,8 @@ onMounted(async () => {
         orient: 'horizontal',
         icon: 'circle',
         itemGap: 20,
-        data: [initialName],
-        textStyle: {
-          fontSize: 12,
-          color: '#333'
-        }
+        data: [ initialName ],
+        textStyle: { fontSize: 12, color: '#333' }
       },
       xAxis: {
         type: 'category',
@@ -217,8 +223,7 @@ onMounted(async () => {
             let h = d.getUTCHours(), m = d.getUTCMinutes();
             const ampm = h >= 12 ? 'PM' : 'AM';
             h = h % 12 || 12;
-            const mm = m < 10 ? '0' + m : m;
-            return `${h}:${mm}${ampm}`;
+            return `${h}:${m < 10 ? '0'+m : m}${ampm}`;
           }
         }
       },
@@ -234,18 +239,14 @@ onMounted(async () => {
           smooth: true,
           areaStyle: {},
           name: initialName,
-          itemStyle: {
-            borderWidth: 2
-          },
-          emphasis: {
-            focus: 'series'
-          }
+          itemStyle: { borderWidth: 2 },
+          emphasis: { focus: 'series' }
         }
       ]
     };
-    chartInstance.setOption(option);
+    inst.setOption(option);
   } catch (error) {
-    console.error('Error fetching Athena hourly data:', error);
+    console.error('Error fetching data:', error);
     errorMessage.value = `Error fetching data: ${error.message}`;
   }
 });
