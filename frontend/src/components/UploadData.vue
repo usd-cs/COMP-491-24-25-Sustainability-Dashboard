@@ -66,7 +66,7 @@
 
           <div class="action-buttons">
             <button class="cancel-btn" @click="handleCancel" tabindex="0">Cancel</button>
-            <button class="cancel-btn" @click="handleBack">Back</button>
+            <button class="back-btn" @click="handleBack">Back</button>
             <button type="submit" class="import-btn">Import</button>
           </div>
         </form>
@@ -274,6 +274,7 @@ const handleBack = () => {
 }
 
 .select-files-btn,
+.back-btn,
 .cancel-btn,
 .import-btn {
   font: 400 16px Inter, sans-serif;

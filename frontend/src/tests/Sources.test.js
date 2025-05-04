@@ -1,3 +1,7 @@
+/**
+ * @file Sources.test.js
+ * @description Unit tests for the `Sources` component using Vitest and Vue Test Utils.
+ */
 import { render, fireEvent } from '@testing-library/vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
@@ -36,7 +40,6 @@ describe('Sources.vue', () => {
     expect(getByText('Summary')).toBeTruthy()
     expect(getByText('Sources')).toBeTruthy()
     expect(getByText('Initiatives')).toBeTruthy()
-    expect(getByText('Logout →')).toBeTruthy()
   })
 
   it('displays filtered buildings correctly', () => {
@@ -69,11 +72,5 @@ describe('Sources.vue', () => {
     await fireEvent.click(getByText('Initiatives'))
     expect(pushSpy).toHaveBeenCalledWith('/initiatives')
 
-  })
-
-  it('logs out when logout button is clicked', async () => {
-    const logoutBtn = getByText('Logout →')
-    await fireEvent.click(logoutBtn)
-    expect(pushSpy).toHaveBeenCalledWith('/')
   })
 })

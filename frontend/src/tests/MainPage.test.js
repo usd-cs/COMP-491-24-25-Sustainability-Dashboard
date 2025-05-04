@@ -1,13 +1,10 @@
 /**
- * @file DashboardLayout.test.js
- * @description Unit tests for the `DashboardLayout` component using Vitest and Vue Test Utils.
+ * @file MainPage.test.js
+ * @description Unit tests for the `MainPage` component using Vitest and Vue Test Utils.
  */
 
 import { mount } from '@vue/test-utils';
-
 import { createRouter, createWebHistory } from 'vue-router';
-import { createTestingPinia } from '@pinia/testing';
-
 import { describe, it, expect } from 'vitest';
 import DashboardLayout from '../components/MainPage.vue';
 
@@ -19,24 +16,41 @@ const router = createRouter({
 
 
 /**
- * @description Test suite for the `DashboardLayout` component.
+ * @description Test suite for the DashboardLayout.
  */
 describe('DashboardLayout', () => {
   /**
    * @description Tests if the component renders correctly.
    */
-  it('renders correctly', () => {
-    const wrapper = mount(DashboardLayout);
+  it('Main renders correctly', () => {
+    const wrapper = mount(DashboardLayout, {
+      global: {
+        plugins: [router],
+      },
+    });
     expect(wrapper.exists()).toBe(true); // Check if the component mounts correctly
   });
 
   /**
-   * @description Tests if the logout button is present in the layout.
+   * @description Tests if the graph display area is present in the layout.
    */
-  it('has logout button', () => {
-    const wrapper = mount(DashboardLayout);
-    expect(wrapper.find('.logout-btn').exists()).toBe(true); // Verify logout button exists
+  it('has graph display', () => {
+    const wrapper = mount(DashboardLayout, {
+      global: {
+        plugins: [router],
+      },
+    });
+    expect(wrapper.find('.visual-container').exists()).toBe(true);
   });
-
-
+  /**
+   * @description Tests if the renewable energy visual is present in the layout.
+   */
+  it('has renewable energy visual', () => {
+    const wrapper = mount(DashboardLayout, {
+      global: {
+        plugins: [router],
+      },
+    });
+    expect(wrapper.find('.bottom-visual-container').exists()).toBe(true);
+  });
 });

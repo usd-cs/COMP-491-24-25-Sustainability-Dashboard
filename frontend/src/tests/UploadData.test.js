@@ -1,13 +1,12 @@
 /**
- * @file UploadPortal.test.js
- * @description Unit tests for the `UploadPortal` component using Vitest and Vue Test Utils.
+ * @file UploadData.test.js
+ * @description Unit tests for the `UploadData` component using Vitest and Vue Test Utils.
  */
 
 import { mount } from '@vue/test-utils';
-import { describe, it, expect, vi } from 'vitest';
+import { it, expect, vi } from 'vitest';
 import { createRouter, createWebHistory } from 'vue-router';
-import { createTestingPinia } from '@pinia/testing';
-import UploadPortal from '../components/UploadData.vue';
+import uploadData from '../components/UploadData.vue';
 
 // Create a mock Vue Router instance
 const mockRouter = createRouter({
@@ -23,7 +22,11 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the file selection functionality.
    */
   it('handles file selection', async () => {
-    const wrapper = mount(UploadPortal);
+    const wrapper = mount(uploadData, {
+        global: {
+            plugins: [mockRouter],
+        },
+    });
     const input = wrapper.find('#fileInput');
 
     // Mock a file input change event with a test file
@@ -45,7 +48,11 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the form submission functionality.
    */
   it('handles form submission', async () => {
-    const wrapper = mount(UploadPortal);
+    const wrapper = mount(uploadData, {
+      global: {
+          plugins: [mockRouter],
+      },
+    });
 
     // Trigger the form submission
     await wrapper.find('form').trigger('submit');
@@ -58,7 +65,7 @@ vi.spyOn(mockRouter, 'push');
    * @description Tests the cancel button navigation functionality.
    */
   it('handles cancel action', async () => {
-    const wrapper = mount(UploadPortal, {
+    const wrapper = mount(uploadData, {
       global: {
         plugins: [mockRouter],
       },
@@ -72,18 +79,18 @@ vi.spyOn(mockRouter, 'push');
   });
 
   /**
-   * @description Tests the logout button navigation functionality.
+   * @description Tests the back button navigation functionality.
    */
-  it('handles logout action', async () => {
-    const wrapper = mount(UploadPortal, {
+  it('handles back action', async () => {
+    const wrapper = mount(uploadData, {
       global: {
         plugins: [mockRouter],
       },
     });
 
-    // Trigger the logout button click
-    await wrapper.find('.logout-btn').trigger('click');
+    // Trigger the back button click
+    await wrapper.find('.back-btn').trigger('click');
 
-    // Verify navigation to the login page
-    expect(mockRouter.push).toHaveBeenCalledWith('/');
+    // Verify navigation to the file selection page
+    expect(mockRouter.push).toHaveBeenCalledWith('/select');
   });
