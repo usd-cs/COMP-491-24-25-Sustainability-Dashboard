@@ -3,24 +3,11 @@
     <main class="sources__content">
       <section class="sources__panel">
         <div class="sources__panel-inner">
-          <nav class="sources__filters">
-            <button
-              v-for="filter in filters"
-              :key="filter"
-              @click="activeFilter = filter"
-              :class="['sources__filter-btn', activeFilter === filter ? 'sources__filter-btn--active' : '']"
-            >
-              {{ formatFilterText(filter) }}
-            </button>
-          </nav>
-
-          <h2 class="sources__grid-title">
-            {{ activeFilter === 'all' ? 'All Buildings' : formatFilterText(activeFilter) + ' Buildings' }}
-          </h2>
+          <h2 class="sources__grid-title">All Buildings</h2>
 
           <section class="sources__buildings-grid">
             <article
-              v-for="building in filteredBuildings"
+              v-for="building in buildings"
               :key="building.name"
               class="sources__building-card"
               @click="navigateToGraph(building.name)"
@@ -35,22 +22,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AppLayout from "./AppLayout.vue";
 
 const router = useRouter();
-
-const activeFilter = ref("all"); // Starting with 'solar'
-const filters = ["all", "fuelcell", "solar"];
-
-// Function to format the filter text
-const formatFilterText = (filter) => {
-  if (filter === "all") {
-    return "All";
-  }
-  return filter.charAt(0).toUpperCase() + filter.slice(1);
-};
 
 const buildings = [
   { name: "Alcala Borrego", types: ["solar"] },
@@ -59,30 +35,24 @@ const buildings = [
   { name: "Copley Library", types: ["solar"] },
   { name: "Founders Hall", types: ["solar"] },
   { name: "Jenny Craig Pavilion", types: ["solar"] },
-  { name: "Kroc", types: ["fuelcell"] },
+  { name: "Kroc", types: ["solar"] },          
   { name: "Manchester A", types: ["solar"] },
   { name: "Manchester B", types: ["solar"] },
-  { name: "Soles", types: ["solar"] },
-  { name: "West Parking", types: ["fuelcell"] },
+  { name: "Soles/MRH", types: ["solar"] },
+  { name: "West Parking", types: ["solar"] },   
 ];
-
-// Computed property to filter buildings based on selected filter
-const filteredBuildings = computed(() => {
-  if (activeFilter.value === "all") {
-    return buildings; // Show all buildings when 'all' is selected
-  }
-  return buildings.filter(b => b.types.includes(activeFilter.value)); // Filter buildings based on the active type
-});
-
-// Selected building
-const selectedBuilding = ref(null);
 
 // Function to select a building and display its graph
 const navigateToGraph = (buildingName) => {
-  const formattedName = buildingName.toLowerCase().replace(/\s+/g, "_"); // Format the building name
-  router.push({ path: `/sources-graph`, query: { buildingName: formattedName } }); // Navigate to /sources-graph with query params
+  // Special case for Soles/MRH to match backend routing
+  let formattedName = buildingName;
+  if (buildingName === "Soles/MRH") {
+    formattedName = "soles";
+  } else {
+    formattedName = buildingName.toLowerCase().replace(/\s+/g, "_");
+  }
+  router.push({ path: `/sources-graph`, query: { buildingName: formattedName } });
 };
-
 </script>
 
 <style scoped>
