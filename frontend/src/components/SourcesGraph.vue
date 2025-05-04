@@ -295,6 +295,7 @@ onMounted(async () => {
   width: 90%;
   max-width: 600px;
   text-align: left;
+  color: black;
 }
 
 .accordion-toggle {
