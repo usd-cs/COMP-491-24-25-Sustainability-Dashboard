@@ -263,6 +263,8 @@ const props = defineProps({
   height: calc(100% - 60px); /* Adjust for controls height */
   position: relative;
   background: #ffffff;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .loading, .error {
@@ -276,5 +278,36 @@ const props = defineProps({
 
 .error {
   color: #dc3545;
+}
+
+/* iPhone 12-specific adjustments (max-width: 420px) */
+@media (max-width: 420px) {
+  .chart-wrapper {
+    padding: 8px; /* Less padding */
+  }
+
+  .controls {
+    margin-bottom: 12px;
+    gap: 6px;
+  }
+
+  .period-label {
+    font-size: 12px;
+  }
+
+  .period-select {
+    font-size: 12px;
+    width: 100px;
+  }
+
+  .chart-container {
+    height: 50vh; /* Adjust chart size for mobile */
+    max-height: 300px;
+  }
+
+  /* Ensure loading/error messages stay centered */
+  .loading, .error {
+    font-size: 1.1em;
+  }
 }
 </style>

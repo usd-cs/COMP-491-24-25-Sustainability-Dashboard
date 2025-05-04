@@ -3,9 +3,10 @@
     <!-- Close Button -->
     <button class="close-btn" @click="navigateBack">X</button>
 
+    <!-- Chart Section -->
     <div ref="chart" class="chart-container"></div>
 
-    <!-- 1. Data Sources -->
+    <!-- Accordion Sections -->
     <div class="accordion">
       <details>
         <summary>Data Sources</summary>
@@ -229,5 +230,47 @@ export default {
 .accordion-content {
   margin-top: 10px;
   padding-left: 10px;
+}
+
+/* iPhone 12 Portrait (max-width: 414px) */
+@media (max-width: 420px) {
+  .chart-with-details {
+    padding: 12px;
+  }
+
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .chart-container {
+    height: 45vh; /* Adjust chart size */
+    max-height: none;
+    margin-bottom: 15px; /* Add margin for accordion sections */
+  }
+
+  .accordion {
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .accordion-content {
+    padding-left: 5px;
+  }
+
+  summary {
+    font-size: 16px;
+  }
+
+  /* Adjust chart legend on mobile */
+  .chart-container .echarts-legend {
+    display: none; /* Hide legend on small screens */
+  }
+
+  /* Optionally, we can also tweak the tooltip behavior for smaller screens */
+  .chart-container .echarts-tooltip {
+    font-size: 12px;
+  }
 }
 </style>

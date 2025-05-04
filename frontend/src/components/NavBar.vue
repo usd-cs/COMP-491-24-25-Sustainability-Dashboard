@@ -130,4 +130,32 @@ const handleLogout = () => {
     color: #003b70;
   }
   
+/* Mobile Optimization */
+@media (max-width: 430px) {
+  .nav-content {
+    gap: 6px;
+    padding-right: 0;
+  }
+
+  .nav-items {
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  .navLink {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .logout-btn {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+
+  .logo-img {
+    height: 38px;
+  }
+}
+
+
 </style>

@@ -20,6 +20,17 @@
         </select>
       </div>
     </div>
+    <div class="accordion-section">
+  <button class="accordion-toggle" @click="showAccordion = !showAccordion">
+    What does this chart show?
+    <span :class="{ rotated: showAccordion }">▼</span>
+  </button>
+  <div v-show="showAccordion" class="accordion-content">
+    <p><strong>kWh (kilowatt-hour)</strong> is a measure of energy. One kilowatt-hour is the energy used by a 1,000-watt appliance running for one hour.</p>
+    <p>This chart displays the electricity output (in kWh) for the selected building over time, based on hourly data. It helps you visualize trends in energy usage, compare buildings, and identify patterns such as peak usage times.</p>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -29,12 +40,14 @@ import { useRoute,useRouter } from "vue-router";
 import * as echarts from 'echarts';
 import axios from 'axios';
 
+
 const route = useRoute();
 const router = useRouter();
 const navigateBack = () => {
   router.push('/sources');
 };
 const buildingName = route.query.buildingName; // Retrieve the building name from query parameters
+const showAccordion = ref(false);
 
 const chart = ref(null);
 const hasData = ref(false); // Notify user if data is not available
@@ -256,24 +269,152 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Styles for screens larger than 768px (tablets and desktops) */
+@media (min-width: 768px) {
+  .chart-wrapper {
+    padding-top: 40px;  /* Adjust for larger screens */
+  }
+
+  .chart-container {
+    height: 70%;  /* Take up less space on bigger screens */
+  }
+
+  .accordion-section {
+    margin-top: 20px;
+  }
+}
+
+/* Styles for small screens like phones (max-width 768px) */
+@media (max-width: 768px) {
+  .chart-wrapper {
+    padding-top: 10px;  /* Less padding on smaller screens */
+    padding-bottom: 20px; /* Add some padding at the bottom */
+  }
+
+  .chart-container {
+    height: 60%;  /* Make the chart take less space on small screens */
+  }
+
+  .accordion-section {
+    margin-top: 8px;
+    width: 100%; /* Make the accordion section take up the full width */
+  }
+
+  .comp-btn {
+    padding: 8px 15px; /* Make the compare button smaller */
+  }
+
+  .close-btn {
+    top: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    font-size: 18px; /* Smaller close button */
+  }
+
+  select {
+    font-size: 14px; /* Make the select dropdown smaller */
+  }
+}
+
+/* Styles for very small devices (e.g., iPhone 12) */
+@media (max-width: 375px) {
+  .chart-wrapper {
+    padding-top: 5px;
+    padding-bottom: 10px;
+  }
+
+  .chart-container {
+    height: 50%;  /* Make the chart take even less space on small devices */
+  }
+
+  .accordion-section {
+    margin-top: 4px;
+  }
+
+  .comp-btn {
+    padding: 6px 12px;  /* Smaller padding for mobile */
+  }
+
+  .close-btn {
+    top: 3px;
+    right: 3px;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  select {
+    font-size: 12px; /* Smaller font size for the select dropdown */
+  }
+}
 .chart-wrapper {
+  overflow: auto;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   padding-top: 20px;
   box-sizing: border-box;
-  overflow: hidden;
-  border-radius: 8px; /* Match your box rounding */
+  border-radius: 8px; 
   background: #ffffff;
   display: flex;
   flex-direction: column; /* Stack items vertically */
   align-items: center; /* Center items horizontally */
   justify-content: flex-start; /* Align items at the top */
+  position: relative;
 }
 
 .chart-container {
   width: 100%;
-  height: 80%;
+  height: 70%;
+  flex-grow: 1;
 }
+
+.accordion-section {
+  margin-top: 16px;
+  width: 90%;
+  max-width: 600px;
+  text-align: left;
+  color: black;
+}
+
+.accordion-toggle {
+  background-color: #f0f0f0;
+  color: #003b70;
+  border: none;
+  padding: 10px 15px;
+  width: 100%;
+  text-align: left;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion-toggle:hover {
+  background-color: #e0e0e0;
+}
+
+.accordion-toggle span {
+  transition: transform 0.3s ease;
+}
+
+.accordion-toggle span.rotated {
+  transform: rotate(180deg);
+}
+
+.accordion-content {
+  background-color: #fafafa;
+  padding: 12px 15px;
+  border-radius: 4px;
+  margin-top: 8px;
+  border: 1px solid #ddd;
+  overflow-y: auto;
+}
+
 
 .compare-section {
   margin-top: 20px;
@@ -295,6 +436,7 @@ onMounted(async () => {
 .close-btn:hover {
   background: #e05555;
 }
+
 
 select {
   padding: 10px;
