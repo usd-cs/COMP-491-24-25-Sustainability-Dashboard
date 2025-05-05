@@ -2,41 +2,54 @@
   <AppLayout>
     <main class="main-content">
       <div class="story-container">
-        <!-- Graphs that accompany story-text -->
-        <div class="story-graphic">
-          <EmissionsChart v-if="activeStep === 0" />
-          <WaterChart v-else-if="activeStep === 1" />
-          <WasteChart v-else-if="activeStep === 2" />
-          <VehicleGraph v-else-if="activeStep === 3" />
-        </div>
+        <div class="story-steps">
+          <section class="step-row" data-step="0">
+            <div class="step-text">
+              <div class="step-content">
+                <p>Starting from a <span class="pill">2010 baseline</span>, we're committed to slicing our university's <span class="pill">emissions</span> and overall <span class="pill">environmental footprint</span> by <span class="pill">15 %</span> by <span class="pill">2020</span>, ramping up to <span class="pill">40 %</span> by <span class="pill">2030</span>, and hitting a <span class="pill">50 %</span> cut by <span class="pill">2035</span>. These bold <span class="pill">targets</span> are informed by—and fully aligned with—the <span class="pill">City of San Diego's Climate Action Plan</span>.
+                </p>
+              </div>
+            </div>
+            <div class="step-chart">
+              <EmissionsChart ref="chartRefs.emissions" />
+            </div>
+          </section>
 
-        <!-- scroll “steps” -->
-        <div class="story-text">
-          <section class="step" data-step="0">
-            <div class="step-content">
-              <p>Starting from a <span class="pill">2010 baseline</span>, we're committed to slicing our university's <span class="pill">emissions</span> and overall <span class="pill">environmental footprint</span> by <span class="pill">15 %</span> by <span class="pill">2020</span>, ramping up to <span class="pill">40 %</span> by <span class="pill">2030</span>, and hitting a <span class="pill">50 %</span> cut by <span class="pill">2035</span>. These bold <span class="pill">targets</span> are informed by—and fully aligned with—the <span class="pill">City of San Diego's Climate Action Plan</span>.
-              </p>
-          </div>
-          </section>
-          <section class="step" data-step="1">
-            <div class="step-content">
-              <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
-              </p>
+          <section class="step-row" data-step="1">
+            <div class="step-text">
+              <div class="step-content">
+                <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
+                </p>
+              </div>
+            </div>
+            <div class="step-chart">
+              <WaterUsageChart ref="chartRefs.water" />
             </div>
           </section>
-          <section class="step" data-step="2">
-            <div class="step-content">
-              <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
-              </p>
+
+          <section class="step-row" data-step="2">
+            <div class="step-text">
+              <div class="step-content">
+                <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
+                </p>
+              </div>
+            </div>
+            <div class="step-chart">
+              <WasteChart ref="chartRefs.waste" />
             </div>
           </section>
-          <section class="step" data-step="3">
-            <div class="step-content">
-              <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
-              </p>
+
+          <section class="step-row" data-step="3">
+            <div class="step-text">
+              <div class="step-content">
+                <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
+                </p>
+              </div>
+            </div>
+            <div class="step-chart">
+              <VehicleGraph ref="chartRefs.vehicle" />
             </div>
           </section>
-          <!-- TODO: more steps… -->
         </div>
       </div>
     </main>
@@ -45,128 +58,152 @@
 
 <script setup>
 import AppLayout from './AppLayout.vue';
-import { ref,onMounted } from 'vue';
+import { ref,onMounted, nextTick } from 'vue';
 import EmissionsChart from './EmissionsChart.vue';
-import WaterChart from './WaterUsageChart.vue';
+import WaterUsageChart from './WaterUsageChart.vue';
 import WasteChart from './WasteChart.vue';
 import VehicleGraph from './VehicleGraph.vue';
 
-const activeStep = ref(0);
+// Array to hold references to chart components
+const chartRefs = {
+  emissions: ref(null),
+  water: ref(null),
+  waste: ref(null),
+  vehicle: ref(null)
+};
 
-let lastActive = null;
-
-onMounted(() => {
-  const container = document.querySelector('.story-text');
-  const steps = container.querySelectorAll('.step');
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const idx = +entry.target.dataset.step;
-
-      if (entry.isIntersecting) {
-        // Remove is-active from all
-        steps.forEach(s => {
-          if (s !== entry.target && s.classList.contains('is-active')) {
-            s.classList.remove('is-active');
-            s.classList.add('was-active');
-            setTimeout(() => s.classList.remove('was-active'), 600); // match CSS duration
-          }
-        });
-
-        entry.target.classList.add('is-active');
-        activeStep.value = idx;
+// Handle window resize to update charts
+const handleResize = () => {
+  nextTick(() => {
+    Object.values(chartRefs).forEach(ref => {
+      if (ref.value && typeof ref.value.resize === 'function') {
+        ref.value.resize();
       }
     });
-  }, { threshold: .1 });
+  });
+};
 
-  steps.forEach(s => io.observe(s));
+onMounted(() => {
+  // Initial resize after component mounts
+  setTimeout(() => {
+    handleResize();
+  }, 300);
+  
+  // Add window resize listener
+  window.addEventListener('resize', handleResize);
+  
+  // Add intersection observer for better scroll handling
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // When a step comes into view, resize its chart
+        const step = entry.target;
+        const stepIndex = parseInt(step.dataset.step);
+        const chartKeys = ['emissions', 'water', 'waste', 'vehicle'];
+        
+        if (chartRefs[chartKeys[stepIndex]]?.value?.resize) {
+          chartRefs[chartKeys[stepIndex]].value.resize();
+        }
+      }
+    });
+  }, { threshold: 0.5 });
+  
+  // Observe all step rows
+  document.querySelectorAll('.step-row').forEach(step => {
+    observer.observe(step);
+  });
+  
+  return () => {
+    window.removeEventListener('resize', handleResize);
+    observer.disconnect();
+  };
 });
-
 </script>
 
 <style scoped>
 /* Reset styles */
 * {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .main-content {
   width: 100%;
-  max-width: 1400px;  
-  margin: 0 auto;
-  padding: 20px;       
   box-sizing: border-box;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  background-color: #ffffff;
 }
+
 .story-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  padding: 1rem;
+  width: 100%;
+}
+
+/* New layout for text+chart rows */
+.story-steps {
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
 }
 
-.story-graphic {
-  position: sticky;
-  top: 80px;   /* push down below the navbar */
-  align-self: start;   /* prevent vertical centering */
-  height: 60vh;        /* or whatever you like */
+/* Each step is now a row with text and chart side-by-side */
+.step-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  min-height: 60vh; /* Give enough room for content */
+  scroll-margin-top: 2rem;
 }
 
-.story-text {
-  position: relative;
+/* Styling for the text part */
+.step-text {
+  grid-column: 1;
 }
 
-.story-text p {
-  background-color: #f0f8ff; /* light blue background for paragraphs */
-  color: #003b70;         /* dark blue text */
-  padding: 0.75rem;
+/* Styling for the chart part */
+.step-chart {
+  grid-column: 2;
+  height: 400px; /* Fixed height for charts */
+  background-color: #f9f9f9;
   border-radius: 8px;
-
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .step-content {
-  position: sticky;
-  top: 80px;
   border-radius: 8px;
-  opacity: 0;
-  transition: transform 1s ease;
-}
-.step.is-active .step-content {
-  position: sticky;
   opacity: 1;
-  transform: translateY(0);
+  background-color: #ffffff;
+  width: 100%;
+  padding: 2rem;
+  background-color: #d2e3fc;
 }
 
-/* This handles the slow fade out */
-.step.was-active .step-content {
-  opacity: 0;
-  transform: translateY(-30px); /* drifts upward as it fades */
-  transition: opacity 4s ease, transform 1.5s ease-in;
+/* Text styling */
+.step-content p {
+  color: #003b70;
+  font-size: 2em;          
+  font-weight: 600;           
+  line-height: 1;           
+  padding: 0.75rem;
 }
 
-.step {
-  min-height: 100vh;
-  position: relative;
-}
-
+/* Pill styling */
 .pill {
   display: inline-block;
   background-color: #dbeaf4;  
-  border-radius: 9999px;      /* maximum rounding for a capsule shape */
-  padding: 0.2em 0.6em;       /* vertical and horizontal padding */
-  font-size: 0.9em;           /* slightly smaller than body text */
-  font-weight: 500;           /* medium weight for emphasis */
-  line-height: 1;             /* ensure vertical centering */
-  margin: 0 0.2em;            /* small horizontal gap if multiple pills */
+  border-radius: 9999px;
+  padding: 0.2em 0.6em;
+  font-size: 0.9em;
+  font-weight: 600;
+  line-height: 1;
+  margin: 0 0.2em;
 }
 
 .pill:hover {
-  background-color: #d2e3fc;  /* subtly darker on hover */
-  color: #174ea6;             /* deeper blue text on hover */
+  background-color: #d2e3fc;
+  color: #174ea6;
 }
-
 </style>
