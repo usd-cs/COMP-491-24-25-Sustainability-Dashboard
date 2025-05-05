@@ -1,10 +1,14 @@
+/**
+ * @file SourcesGraph.test.js
+ * @description Unit tests for the `SourcesGraph` component using Vitest and Vue Test Utils.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import SourcesGraph from '../components/SourcesGraph.vue';
 import axios from 'axios';
 import * as echarts from 'echarts';
 
-// ✅ Mock useRoute and useRouter from vue-router
+// Mock vue-router
 vi.mock('vue-router', () => ({
   useRoute: () => ({
     query: {
@@ -16,23 +20,19 @@ vi.mock('vue-router', () => ({
   })
 }));
 
-// ✅ Mock axios
+// Mock axios
 vi.mock('axios');
 
-// ✅ Mock echarts
+// Mock echarts
 const setOptionMock = vi.fn();
 vi.mock('echarts', () => ({
   init: vi.fn(() => ({
     setOption: setOptionMock,
-    getOption: () => ({
-      series: []
-    })
+    getOption: () => ({ series: [] })
   })),
   getInstanceByDom: vi.fn(() => ({
     setOption: setOptionMock,
-    getOption: () => ({
-      series: []
-    })
+    getOption: () => ({ series: [] })
   }))
 }));
 
@@ -53,9 +53,10 @@ describe('SourcesGraph.vue', () => {
 
     await flushPromises();
 
-    expect(axios.get).toHaveBeenCalledWith(expect.any(String), {
-      params: { buildingName: 'alcala_borrego' }
-    });
+    expect(axios.get).toHaveBeenCalledWith(
+      expect.any(String),
+      { params: { buildingName: 'alcala_borrego' } }
+    );
     expect(setOptionMock).toHaveBeenCalled();
     expect(wrapper.text()).not.toContain('No data available');
   });
@@ -95,10 +96,14 @@ describe('SourcesGraph.vue', () => {
 
     await flushPromises();
 
-    expect(axios.get).toHaveBeenCalledWith(expect.any(String), {
-      params: { buildingName: 'camino_hall' }
-    });
-
+    // Assert the second axios.get call contains the correct params, allowing for extra options
+    expect(axios.get).toHaveBeenNthCalledWith(
+      2,
+      expect.any(String),
+      expect.objectContaining({
+        params: { buildingName: 'camino_hall' }
+      })
+    );
     expect(setOptionMock).toHaveBeenCalled();
   });
 });
