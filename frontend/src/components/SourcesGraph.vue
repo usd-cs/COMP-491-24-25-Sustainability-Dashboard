@@ -9,6 +9,10 @@
       <div v-else>
         <select v-model="selectedBuilding2" @change="toggleBuilding">
           <option disabled value="">Select a building</option>
+          <!-- Compare All option with checkmark -->
+          <option value="ALL" :class="{ 'highlighted': displayedBuildings.includes('ALL') }">
+            Compare All <span v-if="displayedBuildings.includes('ALL')">✔</span>
+          </option>
           <option
             v-for="building in buildings"
             :key="building.name"
@@ -68,8 +72,14 @@ const buildings = ref([
   { name: "West Parking" }
 ]);
 
-const formatBuildingName = name =>
-  name.toLowerCase().replace(/\s+/g, "_");
+const formatBuildingName = name => {
+  // First handle special case for Soles/MRH
+  if (name.toLowerCase() === 'soles/mrh') {
+    return 'soles';
+  }
+  // Then handle other cases
+  return name.toLowerCase().replace(/\s+/g, "_");
+};
 
 const originalBuildingDisplayName = computed(() => {
   const found = buildings.value.find(
@@ -80,9 +90,16 @@ const originalBuildingDisplayName = computed(() => {
   return found ? found.name : buildingName;
 });
 
-// Break title into lines of up to 5 names each
+// Break title into lines of up to 5 names each,
+// but if "Compare All" was used, show "Current vs All Sites" only
 const computedTitle = computed(() => {
-  const names = [originalBuildingDisplayName.value, ...displayedBuildings.value];
+  const base = originalBuildingDisplayName.value;
+  // Check for "Compare All" mode - ensure this check is consistent
+  if (displayedBuildings.value.includes('ALL')) {
+    return `${base} vs All Solar Sites`;
+  }
+  // otherwise, chunk as before
+  const names = [ base, ...displayedBuildings.value.filter(b => b !== 'ALL') ];
   if (!names.length) return 'Electricity Output';
   const chunks = [];
   for (let i = 0; i < names.length; i += 5) {
@@ -92,7 +109,7 @@ const computedTitle = computed(() => {
     const line = chunk.join(' vs ');
     return idx === 0 ? `Electricity Output - ${line}` : line;
   });
-  return lines.join('\n vs ');
+  return lines.join('\n');
 });
 
 watch(computedTitle, newTitle => {
@@ -106,47 +123,139 @@ const toggleDropdown = () => {
 
 const toggleBuilding = async () => {
   if (!selectedBuilding2.value) return;
-  const compareName = selectedBuilding2.value;
   const inst = echarts.getInstanceByDom(chart.value);
   if (!inst) return;
 
-  const option = inst.getOption();
+  try {
+    const option = inst.getOption();
+    const value = selectedBuilding2.value;
 
-  if (displayedBuildings.value.includes(compareName)) {
-    option.series = option.series.filter(
-      s => s.name !== `Electricity Out (${compareName})`
-    );
-    displayedBuildings.value = displayedBuildings.value.filter(b => b !== compareName);
-  } else {
-    try {
-      const formatted = formatBuildingName(compareName);
-      const { data } = await axios.get(
-        `http://localhost:3000/api/tables/hourlyenergybybuilding`,
-        { params: { buildingName: formatted } }
-      );
-      const sorted = data.slice().sort((a, b) => {
-        const da = new Date(a.timestamp), db = new Date(b.timestamp);
-        return da.getUTCHours() - db.getUTCHours() ||
-               da.getUTCMinutes() - db.getUTCMinutes();
-      });
-      const out = sorted.map(r => r.energy_output || 0);
+    // Handle 'Compare All' as a standalone setting
+    if (value === 'ALL') {
+      if (displayedBuildings.value.includes('ALL')) {
+        // Deselect ALL mode
+        displayedBuildings.value = [];
+        option.series = option.series.filter(s =>
+          s.name.includes(originalBuildingDisplayName.value)
+        );
+      } else {
+        // Enable Compare All mode
+        displayedBuildings.value = ['ALL'];  // Set this first
+        
+        // Update the chart title immediately
+        option.title = {
+          text: `${originalBuildingDisplayName.value} vs All Solar Sites`,
+          left: '50%',           
+          top: '2%',            // Changed from 5% to 2%
+          textAlign: 'center',
+          x: 'center',          
+          padding: [0, 0, 0, 0], 
+          textStyle: {
+            width: '100%',
+            align: 'center'
+          }
+        };
+        
+        // keep only the original series
+        option.series = option.series.filter(s =>
+          s.name.includes(originalBuildingDisplayName.value)
+        );
 
-      option.series.push({
-        data: out,
-        type: 'line',
-        smooth: true,
-        name: `Electricity Out (${compareName})`,
-        lineStyle: { type: 'dashed' }
-      });
-      displayedBuildings.value.push(compareName);
-    } catch (err) {
-      console.error('Error fetching data:', err);
+        // add every other building
+        const others = buildings.value
+          .map(b => b.name)
+          .filter(n => n !== originalBuildingDisplayName.value);
+
+        await Promise.all(
+          others.map(async name => {
+            const formatted = formatBuildingName(name);
+            const { data } = await axios.get(
+              `http://localhost:3000/api/tables/hourlyenergybybuilding`,
+              { params: { buildingName: formatted } }
+            );
+            const sorted = data.slice().sort((a, b) => {
+              const da = new Date(a.timestamp), db = new Date(b.timestamp);
+              return da.getUTCHours() - db.getUTCHours() ||
+                     da.getUTCMinutes() - db.getUTCHours();
+            });
+            const out = sorted.map(r => r.energy_output || 0);
+            option.series.push({
+              data: out,
+              type: 'line',
+              smooth: true,
+              name: `Electricity Out (${name})`,
+              lineStyle: { type: 'dashed' }
+            });
+          })
+        );
+      }
+    } else {
+      // If currently in "Compare All" mode, clear it first
+      if (displayedBuildings.value.includes('ALL')) {
+        displayedBuildings.value = [];
+        option.series = option.series.filter(s =>
+          s.name.includes(originalBuildingDisplayName.value)
+        );
+      }
+
+      const compareName = value;
+      if (displayedBuildings.value.includes(compareName)) {
+        // remove
+        option.series = option.series.filter(
+          s => s.name !== `Electricity Out (${compareName})`
+        );
+        displayedBuildings.value = displayedBuildings.value.filter(b => b !== compareName);
+      } else {
+        try {
+          const formatted = formatBuildingName(compareName);
+          const { data } = await axios.get(
+            `http://localhost:3000/api/tables/hourlyenergybybuilding`,
+            { 
+              params: { buildingName: formatted },
+              validateStatus: status => status < 500
+            }
+          );
+          const sorted = data.slice().sort((a, b) => {
+            const da = new Date(a.timestamp), db = new Date(b.timestamp);
+            return da.getUTCHours() - db.getUTCHours() ||
+                   da.getUTCMinutes() - db.getUTCHours();
+          });
+          const out = sorted.map(r => r.energy_output || 0);
+          option.series.push({
+            data: out,
+            type: 'line',
+            smooth: true,
+            name: `Electricity Out (${compareName})`,
+            lineStyle: { type: 'dashed' }
+          });
+          displayedBuildings.value.push(compareName);
+        } catch (err) {
+          console.error('Error in toggleBuilding:', err);
+          errorMessage.value = 'Failed to load building data. Please try again.';
+        }
+      }
     }
-  }
 
-  option.legend.data = option.series.map(s => s.name);
-  inst.setOption(option, true);
-  selectedBuilding2.value = '';
+    // Always update the title and legend after any changes
+    option.title = {
+      text: computedTitle.value,
+      left: '50%',           // Center horizontally
+      top: '2%',            // Changed from 5% to 2%
+      textAlign: 'center',
+      x: 'center',          // Additional centering property
+      padding: [0, 0, 0, 0], // Remove any padding
+      textStyle: {
+        width: '100%',
+        align: 'center'
+      }
+    };
+    option.legend.data = option.series.map(s => s.name);
+    inst.setOption(option, true);
+    selectedBuilding2.value = '';
+  } catch (err) {
+    console.error('Error in toggleBuilding:', err);
+    errorMessage.value = 'Failed to load building data. Please try again.';
+  }
 };
 
 onMounted(async () => {
@@ -168,7 +277,7 @@ onMounted(async () => {
     const sorted = data.slice().sort((a, b) => {
       const da = new Date(a.timestamp), db = new Date(b.timestamp);
       return da.getUTCHours() - db.getUTCHours() ||
-             da.getUTCMinutes() - db.getUTCMinutes();
+             da.getUTCMinutes() - db.getUTCHours();
     });
     const timestamps = sorted.map(r => r.timestamp);
     const electricityOut = sorted.map(r => r.energy_output || 0);
@@ -179,8 +288,15 @@ onMounted(async () => {
     const option = {
       title: {
         text: computedTitle.value,
-        left: 'center',
-        top: '0%',
+        left: '50%',           
+        top: '2%',            // Changed from 5% to 2%
+        textAlign: 'center',
+        x: 'center',          
+        padding: [0, 0, 0, 0], 
+        textStyle: {
+          width: '100%',
+          align: 'center'
+        }
       },
       tooltip: {
         trigger: 'axis',
@@ -193,17 +309,18 @@ onMounted(async () => {
           const ampm = h >= 12 ? 'PM' : 'AM';
           h = h % 12 || 12;
           const m = String(date.getUTCMinutes()).padStart(2, '0');
-          
+
           let tip = `${mm}/${dd}/${yyyy} ${h}:${m}${ampm}<br/>`;
           params.forEach(p => {
-            const buildingName = p.seriesName.match(/\((.*?)\)/)[1];
-            tip += `${p.marker} ${buildingName}: ${parseFloat(p.data).toFixed(2)} kWh<br/>`;
+            const buildingMatch = p.seriesName.match(/\((.*?)\)/);
+            const name = buildingMatch ? buildingMatch[1] : p.seriesName;
+            tip += `${p.marker} ${name}: ${parseFloat(p.data).toFixed(2)} kWh<br/>`;
           });
           return tip;
         }
       },
       legend: {
-        show: false,
+        show: true,
         top: '10%',
         left: 'center',
         orient: 'horizontal',
@@ -256,11 +373,11 @@ onMounted(async () => {
 /* Styles for screens larger than 768px (tablets and desktops) */
 @media (min-width: 768px) {
   .chart-wrapper {
-    padding-top: 40px;  /* Adjust for larger screens */
+    padding-top: 40px;  /* Adjust for larger screens */ 
   }
 
   .chart-container {
-    height: 70%;  /* Take up less space on bigger screens */
+    height: 70%;  /* Take up less space on bigger screens */ 
   }
 
   .accordion-section {
@@ -271,21 +388,21 @@ onMounted(async () => {
 /* Styles for small screens like phones (max-width 768px) */
 @media (max-width: 768px) {
   .chart-wrapper {
-    padding-top: 10px;  /* Less padding on smaller screens */
-    padding-bottom: 20px; /* Add some padding at the bottom */
+    padding-top: 10px;  /* Less padding on smaller screens */ 
+    padding-bottom: 20px; /* Add some padding at the bottom */ 
   }
 
   .chart-container {
-    height: 60%;  /* Make the chart take less space on small screens */
+    height: 60%;  /* Make the chart take less space on small screens */ 
   }
 
   .accordion-section {
     margin-top: 8px;
-    width: 100%; /* Make the accordion section take up the full width */
+    width: 100%; /* Make the accordion section take up the full width */ 
   }
 
   .comp-btn {
-    padding: 8px 15px; /* Make the compare button smaller */
+    padding: 8px 15px; /* Make the compare button smaller */ 
   }
 
   .close-btn {
@@ -293,11 +410,11 @@ onMounted(async () => {
     right: 5px;
     width: 32px;
     height: 32px;
-    font-size: 18px; /* Smaller close button */
+    font-size: 18px; /* Smaller close button */ 
   }
 
   select {
-    font-size: 14px; /* Make the select dropdown smaller */
+    font-size: 14px; /* Make the select dropdown smaller */ 
   }
 }
 
@@ -309,7 +426,7 @@ onMounted(async () => {
   }
 
   .chart-container {
-    height: 50%;  /* Make the chart take even less space on small devices */
+    height: 50%;  /* Make the chart take even less space on small devices */ 
   }
 
   .accordion-section {
@@ -317,7 +434,7 @@ onMounted(async () => {
   }
 
   .comp-btn {
-    padding: 6px 12px;  /* Smaller padding for mobile */
+    padding: 6px 12px;  /* Smaller padding for mobile */ 
   }
 
   .close-btn {
@@ -329,9 +446,10 @@ onMounted(async () => {
   }
 
   select {
-    font-size: 12px; /* Smaller font size for the select dropdown */
+    font-size: 12px; /* Smaller font size for the select dropdown */ 
   }
 }
+
 .chart-wrapper {
   overflow: auto;
   width: 100%;
@@ -341,9 +459,9 @@ onMounted(async () => {
   border-radius: 8px; 
   background: #ffffff;
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
-  justify-content: flex-start; /* Align items at the top */
+  flex-direction: column; /* Stack items vertically */ 
+  align-items: center; /* Center items horizontally */ 
+  justify-content: flex-start; /* Align items at the top */ 
   position: relative;
 }
 
@@ -399,7 +517,6 @@ onMounted(async () => {
   overflow-y: auto;
 }
 
-
 .compare-section {
   margin-top: 20px;
   text-align: center;
@@ -418,7 +535,6 @@ onMounted(async () => {
   background-color: #00509e;
 }
 
-
 select {
   padding: 10px;
   border-radius: 4px;
@@ -429,6 +545,7 @@ select {
   font-weight: bold;
   color: green;
 }
+
 .close-btn {
   position: absolute;
   top: 10px;
@@ -445,18 +562,8 @@ select {
   cursor: pointer;
   z-index: 1000;
 }
+
 .close-btn:hover {
   background: #e05555;
-}
-
-select {
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.highlighted {
-  font-weight: bold;
-  color: green;
 }
 </style>
