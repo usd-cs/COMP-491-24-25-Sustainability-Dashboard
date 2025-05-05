@@ -6,24 +6,26 @@
           <section class="step-row" data-step="0">
             <div class="step-text">
               <div class="step-content">
-                <p>Starting from a <span class="pill">2010 baseline</span>, we're committed to slicing our university's <span class="pill">emissions</span> and overall <span class="pill">environmental footprint</span> by <span class="pill">15 %</span> by <span class="pill">2020</span>, ramping up to <span class="pill">40 %</span> by <span class="pill">2030</span>, and hitting a <span class="pill">50 %</span> cut by <span class="pill">2035</span>. These bold <span class="pill">targets</span> are informed by—and fully aligned with—the <span class="pill">City of San Diego's Climate Action Plan</span>.
-                </p>
+               <p>Starting from a<span class="pill">2010 baseline,</span> the University of San Diego aims to cut emissions by 50% by 2035, aligning with the City of San Diego's Climate Action Plan.</p>
               </div>
             </div>
             <div class="step-chart">
-              <EmissionsChart ref="chartRefs.emissions" />
+              <div class="chart-container-bg">
+                <EmissionsChart ref="chartRefs.emissions" />
+              </div>
             </div>
           </section>
 
           <section class="step-row" data-step="1">
             <div class="step-text">
               <div class="step-content">
-                <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
-                </p>
+                <p>Through the <span class="pill">Eco-Resident Certification</span> program, students learn <span class="pill">water conservation</span> practices, while <span class="pill">drought-tolerant landscaping</span> across campus helps reduce irrigation needs.</p>
               </div>
             </div>
             <div class="step-chart">
-              <WaterUsageChart ref="chartRefs.water" />
+              <div class="chart-container-bg">
+                <WaterUsageChart ref="chartRefs.water" />
+              </div>
             </div>
           </section>
 
@@ -35,7 +37,9 @@
               </div>
             </div>
             <div class="step-chart">
+              <div class="chart-container-bg">
               <WasteChart ref="chartRefs.waste" />
+              </div>
             </div>
           </section>
 
@@ -47,7 +51,9 @@
               </div>
             </div>
             <div class="step-chart">
+              <div class="chart-container-bg">
               <VehicleGraph ref="chartRefs.vehicle" />
+              </div>
             </div>
           </section>
         </div>
@@ -141,6 +147,17 @@ onMounted(() => {
   padding: 1rem;
   width: 100%;
 }
+.chart-container-bg {
+  background-color: #d2e3fc;
+  border-radius: 8px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  padding: 1rem;
+}
 
 /* New layout for text+chart rows */
 .story-steps {
@@ -163,22 +180,28 @@ onMounted(() => {
   grid-column: 1;
 }
 
-/* Styling for the chart part */
-.step-chart {
-  grid-column: 2;
+.chart-container {
   height: 400px; /* Fixed height for charts */
-  background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Styling for the chart part */
+.step-chart {
+  width: 100%;
+  height: 100%;
+  min-height: 350px;
 }
 
 .step-content {
   border-radius: 8px;
   opacity: 1;
-  background-color: #ffffff;
   width: 100%;
   padding: 2rem;
-  background-color: #d2e3fc;
+  min-height: 400px;
+  display: flex;                /* Add */
+  align-items: center;          /* Add: vertical centering */
+  justify-content: center; 
 }
 
 /* Text styling */
@@ -186,8 +209,10 @@ onMounted(() => {
   color: #003b70;
   font-size: 2em;          
   font-weight: 600;           
-  line-height: 1;           
-  padding: 0.75rem;
+  line-height: 1.25;           
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
 }
 
 /* Pill styling */
@@ -198,7 +223,6 @@ onMounted(() => {
   padding: 0.2em 0.6em;
   font-size: 0.9em;
   font-weight: 600;
-  line-height: 1;
   margin: 0 0.2em;
 }
 
