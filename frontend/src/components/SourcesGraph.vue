@@ -1,15 +1,16 @@
 <template>
-  <div class="chart-wrapper">
+  <div class="chart-with-details">
     <button class="close-btn" @click="navigateBack">X</button>
-    <div v-if="!hasData">No data available for the selected building.</div>
+    
+    <div v-if="!hasData" class="no-data">No data available for the selected building.</div>
     <div v-else ref="chart" class="chart-container"></div>
-    <!-- Add the Compare button and dropdown -->
+
+    <!-- Compare Section -->
     <div class="compare-section">
       <button v-if="!showDropdown" class="comp-btn" @click="toggleDropdown">Compare</button>
       <div v-else>
         <select v-model="selectedBuilding2" @change="toggleBuilding">
           <option disabled value="">Select a building</option>
-          <!-- Compare All option with checkmark -->
           <option value="ALL" :class="{ 'highlighted': displayedBuildings.includes('ALL') }">
             Compare All <span v-if="displayedBuildings.includes('ALL')">✔</span>
           </option>
@@ -25,15 +26,61 @@
         </select>
       </div>
     </div>
-    <div class="accordion-section">
-      <button class="accordion-toggle" @click="showAccordion = !showAccordion">
-        What does this chart show?
-        <span :class="{ rotated: showAccordion }">▼</span>
-      </button>
-      <div v-show="showAccordion" class="accordion-content">
-        <p><strong>kWh (kilowatt-hour)</strong> is a measure of energy. One kilowatt-hour is the energy used by a 1,000-watt appliance running for one hour.</p>
-        <p>This chart displays the electricity output (in kWh) for the selected building over time, based on hourly data. It helps you visualize trends in energy usage, compare buildings, and identify patterns such as peak usage times.</p>
-      </div>
+
+    <!-- Data Overview -->
+    <div class="accordion">
+      <details>
+        <summary><strong>What does this chart show?</strong></summary>
+        <div class="accordion-content">
+          <p><strong>kWh (kilowatt-hour)</strong> is a measure of energy. One kilowatt-hour is the energy used by a 1,000-watt appliance running for one hour.</p><br>
+          <p>This chart displays the electricity output (in kWh) for the selected building over time, based on hourly data. It helps you visualize trends in energy usage, compare buildings, and identify patterns such as peak usage times.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- Reading the Graph -->
+    <div class="accordion">
+      <details>
+        <summary><strong>How to Read the Graph</strong></summary>
+        <div class="accordion-content">
+          <ul>
+            <li><strong>X-axis:</strong> Shows time in hourly intervals</li>
+            <li><strong>Y-axis:</strong> Shows energy output in kilowatt-hours (kWh)</li>
+            <li><strong>Hover</strong> over any point to see exact values and timestamps</li>
+            <li><strong>Compare</strong> multiple buildings using the compare button above</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Solar Panel Distribution -->
+    <div class="accordion">
+      <details>
+        <summary><strong>Solar Panel Information</strong></summary>
+        <div class="accordion-content">
+          <div class="panel-info">
+            <h4>Solar Panel Distribution:</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Location</th>
+                  <th>Number of Panels</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="building in buildings" :key="building.name">
+                  <td>{{ building.name }}</td>
+                  <td>{{ building.panels }}</td>
+                </tr>
+                <tr class="total">
+                  <td><strong>Total Panels</strong></td>
+                  <td><strong>{{ totalPanels }}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </div>
   </div>
 </template>
@@ -49,8 +96,6 @@ const router = useRouter();
 const navigateBack = () => router.push('/sources');
 
 const buildingName = route.query.buildingName;
-const showAccordion = ref(false);
-
 const chart = ref(null);
 const hasData = ref(false);
 const errorMessage = ref('');
@@ -71,6 +116,10 @@ const buildings = ref([
   { name: "Soles/MRH", panels: 546 },
   { name: "West Parking", panels: 896 }
 ]);
+
+const totalPanels = computed(() =>
+  buildings.value.reduce((sum, b) => sum + b.panels, 0)
+);
 
 const formatBuildingName = name => {
   if (name.toLowerCase() === 'soles/mrh') {
@@ -137,7 +186,6 @@ const toggleBuilding = async () => {
           left: '50%',
           top: '2%',
           textAlign: 'center',
-          x: 'center',
         };
         option.series = option.series.filter(s =>
           s.name.includes(originalBuildingDisplayName.value)
@@ -212,7 +260,6 @@ const toggleBuilding = async () => {
       left: '50%',
       top: '2%',
       textAlign: 'center',
-      x: 'center',
     };
     option.legend.data = option.series.map(s => s.name);
     inst.setOption(option, true);
@@ -256,7 +303,6 @@ onMounted(async () => {
         left: '50%',
         top: '2%',
         textAlign: 'center',
-        x: 'center',
       },
       tooltip: {
         trigger: 'axis',
@@ -332,134 +378,59 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Styles for screens larger than 768px (tablets and desktops) */
-@media (min-width: 768px) {
-  .chart-wrapper {
-    padding-top: 40px;  
-  }
-  .chart-container {
-    height: 70%;  
-  }
-  .accordion-section {
-    margin-top: 20px;
-  }
-}
-/* Styles for small screens like phones (max-width 768px) */
-@media (max-width: 768px) {
-  .chart-wrapper {
-    padding-top: 10px;  
-    padding-bottom: 20px; 
-  }
-  .chart-container {
-    height: 60%;  
-  }
-  .accordion-section {
-    margin-top: 8px;
-    width: 100%; 
-  }
-  .comp-btn {
-    padding: 8px 15px; 
-  }
-  .close-btn {
-    top: 5px;
-    right: 5px;
-    width: 32px;
-    height: 32px;
-    font-size: 18px; 
-  }
-  select {
-    font-size: 14px; 
-  }
-}
-/* Styles for very small devices (e.g., iPhone 12) */
-@media (max-width: 375px) {
-  .chart-wrapper {
-    padding-top: 5px;
-    padding-bottom: 10px;
-  }
-  .chart-container {
-    height: 50%;  
-  }
-  .accordion-section {
-    margin-top: 4px;
-  }
-  .comp-btn {
-    padding: 6px 12px;  
-  }
-  .close-btn {
-    top: 3px;
-    right: 3px;
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
-  }
-  select {
-    font-size: 12px; 
-  }
-}
-.chart-wrapper {
-  overflow: auto;
-  width: 100%;
-  height: 100vh;
-  padding-top: 20px;
-  box-sizing: border-box;
-  border-radius: 8px; 
-  background: #ffffff;
-  display: flex;
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: flex-start; 
-  position: relative;
-}
-.chart-container {
-  width: 100%;
-  height: 70%;
-  flex-grow: 1;
-}
-.accordion-section {
-  margin-top: 16px;
-  width: 90%;
-  max-width: 600px;
-  text-align: left;
-  color: black;
-}
-.accordion-toggle {
-  background-color: #f0f0f0;
-  color: #003b70;
-  border: none;
-  padding: 10px 15px;
-  width: 100%;
-  text-align: left;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 4px;
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.accordion-toggle:hover {
-  background-color: #e0e0e0;
-}
-.accordion-toggle span {
-  transition: transform 0.3s ease;
-}
-.accordion-toggle span.rotated {
-  transform: rotate(180deg);
-}
-.accordion-content {
-  background-color: #fafafa;
-  padding: 12px 15px;
-  border-radius: 4px;
-  margin-top: 8px;
-  border: 1px solid #ddd;
+.chart-with-details {
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  min-height: 100vh;
   overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  background: #FF6B6B;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.close-btn:hover {
+  background: #FF2C2C;
+}
+
+.chart-container {
+  flex: 0 0 400px;
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 1.1em;
+}
+
 .compare-section {
-  margin-top: 20px;
+  margin: 20px 0;
   text-align: center;
 }
+
 .comp-btn {
   padding: 10px 20px;
   background-color: #003b70;
@@ -467,36 +438,163 @@ onMounted(async () => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1em;
 }
 .comp-btn:hover {
   background-color: #00509e;
 }
+
 select {
   padding: 10px;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
+  font-size: 1em;
+  min-width: 200px;
 }
+
+/* Accordion styling copied from examples */
+.accordion {
+  margin-top: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  color: #003b70;
+}
+
+.accordion details {
+  width: 100%;
+}
+
+.accordion summary {
+  cursor: pointer;
+  padding: 8px 8px 8px 24px;
+  list-style: none;
+  position: relative;
+}
+
+.accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion summary::after {
+  content: '►';  /* Right-pointing triangle */
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+  font-weight: normal;
+}
+
+.accordion details[open] summary::after {
+  transform: translateY(-50%) rotate(90deg);  /* Rotate to point down when open */
+}
+
+.accordion-content {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fff;  /* Changed from #fafafa to white */
+  border-radius: 4px;
+}
+
+.panel-info {
+  margin-top: 20px;
+}
+.panel-info table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.panel-info th,
+.panel-info td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+.panel-info th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+.panel-info .total {
+  font-weight: bold;
+  background-color: #f9f9f9;
+}
+
 .highlighted {
   font-weight: bold;
-  color: green;
+  color: #003b70;
 }
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #FF6B6B;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 1000;
+
+.accordion strong {
+  font-weight: 700;  /* Force bold weight */
 }
-.close-btn:hover {
-  background: #e05555;
+
+/* Update the strong styling to be more specific */
+.accordion-content strong {
+  font-weight: 700;  /* Keep content bold */
+}
+
+/* Remove bold from summary strong */
+.accordion summary strong {
+  font-weight: normal;  /* Remove bold from titles */
+}
+
+/* Keep table total row bold */
+.panel-info .total {
+  font-weight: bold;
+}
+
+/* Keep table headers bold */
+.panel-info th {
+  font-weight: bold;
+}
+
+/* Keep highlighted items bold */
+.highlighted {
+  font-weight: bold;
+  color: #003b70;
+}
+
+@media (max-width: 420px) {
+  .chart-with-details {
+    padding: 12px;
+  }
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  .chart-container {
+    height: 45vh;
+    max-height: none;
+    margin-bottom: 15px;
+  }
+  .accordion {
+    padding: 10px;
+    font-size: 15px;
+  }
+  .accordion-content {
+    padding: 8px;
+  }
+  .accordion summary {
+    font-size: 16px;
+  }
+  .panel-info table {
+    font-size: 14px;
+  }
+  .panel-info th,
+  .panel-info td {
+    padding: 6px;
+  }
+  .comp-btn {
+    padding: 8px 15px;
+    font-size: 0.9em;
+  }
+  select {
+    padding: 8px;
+    font-size: 0.9em;
+    min-width: 180px;
+  }
 }
 </style>

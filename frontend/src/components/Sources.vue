@@ -3,7 +3,7 @@
     <main class="sources__content">
       <section class="sources__panel">
         <div class="sources__panel-inner">
-          <h2 class="sources__grid-title">All Buildings</h2>
+          <h2 class="sources__grid-title">All Solar Sites</h2>
 
           <section class="sources__buildings-grid">
             <article
