@@ -59,25 +59,23 @@ const selectedBuilding2 = ref('');
 const displayedBuildings = ref([]);
 
 const buildings = ref([
-  { name: "Alcala Borrego" },
-  { name: "Alcala Laguna" },
-  { name: "Camino Hall" },
-  { name: "Copley Library" },
-  { name: "Founders Hall" },
-  { name: "Jenny Craig Pavilion" },
-  { name: "Kroc" },
-  { name: "Manchester A" },
-  { name: "Manchester B" },
-  { name: "Soles/MRH" },
-  { name: "West Parking" }
+  { name: "Alcala Borrego", panels: 126 },
+  { name: "Alcala Laguna", panels: 126 },
+  { name: "Camino Hall", panels: 980 },
+  { name: "Copley Library", panels: 266 },
+  { name: "Founders Hall", panels: 308 },
+  { name: "Jenny Craig Pavilion", panels: 910 },
+  { name: "Kroc", panels: 512 },
+  { name: "Manchester A", panels: 272 },
+  { name: "Manchester B", panels: 272 },
+  { name: "Soles/MRH", panels: 546 },
+  { name: "West Parking", panels: 896 }
 ]);
 
 const formatBuildingName = name => {
-  // First handle special case for Soles/MRH
   if (name.toLowerCase() === 'soles/mrh') {
     return 'soles';
   }
-  // Then handle other cases
   return name.toLowerCase().replace(/\s+/g, "_");
 };
 
@@ -90,15 +88,11 @@ const originalBuildingDisplayName = computed(() => {
   return found ? found.name : buildingName;
 });
 
-// Break title into lines of up to 5 names each,
-// but if "Compare All" was used, show "Current vs All Sites" only
 const computedTitle = computed(() => {
   const base = originalBuildingDisplayName.value;
-  // Check for "Compare All" mode - ensure this check is consistent
   if (displayedBuildings.value.includes('ALL')) {
     return `${base} vs All Solar Sites`;
   }
-  // otherwise, chunk as before
   const names = [ base, ...displayedBuildings.value.filter(b => b !== 'ALL') ];
   if (!names.length) return 'Electricity Output';
   const chunks = [];
@@ -130,42 +124,27 @@ const toggleBuilding = async () => {
     const option = inst.getOption();
     const value = selectedBuilding2.value;
 
-    // Handle 'Compare All' as a standalone setting
     if (value === 'ALL') {
       if (displayedBuildings.value.includes('ALL')) {
-        // Deselect ALL mode
         displayedBuildings.value = [];
         option.series = option.series.filter(s =>
           s.name.includes(originalBuildingDisplayName.value)
         );
       } else {
-        // Enable Compare All mode
-        displayedBuildings.value = ['ALL'];  // Set this first
-        
-        // Update the chart title immediately
+        displayedBuildings.value = ['ALL'];
         option.title = {
           text: `${originalBuildingDisplayName.value} vs All Solar Sites`,
-          left: '50%',           
-          top: '2%',            // Changed from 5% to 2%
+          left: '50%',
+          top: '2%',
           textAlign: 'center',
-          x: 'center',          
-          padding: [0, 0, 0, 0], 
-          textStyle: {
-            width: '100%',
-            align: 'center'
-          }
+          x: 'center',
         };
-        
-        // keep only the original series
         option.series = option.series.filter(s =>
           s.name.includes(originalBuildingDisplayName.value)
         );
-
-        // add every other building
         const others = buildings.value
           .map(b => b.name)
           .filter(n => n !== originalBuildingDisplayName.value);
-
         await Promise.all(
           others.map(async name => {
             const formatted = formatBuildingName(name);
@@ -190,64 +169,50 @@ const toggleBuilding = async () => {
         );
       }
     } else {
-      // If currently in "Compare All" mode, clear it first
       if (displayedBuildings.value.includes('ALL')) {
         displayedBuildings.value = [];
         option.series = option.series.filter(s =>
           s.name.includes(originalBuildingDisplayName.value)
         );
       }
-
       const compareName = value;
       if (displayedBuildings.value.includes(compareName)) {
-        // remove
         option.series = option.series.filter(
           s => s.name !== `Electricity Out (${compareName})`
         );
         displayedBuildings.value = displayedBuildings.value.filter(b => b !== compareName);
       } else {
-        try {
-          const formatted = formatBuildingName(compareName);
-          const { data } = await axios.get(
-            `http://localhost:3000/api/tables/hourlyenergybybuilding`,
-            { 
-              params: { buildingName: formatted },
-              validateStatus: status => status < 500
-            }
-          );
-          const sorted = data.slice().sort((a, b) => {
-            const da = new Date(a.timestamp), db = new Date(b.timestamp);
-            return da.getUTCHours() - db.getUTCHours() ||
-                   da.getUTCMinutes() - db.getUTCHours();
-          });
-          const out = sorted.map(r => r.energy_output || 0);
-          option.series.push({
-            data: out,
-            type: 'line',
-            smooth: true,
-            name: `Electricity Out (${compareName})`,
-            lineStyle: { type: 'dashed' }
-          });
-          displayedBuildings.value.push(compareName);
-        } catch (err) {
-          console.error('Error in toggleBuilding:', err);
-          errorMessage.value = 'Failed to load building data. Please try again.';
-        }
+        const formatted = formatBuildingName(compareName);
+        const { data } = await axios.get(
+          `http://localhost:3000/api/tables/hourlyenergybybuilding`,
+          { 
+            params: { buildingName: formatted },
+            validateStatus: status => status < 500
+          }
+        );
+        const sorted = data.slice().sort((a, b) => {
+          const da = new Date(a.timestamp), db = new Date(b.timestamp);
+          return da.getUTCHours() - db.getUTCHours() ||
+                 da.getUTCMinutes() - db.getUTCHours();
+        });
+        const out = sorted.map(r => r.energy_output || 0);
+        option.series.push({
+          data: out,
+          type: 'line',
+          smooth: true,
+          name: `Electricity Out (${compareName})`,
+          lineStyle: { type: 'dashed' }
+        });
+        displayedBuildings.value.push(compareName);
       }
     }
 
-    // Always update the title and legend after any changes
     option.title = {
       text: computedTitle.value,
-      left: '50%',           // Center horizontally
-      top: '2%',            // Changed from 5% to 2%
+      left: '50%',
+      top: '2%',
       textAlign: 'center',
-      x: 'center',          // Additional centering property
-      padding: [0, 0, 0, 0], // Remove any padding
-      textStyle: {
-        width: '100%',
-        align: 'center'
-      }
+      x: 'center',
     };
     option.legend.data = option.series.map(s => s.name);
     inst.setOption(option, true);
@@ -288,15 +253,10 @@ onMounted(async () => {
     const option = {
       title: {
         text: computedTitle.value,
-        left: '50%',           
-        top: '2%',            // Changed from 5% to 2%
+        left: '50%',
+        top: '2%',
         textAlign: 'center',
-        x: 'center',          
-        padding: [0, 0, 0, 0], 
-        textStyle: {
-          width: '100%',
-          align: 'center'
-        }
+        x: 'center',
       },
       tooltip: {
         trigger: 'axis',
@@ -314,13 +274,15 @@ onMounted(async () => {
           params.forEach(p => {
             const buildingMatch = p.seriesName.match(/\((.*?)\)/);
             const name = buildingMatch ? buildingMatch[1] : p.seriesName;
-            tip += `${p.marker} ${name}: ${parseFloat(p.data).toFixed(2)} kWh<br/>`;
+            const b = buildings.value.find(b => b.name === name);
+            const panelInfo = b ? ` (${b.panels} panels)` : '';
+            tip += `${p.marker} ${name}: ${parseFloat(p.data).toFixed(2)} kWh${panelInfo}<br/>`;
           });
           return tip;
         }
       },
       legend: {
-        show: true,
+        show: false,
         top: '10%',
         left: 'center',
         orient: 'horizontal',
@@ -373,70 +335,57 @@ onMounted(async () => {
 /* Styles for screens larger than 768px (tablets and desktops) */
 @media (min-width: 768px) {
   .chart-wrapper {
-    padding-top: 40px;  /* Adjust for larger screens */ 
+    padding-top: 40px;  
   }
-
   .chart-container {
-    height: 70%;  /* Take up less space on bigger screens */ 
+    height: 70%;  
   }
-
   .accordion-section {
     margin-top: 20px;
   }
 }
-
 /* Styles for small screens like phones (max-width 768px) */
 @media (max-width: 768px) {
   .chart-wrapper {
-    padding-top: 10px;  /* Less padding on smaller screens */ 
-    padding-bottom: 20px; /* Add some padding at the bottom */ 
+    padding-top: 10px;  
+    padding-bottom: 20px; 
   }
-
   .chart-container {
-    height: 60%;  /* Make the chart take less space on small screens */ 
+    height: 60%;  
   }
-
   .accordion-section {
     margin-top: 8px;
-    width: 100%; /* Make the accordion section take up the full width */ 
+    width: 100%; 
   }
-
   .comp-btn {
-    padding: 8px 15px; /* Make the compare button smaller */ 
+    padding: 8px 15px; 
   }
-
   .close-btn {
     top: 5px;
     right: 5px;
     width: 32px;
     height: 32px;
-    font-size: 18px; /* Smaller close button */ 
+    font-size: 18px; 
   }
-
   select {
-    font-size: 14px; /* Make the select dropdown smaller */ 
+    font-size: 14px; 
   }
 }
-
 /* Styles for very small devices (e.g., iPhone 12) */
 @media (max-width: 375px) {
   .chart-wrapper {
     padding-top: 5px;
     padding-bottom: 10px;
   }
-
   .chart-container {
-    height: 50%;  /* Make the chart take even less space on small devices */ 
+    height: 50%;  
   }
-
   .accordion-section {
     margin-top: 4px;
   }
-
   .comp-btn {
-    padding: 6px 12px;  /* Smaller padding for mobile */ 
+    padding: 6px 12px;  
   }
-
   .close-btn {
     top: 3px;
     right: 3px;
@@ -444,12 +393,10 @@ onMounted(async () => {
     height: 28px;
     font-size: 16px;
   }
-
   select {
-    font-size: 12px; /* Smaller font size for the select dropdown */ 
+    font-size: 12px; 
   }
 }
-
 .chart-wrapper {
   overflow: auto;
   width: 100%;
@@ -459,18 +406,16 @@ onMounted(async () => {
   border-radius: 8px; 
   background: #ffffff;
   display: flex;
-  flex-direction: column; /* Stack items vertically */ 
-  align-items: center; /* Center items horizontally */ 
-  justify-content: flex-start; /* Align items at the top */ 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: flex-start; 
   position: relative;
 }
-
 .chart-container {
   width: 100%;
   height: 70%;
   flex-grow: 1;
 }
-
 .accordion-section {
   margin-top: 16px;
   width: 90%;
@@ -478,7 +423,6 @@ onMounted(async () => {
   text-align: left;
   color: black;
 }
-
 .accordion-toggle {
   background-color: #f0f0f0;
   color: #003b70;
@@ -495,19 +439,15 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
 }
-
 .accordion-toggle:hover {
   background-color: #e0e0e0;
 }
-
 .accordion-toggle span {
   transition: transform 0.3s ease;
 }
-
 .accordion-toggle span.rotated {
   transform: rotate(180deg);
 }
-
 .accordion-content {
   background-color: #fafafa;
   padding: 12px 15px;
@@ -516,12 +456,10 @@ onMounted(async () => {
   border: 1px solid #ddd;
   overflow-y: auto;
 }
-
 .compare-section {
   margin-top: 20px;
   text-align: center;
 }
-
 .comp-btn {
   padding: 10px 20px;
   background-color: #003b70;
@@ -530,22 +468,18 @@ onMounted(async () => {
   border-radius: 4px;
   cursor: pointer;
 }
-
 .comp-btn:hover {
   background-color: #00509e;
 }
-
 select {
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
-
 .highlighted {
   font-weight: bold;
   color: green;
 }
-
 .close-btn {
   position: absolute;
   top: 10px;
@@ -562,7 +496,6 @@ select {
   cursor: pointer;
   z-index: 1000;
 }
-
 .close-btn:hover {
   background: #e05555;
 }

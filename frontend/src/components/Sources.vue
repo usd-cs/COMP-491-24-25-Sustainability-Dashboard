@@ -13,6 +13,7 @@
               @click="navigateToGraph(building.name)"
             >
               <h3 class="sources__building-name">{{ building.name }}</h3>
+              <p class="sources__building-panels">{{ building.panels }} panels</p>
             </article>
           </section>
         </div>
@@ -29,17 +30,17 @@ import AppLayout from "./AppLayout.vue";
 const router = useRouter();
 
 const buildings = [
-  { name: "Alcala Borrego", types: ["solar"] },
-  { name: "Alcala Laguna", types: ["solar"] },
-  { name: "Camino Hall", types: ["solar"] },
-  { name: "Copley Library", types: ["solar"] },
-  { name: "Founders Hall", types: ["solar"] },
-  { name: "Jenny Craig Pavilion", types: ["solar"] },
-  { name: "Kroc", types: ["solar"] },          
-  { name: "Manchester A", types: ["solar"] },
-  { name: "Manchester B", types: ["solar"] },
-  { name: "Soles/MRH", types: ["solar"] },
-  { name: "West Parking", types: ["solar"] },   
+  { name: "Alcala Borrego", types: ["solar"], panels: 126 },
+  { name: "Alcala Laguna", types: ["solar"], panels: 126 },
+  { name: "Camino Hall", types: ["solar"], panels: 980 },
+  { name: "Copley Library", types: ["solar"], panels: 266 },
+  { name: "Founders Hall", types: ["solar"], panels: 308 },
+  { name: "Jenny Craig Pavilion", types: ["solar"], panels: 910 },
+  { name: "Kroc", types: ["solar"], panels: 512 },
+  { name: "Manchester A", types: ["solar"], panels: 272 },
+  { name: "Manchester B", types: ["solar"], panels: 272 },
+  { name: "Soles/MRH", types: ["solar"], panels: 546 },
+  { name: "West Parking", types: ["solar"], panels: 896 },
 ];
 
 // Function to select a building and display its graph
@@ -103,21 +104,21 @@ const navigateToGraph = (buildingName) => {
   }
 
   .sources__building-card {
-  aspect-ratio: 1 / 1; /* makes each card a square */
-  background-color: #6ea1ce;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    aspect-ratio: 1 / 1; /* makes each card a square */
+    background-color: #6ea1ce;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
   .sources__building-name {
     font-size: 16px;
   }
 }
-
 
 .sources__grid-title {
   font-size: 24px;
@@ -188,12 +189,22 @@ const navigateToGraph = (buildingName) => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .sources__building-name {
   font-size: 18px;
   font-weight: 600;
   color: #003b70;
+}
+
+.sources__building-panels {
+  font-size: 14px;
+  color: #003b70;
+  margin-top: 8px;
 }
 
 .sources__building-card:hover {
