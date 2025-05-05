@@ -27,7 +27,12 @@ const option = {
   },
   yAxis: {
     type: 'value',
-    name: 'Gallons of Water'
+    name: 'Gallons of Water',
+    axisLabel: {
+      formatter: function (value) {
+        return value / 1000000 + 'M';
+      }
+    }
   },
   series: [
     {
