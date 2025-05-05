@@ -8,7 +8,6 @@ import * as echarts from 'echarts';
 vi.mock('axios');
 vi.mock('echarts', () => ({ init: vi.fn() }));
 
-// helper to wait for all promises to resolve
 const flushPromises = () => new Promise(r => setTimeout(r, 0));
 
 describe('PieChart.vue', () => {
@@ -21,20 +20,47 @@ describe('PieChart.vue', () => {
   ];
 
   beforeEach(() => {
-    // reset mocks
     vi.clearAllMocks();
-    // stub API
     axios.get.mockResolvedValue({ data: fakeData });
-    // stub echarts instance
     mockChart = { setOption: vi.fn(), resize: vi.fn(), dispose: vi.fn() };
     echarts.init.mockReturnValue(mockChart);
-    // spy on resize listener
     vi.spyOn(window, 'addEventListener');
     vi.spyOn(window, 'removeEventListener');
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it('renders the pie chart with proper legend splitting and data', async () => {
+    const wrapper = mount(PieChart);
+    await flushPromises();
+
+    expect(echarts.init).toHaveBeenCalledWith(wrapper.vm.$refs.chart);
+
+    const opts = mockChart.setOption.mock.calls[0][0];
+
+    // Test title
+    expect(opts.title.text).toBe('Solar Energy Contributions by Site');
+
+    // Test legend splitting
+    const names = fakeData.map(i => i.site);
+    const mid = Math.ceil(names.length / 2);
+    expect(opts.legend[0].data).toEqual(names.slice(0, mid));
+    expect(opts.legend[1].data).toEqual(names.slice(mid));
+
+    // Test series data
+    expect(opts.series[0].data).toEqual(wrapper.vm.chartData);
+
+    // Test tooltip formatter function
+    const mockParams = {
+      name: 'Array A',
+      value: 123.46,
+      percent: '45.2'
+    };
+    const expectedTooltip = `Array A\nEnergy: 123.46 kWh (45.2%)\nSolar Panels: N/A`;
+    const formattedTooltip = opts.tooltip.formatter(mockParams).replace(/<br\/>/g, '\n');
+    expect(formattedTooltip).toBe(expectedTooltip);
   });
 
   it('fetches data and transforms chartData correctly', async () => {
@@ -52,32 +78,6 @@ describe('PieChart.vue', () => {
       { name: 'Array B', value:  78.91 },
       { name: 'Array C', value:  50.00 }
     ]);
-  });
-
-  it('renders the pie chart with proper legend splitting and data', async () => {
-    const wrapper = mount(PieChart);
-    await flushPromises();
-
-    // echarts.init called with the chart container
-    expect(echarts.init).toHaveBeenCalledWith(wrapper.vm.$refs.chart);
-
-    // grab the options passed into setOption
-    const opts = mockChart.setOption.mock.calls[0][0];
-
-    // title
-    expect(opts.title.text).toBe('Solar Energy Contributions by Site');
-
-    // legend data splits in half
-    const names = fakeData.map(i => i.site);
-    const mid = Math.ceil(names.length / 2);
-    expect(opts.legend[0].data).toEqual(names.slice(0, mid));
-    expect(opts.legend[1].data).toEqual(names.slice(mid));
-
-    // series data is chartData
-    expect(opts.series[0].data).toEqual(wrapper.vm.chartData);
-
-    // tooltip format
-    expect(opts.tooltip.formatter).toBe('{b}: {c} kWh ({d}%)');
   });
 
   it('adds and removes resize listener', () => {

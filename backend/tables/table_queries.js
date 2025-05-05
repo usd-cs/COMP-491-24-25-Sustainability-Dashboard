@@ -475,7 +475,7 @@ export const getSolarContributionsData = async () => {
     UNION ALL
     SELECT 'Manchester B',        SUM(manchester_b)       FROM athena_hourly_output
     UNION ALL
-    SELECT 'Soles Hall',          SUM(soles)              FROM athena_hourly_output
+    SELECT 'Soles/MHR',          SUM(soles)              FROM athena_hourly_output
     UNION ALL
     SELECT 'West Parking',        SUM(west_parking)       FROM athena_hourly_output;
   `;

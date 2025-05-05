@@ -188,5 +188,62 @@ const toggleFooter = () => {
   color: #003b70;
   background-color: #ffffff;
 }
+@media screen and (max-width: 420px) {
+  .footer-content {
+    padding: 1rem 1.25rem; /* Less horizontal padding */
+  }
+
+  .footer-contactInfo {
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align left */
+    gap: 2rem;
+  }
+
+  .contactInfo__Addr,
+  .footer-adv,
+  .footer-image {
+    width: 100%; /* Use full width on small screen */
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .footer-image {
+    justify-content: flex-start; /* Align logo left */
+    margin-bottom: 1rem;
+  }
+
+  .footer-adv h3 {
+    font-size: 0.75rem;
+  }
+
+  .footer-adv a {
+    font-size: 0.65rem;
+    margin-left: 0; /* Remove left margin */
+  }
+
+  .footer-copy p {
+    font-size: 0.55rem;
+    letter-spacing: 0.05rem;
+  }
+
+  .footer-legal {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 0.5rem;
+  }
+
+  .footer-legal a {
+    font-size: 0.55rem;
+    margin-left: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  .footer-gradient-box {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+}
+
 
 </style>

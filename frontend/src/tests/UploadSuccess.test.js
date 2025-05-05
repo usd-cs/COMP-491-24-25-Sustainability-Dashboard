@@ -1,10 +1,23 @@
+/**
+ * @file UploadSuccess.test.js
+ * @description Unit tests for the `UploadSuccess` component using Vitest and Vue Test Utils.
+ */
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import UploadSuccess from '../components/UploadSuccess.vue';
 
 describe('UploadSuccess', () => {
   it('renders correctly', () => {
-    const wrapper = mount(UploadSuccess);
+    const wrapper = mount(UploadSuccess, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
 
     // Verify the main section title
     const sectionTitle = wrapper.find('.upload-success-title');
@@ -23,7 +36,16 @@ describe('UploadSuccess', () => {
   });
 
   it('has accessible buttons', () => {
-    const wrapper = mount(UploadSuccess);
+    const wrapper = mount(UploadSuccess, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
 
     const cancelButton = wrapper.find('.cancel-btn');
     const importButton = wrapper.find('.import-btn');
@@ -36,7 +58,16 @@ describe('UploadSuccess', () => {
   });
 
   it('contains success message and prompt', () => {
-    const wrapper = mount(UploadSuccess);
+    const wrapper = mount(UploadSuccess, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
 
     expect(wrapper.find('.success-heading').text()).toBe('SUCCESS');
     expect(wrapper.find('.success-detail').text()).toBe('Imported file successfully');
@@ -45,7 +76,16 @@ describe('UploadSuccess', () => {
 
 
   it('has action buttons', () => {
-    const wrapper = mount(UploadSuccess);
+    const wrapper = mount(UploadSuccess, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AppLayout: {
+            template: '<div><slot /></div>'
+          }
+        }
+      }
+    });
 
     expect(wrapper.find('.cancel-btn').exists()).toBe(true);
     expect(wrapper.find('.import-btn').exists()).toBe(true);

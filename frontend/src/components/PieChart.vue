@@ -13,7 +13,20 @@ export default {
   data() {
     return {
       chartData: [],
-      title: 'Solar Energy Contributions by Site'
+      title: 'Solar Energy Contributions by Site',
+      panelData: {
+        'Alcala Borrego': 126,
+        'Alcala Laguna': 126,
+        'Camino Hall': 980,
+        'Copley Library': 266,
+        'Founders Hall': 308,
+        'Jenny Craig Pavilion': 910,
+        'Kroc Center': 512,
+        'Manchester A': 272,
+        'Manchester B': 272,
+        'Soles/MHR': 546,
+        'West Parking': 896
+      }
     };
   },
   mounted() {
@@ -58,7 +71,10 @@ export default {
         },
         tooltip: {
           trigger: 'item',
-          formatter: '{b}: {c} kWh ({d}%)'
+          formatter: (params) => {
+            const panelCount = this.getPanelCount(params.name);
+            return `${params.name}<br/>Energy: ${params.value} kWh (${params.percent}%)<br/>Solar Panels: ${panelCount}`;
+          }
         },
         legend: [
           {
@@ -95,6 +111,15 @@ export default {
         ]
       };
       this.chartInstance.setOption(options);
+    },
+    getPanelCount(siteName) {
+      // Helper function to find panel count based on site name
+      for (const [key, value] of Object.entries(this.panelData)) {
+        if (siteName.includes(key) || key.includes(siteName)) {
+          return value;
+        }
+      }
+      return 'N/A';
     },
     handleResize() {
       if (this.chartInstance) {

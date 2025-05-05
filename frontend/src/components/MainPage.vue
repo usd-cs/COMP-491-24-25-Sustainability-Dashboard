@@ -117,4 +117,26 @@ defineProps({
   padding:10px;
 }
 .wide-visual-section>*{width:100%;height:100%;border-radius:inherit;}
+
+/* --- MOBILE: stack charts vertically in one column --- */
+@media screen and (max-width: 768px) {
+  .visual-container {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    gap: 16px;
+    padding: 10px 12px;
+    margin-top: 0;
+  }
+
+  .bottom-visual-container {
+    margin-top: 20px;
+    padding: 0 12px 20px;
+  }
+
+  .wide-visual-section {
+    height: 300px; /* adjust as needed */
+  }
+}
+
 </style>

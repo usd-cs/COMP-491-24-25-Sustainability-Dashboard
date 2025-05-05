@@ -3,21 +3,47 @@
     <!-- Close Button -->
     <button class="close-btn" @click="navigateBack">X</button>
 
+    <!-- Chart Section -->
     <div ref="chart" class="chart-container"></div>
 
-    <!-- 1. Data Sources -->
+    <!-- Accordion Sections -->
     <div class="accordion">
       <details>
         <summary>Data Sources</summary>
         <div class="accordion-content">
           <p>
             The chart combines live production from <strong>11 on-site solar arrays</strong>
-            (rooftops and parking canopies). It tracks each inverter’s hourly kWh and then
-            sums those readings for the period you’re viewing.
+            (rooftops and parking canopies). It tracks each inverter's hourly kWh and then
+            sums those readings for the period you're viewing.
           </p>
           <ul>
             <li>Kilowatt-hour (kWh) = energy that powers a 100-W bulb for 10 hours.</li>
           </ul>
+          <div class="panel-info">
+            <h4>Solar Panel Distribution:</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Location</th>
+                  <th>Number of Panels</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Alcala Borrego</td><td>126</td></tr>
+                <tr><td>Alcala Laguna</td><td>126</td></tr>
+                <tr><td>Camino Hall</td><td>980</td></tr>
+                <tr><td>Founders Hall</td><td>308</td></tr>
+                <tr><td>Copley Library</td><td>266</td></tr>
+                <tr><td>Jenny Craig Pavillion</td><td>910</td></tr>
+                <tr><td>Kroc Center</td><td>512</td></tr>
+                <tr><td>Manchester A</td><td>272</td></tr>
+                <tr><td>Manchester B</td><td>272</td></tr>
+                <tr><td>Soles/MHR</td><td>546</td></tr>
+                <tr><td>West Parking</td><td>896</td></tr>
+                <tr class="total"><td><strong>Total Panels</strong></td><td><strong>5,214</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </details>
     </div>
@@ -98,7 +124,20 @@ export default {
     return {
       chartData: [],
       title: 'Solar Energy Contributions by Site',
-      chartInstance: null
+      chartInstance: null,
+      panelData: {
+        'Alcala Borrego': 126,
+        'Alcala Laguna': 126,
+        'Camino Hall': 980,
+        'Copley Library': 266,
+        'Founders Hall': 308,
+        'Jenny Craig Pavilion': 910,
+        'Kroc Center': 512,
+        'Manchester A': 272,
+        'Manchester B': 272,
+        'Soles/MHR': 546,
+        'West Parking': 896
+      }
     };
   },
   mounted() {
@@ -151,7 +190,10 @@ export default {
         },
         tooltip: {
           trigger: 'item',
-          formatter: '{b}: {c} kWh ({d}%)'
+          formatter: (params) => {
+            const panelCount = this.getPanelCount(params.name);
+            return `${params.name}<br/>Energy: ${params.value} kWh (${params.percent}%)<br/>Solar Panels: ${panelCount}`;
+          }
         },
         legend: [
           { orient: 'vertical', left: '20%', top: '30%', data: leftNames },
@@ -172,6 +214,15 @@ export default {
           data: this.chartData
         }]
       });
+    },
+    getPanelCount(siteName) {
+      // Helper function to find panel count based on site name
+      for (const [key, value] of Object.entries(this.panelData)) {
+        if (siteName.includes(key) || key.includes(siteName)) {
+          return value;
+        }
+      }
+      return 'N/A';
     },
     handleResize() {
       if (this.chartInstance) this.chartInstance.resize();
@@ -229,5 +280,82 @@ export default {
 .accordion-content {
   margin-top: 10px;
   padding-left: 10px;
+}
+
+.panel-info {
+  margin-top: 20px;
+}
+
+.panel-info table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.panel-info th,
+.panel-info td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.panel-info th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.panel-info .total {
+  font-weight: bold;
+  background-color: #f9f9f9;
+}
+
+@media (max-width: 420px) {
+  .chart-with-details {
+    padding: 12px;
+  }
+
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .chart-container {
+    height: 45vh; /* Adjust chart size */
+    max-height: none;
+    margin-bottom: 15px; /* Add margin for accordion sections */
+  }
+
+  .accordion {
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .accordion-content {
+    padding-left: 5px;
+  }
+
+  summary {
+    font-size: 16px;
+  }
+
+  /* Adjust chart legend on mobile */
+  .chart-container .echarts-legend {
+    display: none; /* Hide legend on small screens */
+  }
+
+  /* Optionally, we can also tweak the tooltip behavior for smaller screens */
+  .chart-container .echarts-tooltip {
+    font-size: 12px;
+  }
+
+  .panel-info table {
+    font-size: 14px;
+  }
+  
+  .panel-info th,
+  .panel-info td {
+    padding: 6px;
+  }
 }
 </style>
