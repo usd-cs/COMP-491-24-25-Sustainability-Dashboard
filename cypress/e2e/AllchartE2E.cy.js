@@ -1,6 +1,15 @@
-// cypress/e2e/ChartIntegration.cy.js
-
-// don’t fail on uncaught exceptions in your app:
+/**
+ * @file ChartIntegration.cy.js
+ * @description
+ * End-to-end (E2E) Cypress tests for chart navigation and integration across the main dashboard pages.
+ * Covers navigation between chart pages, chart rendering, accordion toggling, and API integration for:
+ * - Bar Chart
+ * - Bubble Chart
+ * - Pie Chart
+ * - Tree Chart (Pictorial)
+ * 
+ * Each describe block targets a specific chart page or navigation flow.
+ */
 Cypress.on('uncaught:exception', () => false);
 
 describe('MainPage Charts & Navigation', () => {
