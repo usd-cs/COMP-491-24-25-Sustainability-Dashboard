@@ -36,7 +36,7 @@
 
 <script setup>
 import AppLayout from './AppLayout.vue';
-import { ref,onMounted, nextTick } from 'vue';
+import { ref,onMounted } from 'vue';
 import EmissionsChart from './EmissionsChart.vue';
 import WaterUsageChart from './WaterUsageChart.vue';
 import WasteChart from './WasteChart.vue';
@@ -65,7 +65,7 @@ const blurbs = [
 
 { text: "USD achieved this reduction through <span class='pill'>extensive retrofits</span> like low-flow aerators, water-efficient toilets, and weather-based irrigation systems, alongside a shift toward <span class='pill'>drought-tolerant landscaping</span> across campus.", chart: 1 },
 
-{ text: "Campus engagement programs, such as the <span class='pill'>Eco-Resident Certification</span>, further encouraged students to adopt \<span class='pill'>water-saving practices</span>, amplifying conservation outcomes.", chart: 1 },
+{ text: "Campus engagement programs, such as the <span class='pill'>Eco-Resident Certification</span>, further encouraged students to adopt <span class='pill'>water-saving practices</span>, amplifying conservation outcomes.", chart: 1 },
 
 // — Chart 2 (WasteChart) —
 { text: "To further its sustainability mission, USD pursued ambitious <span class='pill'>Zero Waste goals</span>, significantly bolstered by the implementation of single-stream recycling and composting initiatives within dining and community spaces.", chart: 2 },
