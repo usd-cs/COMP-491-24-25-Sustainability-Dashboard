@@ -35,7 +35,7 @@ import LineChartExpand from "@/components/LineChartExpand.vue";
  * - `/line-chart`     → Expanded line chart
  * - `/bubble-chart`   → Expanded bubble chart
  * - `/sources-graph`  → Individual buildings graph
-
+ * - `/energy-impact`  → Energy Impact Full page
  *
  * @type {Array<{ path: string, component: Object, [props]?: Object }>}
  */
@@ -58,7 +58,7 @@ const routes = [
   /* misc utility pages */
   { path: "/sources", component: Sources },
   { path: "/sources-graph", component: SourcesGraph },
-  { path: "/initiatives", component: Initiatives }
+  { path: "/initiatives", component: Initiatives },
 ];
 
 /**

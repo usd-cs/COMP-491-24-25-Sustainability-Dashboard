@@ -16,7 +16,9 @@
           <PieChart/>
         </div>
         <!-- Lower right square -->
-        <div class="visual-section"></div>
+        <div class="visual-section">
+          <EnergyQuadrants/>
+        </div>
       </div>
       <div class="bottom-visual-container">
         <div class="wide-visual-section" role="button" @click="navigateToLineChart">
@@ -35,6 +37,7 @@ import BarChart from './BarChart.vue';
 import BubbleChart from './BubbleChart.vue';
 import PieChart from './PieChart.vue';
 import LineChart from './LineChart.vue';
+import EnergyQuadrants from './EnergyQuadrants.vue';
 
 const router = useRouter();
 
@@ -80,7 +83,7 @@ defineProps({
   height:calc(100vh - 71px - 20px); /* reduced the internal offset (-20px) */
 }
 
-/* individual small‑chart “cards” */
+/* individual small‑chart "cards" */
 .visual-section{
   background:#fff;
   border:2px solid rgba(0,0,0,.05);
