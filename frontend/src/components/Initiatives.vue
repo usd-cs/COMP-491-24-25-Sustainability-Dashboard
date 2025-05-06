@@ -109,7 +109,8 @@ onMounted(() => {
   padding: 0;
   box-sizing: border-box;
 }
-.start{
+
+.start {
   background-image: -webkit-linear-gradient(right, #003b70, #0074c8);
   background-image: linear-gradient(to top, #003b70, #3d9970);
   opacity: 0.95;
@@ -198,5 +199,4 @@ onMounted(() => {
   background-color: #d2e3fc;
   color: #174ea6;
 }
-
 </style>
