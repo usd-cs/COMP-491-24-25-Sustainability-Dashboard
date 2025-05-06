@@ -6,7 +6,7 @@
           <section class="step-row" data-step="0">
             <div class="step-text">
               <div class="step-content">
-               <p>Starting from a<span class="pill">2010 baseline,</span> the University of San Diego aims to cut emissions by 50% by 2035, aligning with the City of San Diego's Climate Action Plan.</p>
+               <p>Starting from a<span class="pill">2010 baseline,</span> the University of San Diego originally aimed to cut emissions by 50% by 2035, aligning with the City of San Diego's Climate Action Plan.</p>
               </div>
             </div>
             <div class="step-chart">
@@ -19,7 +19,7 @@
           <section class="step-row" data-step="1">
             <div class="step-text">
               <div class="step-content">
-                <p>Through the <span class="pill">Eco-Resident Certification</span> program, students learn <span class="pill">water conservation</span> practices, while <span class="pill">drought-tolerant landscaping</span> across campus helps reduce irrigation needs.</p>
+                <p>Undertakings such as the planting of <span class="pill">drought-tolerant landscaping,</span> irrigation reductions, and participation in the <span class="pill">Eco-Resident Certification</span> program, where students learn <span class="pill">water conservation</span> best practices, has had a drastic effect on campus wide water usage. </p>
               </div>
             </div>
             <div class="step-chart">
@@ -32,8 +32,7 @@
           <section class="step-row" data-step="2">
             <div class="step-text">
               <div class="step-content">
-                <p>Through the <span class="pill">Eco-Resident Certification</span> program, students are introduced to <span class="pill">water conservation</span> practices for daily life. Across campus, traditional lawns have been replaced with <span class="pill">drought-tolerant landscaping</span>, reducing the need for irrigation.
-                </p>
+                <p> Promoting a<span class="pill">Zero Waste goal,</span>USD has introduced single-stream recycling, the promotion of Sustain-A-Bottle for reusable water bottles, and pre-consumer composting in dining areas.<span class="pill">Community composting</span>takes place at Crossroads Garden and SOLES.</p>
               </div>
             </div>
             <div class="step-chart">
