@@ -31,7 +31,7 @@ const option = {
   },
   xAxis: {
     type: 'category',
-    data: ['2014', '2017', '2021', '2023']
+    data: ['2014', '2017', '2021']
   },
   yAxis: {
     type: 'value',
@@ -41,22 +41,22 @@ const option = {
     {
       name: 'Gasoline or Diesel-only',
       type: 'bar',
-      data: [86.3, 82.8, 79.8, 0]
+      data: [86.3, 82.8, 79.8]
     },
     {
       name: 'Electric-only',
       type: 'bar',
-      data: [11.5, 15.2, 17.4, 0]
+      data: [11.5, 15.2, 17.4]
     },
     {
       name: 'Gasoline-electric hybrid',
       type: 'bar',
-      data: [1.6, 0, 1.4, 0]
+      data: [1.6, 0, 1.4]
     },
     {
       name: 'Compressed Natural Gas (CNG)',
       type: 'bar',
-      data: [0.5, 2, 1.4, 0]
+      data: [0.5, 2, 1.4]
     }
   ]
 };
