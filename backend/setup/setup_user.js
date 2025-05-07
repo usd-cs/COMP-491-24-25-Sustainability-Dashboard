@@ -67,8 +67,8 @@ const addUser = async (username, email, password) => {
 
 // Add user
 addUser(
-  process.env.TEST_USER_NAME || 'johnalejandro',
-  process.env.TEST_USER_EMAIL|| 'johnalejandro@sandiego.edu',
+  process.env.TEST_USER_NAME || 'mockuser_1',
+  process.env.TEST_USER_EMAIL|| 'mockuser_1@sandiego.edu',
   process.env.TEST_USER_PASSWORD || 'pw123'
 )
   .then(() => {
