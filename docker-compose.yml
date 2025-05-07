@@ -1,51 +1,45 @@
 services:
   backend:
     platform: linux/amd64
+    env_file:
+      - prod.env
     build:
       context: .
       dockerfile: backend/Dockerfile.backend
-    ports:
-      - "3000:3000"
     volumes:
       - ${COMPOSE_PROJECT_PATH:-.}:/app
       - /app/node_modules  # Ensures node_modules is created inside the container
-    environment:
-      - NODE_ENV=development
-      - DB_HOST=database
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=postgres
     depends_on:
       database:
         condition: service_healthy
+    networks:
+      - internal
 
 
   frontend:
     platform: linux/amd64
+    env_file:
+      - prod.env
     build:
       context: .
       dockerfile: frontend/Dockerfile.frontend
     ports:
       - "5173:5173"
+      - "80:80" 
     volumes:
       - ${COMPOSE_PROJECT_PATH:-.}:/app
       - /app/node_modules  # Ensures node_modules is created inside the container
-    environment:
-      - NODE_ENV=development
     depends_on:
       - backend
+    networks:
+      - internal
 
   database:
     image: postgres:17
     container_name: postgres_container
     restart: always
-    ports:
-      - "5434:5432"  # Maps PostgreSQL's default port to host
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+    env_file:
+      - prod.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:  # Ensures database is ready before backend starts
@@ -53,6 +47,12 @@ services:
       interval: 5s
       retries: 5
       timeout: 3s
+    networks:
+      - internal
 
 volumes:
   postgres_data:
+
+networks:
+  internal:
+    driver: bridge
