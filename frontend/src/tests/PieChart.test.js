@@ -67,9 +67,10 @@ describe('PieChart.vue', () => {
     const wrapper = mount(PieChart);
     await flushPromises();
 
+    const apiUrl = import.meta.env.VITE_API_URL;
     // correct API endpoint
     expect(axios.get).toHaveBeenCalledWith(
-      'http://localhost:3000/api/tables/energy/solar/contributions'
+      `${apiUrl}/api/tables/energy/solar/contributions`
     );
 
     // chartData should have name & value (rounded to 2 decimals)

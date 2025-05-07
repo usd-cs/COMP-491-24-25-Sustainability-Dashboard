@@ -37,8 +37,9 @@ describe('BubbleChart.vue', () => {
     const wrapper = mount(BubbleChart);
     await flushPromises();
 
+    const apiUrl = import.meta.env.VITE_API_URL;
     // API called
-    expect(axios.get).toHaveBeenCalledWith('http://localhost:3000/api/tables/getbubblechart');
+    expect(axios.get).toHaveBeenCalledWith(`${apiUrl}/api/tables/getbubblechart`);
 
     // chartData must be array of {date, gas, output}
     expect(wrapper.vm.chartData).toEqual([

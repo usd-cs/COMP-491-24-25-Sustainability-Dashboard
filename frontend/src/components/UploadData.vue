@@ -112,11 +112,11 @@ const handleUpload = async (_event) => {
 
   try {
     console.log('Making POST request to upload file...');
-    
+    const apiUrl = import.meta.env.VITE_API_URL;
     // Determine the endpoint based on the selected source
     const endpoint = selectedSource.value === 'Athena' 
-      ? 'http://localhost:3000/api/auth/athena-upload'
-      : 'http://localhost:3000/api/auth/file-upload';
+      ? `${apiUrl}/api/auth/athena-upload`
+      : `${apiUrl}/api/auth/file-upload`;
 
     console.log(`Using endpoint: ${endpoint}`);
     

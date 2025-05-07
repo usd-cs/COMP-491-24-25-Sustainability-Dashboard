@@ -72,10 +72,11 @@ const selectSource = (source) => {
 // Fetch timestamp for a given source
 const fetchTimestamp = async (source) => {
   let url = "";
+  const apiUrl = import.meta.env.VITE_API_URL;
   if (source === "Athena") {
-    url = "http://localhost:3000/api/tables/athenadate";
+    url = `${apiUrl}/api/tables/athenadate`;
   } else if (source === "Bloom") {
-    url = "http://localhost:3000/api/tables/bloomdate";
+    url = `${apiUrl}/api/tables/bloomdate`;
   }
 
   try {

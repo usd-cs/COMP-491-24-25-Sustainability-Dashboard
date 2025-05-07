@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import pkg from 'pg'; // Import the CommonJS module as a default
 import bcrypt from 'bcrypt'; // Library for hashing passwords
 
@@ -62,8 +65,12 @@ const addUser = async (username, email, password) => {
   }
 };
 
-// Add user 'johnalejandro'
-addUser('johnalejandro', 'johnalejandro@sandiego.edu', 'pw123')
+// Add user
+addUser(
+  process.env.TEST_USER_NAME || 'mockuser_1',
+  process.env.TEST_USER_EMAIL|| 'mockuser_1@sandiego.edu',
+  process.env.TEST_USER_PASSWORD || 'pw123'
+)
   .then(() => {
     console.log("User creation process complete!");
     pool.end();

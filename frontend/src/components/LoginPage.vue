@@ -59,8 +59,9 @@ const router = useRouter(); // Router instance for navigation
  */
 const handleSubmit = async () => {
   try {
+    const apiUrl = import.meta.env.VITE_API_URL;
     // Make an API call to the login endpoint
-    const response = await axios.post('http://localhost:3000/api/auth/login', {
+    const response = await axios.post(`${apiUrl}/api/auth/login`, {
       email: email.value, // Send email input
       password: password.value, // Send password input
     });

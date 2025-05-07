@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import pkg from 'pg'; // Import the CommonJS module for PostgreSQL
 const { Pool } = pkg; // Destructure `Pool` from the imported package
 
