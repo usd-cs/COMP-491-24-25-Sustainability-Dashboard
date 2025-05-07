@@ -78,8 +78,9 @@ describe('UploadData.vue', () => {
     await wrapper.vm.handleUpload();
 
     // Verify correct endpoint was called
+    const apiUrl = import.meta.env.VITE_API_URL;
     expect(axios.post).toHaveBeenCalledWith(
-      `http://localhost:3000/api/auth/${endpoint}`,
+      `${apiUrl}api/auth/${endpoint}`,
       expect.any(FormData),
       {
         headers: { 'Content-Type': 'multipart/form-data' }

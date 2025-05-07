@@ -43,9 +43,10 @@ describe('TreeChart.vue', () => {
     mount(TreeChart);
     await flushPromises();
 
+    const apiUrl = import.meta.env.VITE_API_URL;
     // correct endpoint with default "1 year"
     expect(axios.get).toHaveBeenCalledWith(
-      'http://localhost:3000/api/tables/gettreedata?period=1%20year'
+      `${apiUrl}api/tables/gettreedata?period=1%20year`
     );
 
     // chart should be initialized once
@@ -82,8 +83,9 @@ describe('TreeChart.vue', () => {
     await select.setValue('6 months');
     // trigger change
     await flushPromises();
+    const apiUrl = import.meta.env.VITE_API_URL;
     expect(axios.get).toHaveBeenCalledWith(
-      'http://localhost:3000/api/tables/gettreedata?period=6%20months'
+      `${apiUrl}api/tables/gettreedata?period=6%20months`
     );
   });
 });
