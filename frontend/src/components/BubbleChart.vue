@@ -31,7 +31,7 @@ export default {
     async fetchChartData() {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
-        const { data } = await axios.get(`${apiUrl}api/tables/getbubblechart`);
+        const { data } = await axios.get(`${apiUrl}/api/tables/getbubblechart`);
         this.chartData = data.map(r => ({
           date: r.date_local,
           gas: +r.gas_flow_in_therms,

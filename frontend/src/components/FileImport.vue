@@ -74,9 +74,9 @@ const fetchTimestamp = async (source) => {
   let url = "";
   const apiUrl = import.meta.env.VITE_API_URL;
   if (source === "Athena") {
-    url = `${apiUrl}api/tables/athenadate`;
+    url = `${apiUrl}/api/tables/athenadate`;
   } else if (source === "Bloom") {
-    url = `${apiUrl}api/tables/bloomdate`;
+    url = `${apiUrl}/api/tables/bloomdate`;
   }
 
   try {

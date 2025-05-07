@@ -198,7 +198,7 @@ const toggleBuilding = async () => {
           others.map(async name => {
             const formatted = formatBuildingName(name);
             const { data } = await axios.get(
-              `${apiUrl}api/tables/hourlyenergybybuilding`,
+              `${apiUrl}/api/tables/hourlyenergybybuilding`,
               { params: { buildingName: formatted } }
             );
             const sorted = data.slice().sort((a, b) => {
@@ -233,7 +233,7 @@ const toggleBuilding = async () => {
       } else {
         const formatted = formatBuildingName(compareName);
         const { data } = await axios.get(
-          `${apiUrl}api/tables/hourlyenergybybuilding`,
+          `${apiUrl}/api/tables/hourlyenergybybuilding`,
           { 
             params: { buildingName: formatted },
             validateStatus: status => status < 500
@@ -278,7 +278,7 @@ onMounted(async () => {
   }
   try {
     const { data } = await axios.get(
-      `${apiUrl}api/tables/hourlyenergybybuilding`,
+      `${apiUrl}/api/tables/hourlyenergybybuilding`,
       { params: { buildingName } }
     );
     if (!data?.length) {

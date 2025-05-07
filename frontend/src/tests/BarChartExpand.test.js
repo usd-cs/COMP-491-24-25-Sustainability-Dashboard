@@ -58,7 +58,7 @@ describe('BarChartExpand.vue', () => {
     });
     await flushPromises();
     const apiUrl = import.meta.env.VITE_API_URL;
-    expect(axios.get).toHaveBeenCalledWith(`${apiUrl}api/tables/getcombinedweekly`);
+    expect(axios.get).toHaveBeenCalledWith(`${apiUrl}/api/tables/getcombinedweekly`);
     expect(echarts.init).toHaveBeenCalledWith(wrapper.vm.$refs.chart);
 
     // Ascending weekDates
@@ -86,7 +86,7 @@ describe('BarChartExpand.vue', () => {
     expect(wrapper.vm.isDrilldown).toBe(true);
     const apiUrl = import.meta.env.VITE_API_URL;
     expect(axios.get).toHaveBeenCalledWith(
-      `${apiUrl}api/tables/getcombinedweekly/daily`,
+      `${apiUrl}/api/tables/getcombinedweekly/daily`,
       { params: { weekStart: '2025-02-08' } }
     );
   });
@@ -108,6 +108,6 @@ describe('BarChartExpand.vue', () => {
 
     expect(wrapper.vm.isDrilldown).toBe(false);
     const apiUrl = import.meta.env.VITE_API_URL;
-    expect(axios.get).toHaveBeenCalledWith(`${apiUrl}api/tables/getcombinedweekly`);
+    expect(axios.get).toHaveBeenCalledWith(`${apiUrl}/api/tables/getcombinedweekly`);
   });
 });

@@ -40,7 +40,7 @@ export default {
     async fetchChartData() {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
-        const response = await axios.get(`${apiUrl}api/tables/energy/solar/contributions`);
+        const response = await axios.get(`${apiUrl}/api/tables/energy/solar/contributions`);
         this.chartData = response.data.map(item => ({
           name: item.site,
           value: parseFloat(item.total_kwh.toFixed(2))
