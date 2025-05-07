@@ -3,12 +3,12 @@
       <main>
         <form class="login-form" @submit.prevent="handleSubmit">
           <h2 class="form-title">administrative login</h2>
-          <!-- Email input field -->
+          <!-- Username input field -->
           <div class="form-group">
-            <label for="email" class="form-label">Email</label>
+            <label for="username" class="form-label">Username</label>
             <input
-              type="email"
-              id="email"
+              type="text"
+              id="username"
               v-model="email"
               class="form-input"
               required
@@ -44,7 +44,7 @@ import { useRouter } from 'vue-router'; // Vue Router for navigation
 import AppLayout from './AppLayout.vue';
 
 // Reactive variables for email and password inputs
-const email = ref('');
+const username = ref('');
 const password = ref('');
 const router = useRouter(); // Router instance for navigation
 
@@ -62,15 +62,16 @@ const handleSubmit = async () => {
     const apiUrl = import.meta.env.VITE_API_URL;
     // Make an API call to the login endpoint
     const response = await axios.post(`${apiUrl}/api/auth/login`, {
-      email: email.value, // Send email input
+      username: username.value, // Send email input
       password: password.value, // Send password input
     });
 
     // If the response is successful, navigate to the main page
     if (response.status === 200) {
-      alert(response.data.message); // Show success message
-      localStorage.setItem('userId', response.data.user.user_id); // Save user ID in localStorage
-      router.push('/select'); // Redirect to MainPage.vue
+      
+      // Save the JWT token so it can be sent with subsequent API requests
+      localStorage.setItem('jwtToken', response.data.token);
+      router.push('/select'); // Redirect to data source selection page
     }
   } catch (error) {
     // Handle error responses
