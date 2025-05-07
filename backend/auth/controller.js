@@ -1,25 +1,28 @@
 import { queryUserByUsername } from './queries.js';
 import bcrypt from 'bcrypt';
-
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 /**
- * @file loginUser.js
- * @description Function to handle user login by validating credentials (username and password). 
- * If the credentials match, the user is authenticated, and their details are returned.
- * 
+ * @file controller.js
+ * @description Contains the function for handling user login by verifying credentials (username and password).
+ * After successful authentication, this module issues a JSON Web Token (JWT) that encapsulates the user's
+ * identity information. The token is used for authorizing subsequent API requests.
+ *
  * Features:
- * - Validates the presence of `username` and `password` fields in the request body.
- * - Queries the database for a user by their username.
- * - Verifies the provided password against the stored hashed password using bcrypt.
- * - Returns appropriate HTTP status codes and messages for different scenarios.
- * 
+ * - Validates that both 'username' and 'password' are provided in the request body.
+ * - Queries the database for the user with the given username.
+ * - Compares the provided password against the stored hashed password using bcrypt.
+ * - If credentials are valid, creates a JWT containing user details (user_id, username, email).
+ * - Returns corresponding HTTP status codes and messages for missing credentials, authentication failures,
+ *   and server errors.
+ *
  * @function loginUser
  * @param {Object} req - Express request object.
- * @param {Object} req.body - The request body containing `username` and `password`.
+ * @param {Object} req.body - Contains 'username' and 'password'.
  * @param {Object} res - Express response object.
- * 
- * @returns {Object} Response with appropriate HTTP status code
- **/
-
+ * @returns {Object} JSON response with token and user details on successful login, or an error message.
+ */
 export const loginUser = async (req, res) => {
   const { username, password } = req.body; // Expecting username and password from the request
 
@@ -45,14 +48,18 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password.' });
     }
 
-    // Respond with user details if the login is successful
+    // Create a JWT token after successful authentication
+    const tokenPayload = {
+      user_id: user[0].user_id,
+      username: user[0].username,
+      email: user[0].email,
+    };
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
     res.status(200).json({
       message: 'Login successful',
-      user: {
-        user_id: user[0].user_id,
-        username: user[0].username,
-        email: user[0].email,
-      },
+      token, // Include token in the response
+      user: tokenPayload,
     });
   } catch (error) {
     console.error('Error during login:', error);
