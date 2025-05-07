@@ -89,8 +89,9 @@ async function fetchData() {
   try {
     loading.value = true;
     error.value = null;
+    const apiUrl = import.meta.env.VITE_API_URL;
     const { data } = await axios.get(
-      `http://localhost:3000/api/tables/gettreedata?period=${encodeURIComponent(selectedPeriod.value)}`
+      `${apiUrl}api/tables/gettreedata?period=${encodeURIComponent(selectedPeriod.value)}`
     );
     const row = data[0] || {};
     lifetimeEnergy = Number(row.lifetime_energy);
