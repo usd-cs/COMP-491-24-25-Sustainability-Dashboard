@@ -1,5 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import pkg from 'pg'; // Import the PostgreSQL module
 const { Pool } = pkg; // Destructure Pool from the imported package
+
 
 /** 
  * @description Establishes a connection to the PostgreSQL database using a connection pool.

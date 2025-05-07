@@ -19,11 +19,10 @@ RUN npm install --no-package-lock
 COPY . .
 
 
-
-
 # Expose the port that the app runs on
 EXPOSE 3000
 
+ENV NODE_ENV=production
 
 # Run database schema setup and insert initial user before starting the server
 CMD ["sh", "-c", "node backend/create_schema.js && node backend/setup/setup_user.js && npm start"]

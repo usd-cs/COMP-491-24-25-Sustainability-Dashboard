@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+
 // queryDebug.js
 import { queryUserByEmail } from './queries.js'; // Adjust the path if necessary
 import bcrypt from 'bcrypt';
@@ -18,8 +22,8 @@ import bcrypt from 'bcrypt';
 (async () => {
   try {
     // Email to test
-    const emailToTest = 'johnalejandro@sandiego.edu';
-    const plainPassword = 'pw123';
+    const emailToTest = process.env.TEST_USER_EMAIL || 'johnalejandro@sandiego.edu';
+    const plainPassword = process.env.TEST_USER_PASSWORD || 'pw123';
 
     console.log(`Testing query for email: ${emailToTest}`);
 
