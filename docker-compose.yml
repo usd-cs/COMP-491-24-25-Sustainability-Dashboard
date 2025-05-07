@@ -23,12 +23,9 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile.frontend
-    ports:
-      - "5173:5173"
-      - "80:80" 
     volumes:
       - ${COMPOSE_PROJECT_PATH:-.}:/app
-      - /app/node_modules  # Ensures node_modules is created inside the container
+      - /app/node_modules
     depends_on:
       - backend
     networks:
@@ -47,6 +44,20 @@ services:
       interval: 5s
       retries: 5
       timeout: 3s
+    networks:
+      - internal
+  
+  proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"    # External HTTP
+      - "443:443"  # External HTTPS
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt
+    restart: always
+    depends_on:
+      - frontend
     networks:
       - internal
 
