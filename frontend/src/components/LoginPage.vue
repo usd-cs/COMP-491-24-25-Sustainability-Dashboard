@@ -9,7 +9,7 @@
             <input
               type="text"
               id="username"
-              v-model="email"
+              v-model="username"
               class="form-input"
               required
             />
