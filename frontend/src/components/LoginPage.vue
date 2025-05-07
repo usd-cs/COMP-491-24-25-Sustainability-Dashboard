@@ -60,6 +60,7 @@ const router = useRouter(); // Router instance for navigation
 const handleSubmit = async () => {
   try {
     const apiUrl = import.meta.env.VITE_API_URL;
+    console.log('Attempting login with username:', username.value);
     // Make an API call to the login endpoint
     const response = await axios.post(`${apiUrl}/api/auth/login`, {
       username: username.value, // Send email input
