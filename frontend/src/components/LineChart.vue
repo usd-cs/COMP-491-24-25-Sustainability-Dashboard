@@ -50,8 +50,9 @@ async function fetchData() {
   try {
     loading.value = true;
     error.value = null;
+    const apiUrl = import.meta.env.VITE_API_URL;
     const response = await axios.get(
-      `http://localhost:3000/api/tables/gettreedata?period=${encodeURIComponent(selectedPeriod.value)}`
+      `${apiUrl}api/tables/gettreedata?period=${encodeURIComponent(selectedPeriod.value)}`
     );
     console.log("API response:", response.data);
     const data = response.data[0];
