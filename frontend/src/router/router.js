@@ -73,4 +73,12 @@ const router = createRouter({
   routes
 });
 
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('jwtToken');
+  if (to.meta.requiresAuth && !token) {
+    next({ name: 'Login' });
+  } else {
+    next();
+  }
+});
 export default router;
