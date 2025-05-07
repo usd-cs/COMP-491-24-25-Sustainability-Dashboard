@@ -1,38 +1,38 @@
-import { queryUserByEmail } from './queries.js';
+import { queryUserByUsername } from './queries.js';
 import bcrypt from 'bcrypt';
 
 /**
  * @file loginUser.js
- * @description Function to handle user login by validating credentials (email and password). 
+ * @description Function to handle user login by validating credentials (username and password). 
  * If the credentials match, the user is authenticated, and their details are returned.
  * 
  * Features:
- * - Validates the presence of `email` and `password` fields in the request body.
- * - Queries the database for a user by their email.
+ * - Validates the presence of `username` and `password` fields in the request body.
+ * - Queries the database for a user by their username.
  * - Verifies the provided password against the stored hashed password using bcrypt.
  * - Returns appropriate HTTP status codes and messages for different scenarios.
  * 
  * @function loginUser
  * @param {Object} req - Express request object.
- * @param {Object} req.body - The request body containing `email` and `password`.
+ * @param {Object} req.body - The request body containing `username` and `password`.
  * @param {Object} res - Express response object.
  * 
  * @returns {Object} Response with appropriate HTTP status code
  **/
 
 export const loginUser = async (req, res) => {
-  const { email, password } = req.body; // Expecting email and password from the request
+  const { username, password } = req.body; // Expecting username and password from the request
 
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required.' });
+  if (!username || !password) {
+    return res.status(400).json({ message: 'username and password are required.' });
   }
 
   try {
-    // Query the user by email
-    const user = await queryUserByEmail(email);
+    // Query the user by username
+    const user = await queryUserByUsername(username);
 
     if (user.length === 0) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+      return res.status(401).json({ message: 'Invalid username or password.' });
     }
 
     // Retrieve the hashed password from the database
@@ -42,7 +42,7 @@ export const loginUser = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
 
     if (!passwordMatch) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+      return res.status(401).json({ message: 'Invalid username or password.' });
     }
 
     // Respond with user details if the login is successful
