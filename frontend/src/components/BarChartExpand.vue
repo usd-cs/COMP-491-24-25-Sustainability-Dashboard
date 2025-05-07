@@ -144,7 +144,8 @@ export default {
   methods: {
     async fetchChartData() {
       try {
-        const response = await axios.get('http://localhost:3000/api/tables/getcombinedweekly');
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await axios.get(`${apiUrl}api/tables/getcombinedweekly`);
         const data = response.data
           .sort((a, b) => new Date(b.week_start) - new Date(a.week_start))
           .slice(0, 4)
@@ -278,8 +279,8 @@ export default {
 
     async renderDrilldown(weekStart, source) {
       try {
-        const response = await axios.get(
-          'http://localhost:3000/api/tables/getcombinedweekly/daily',
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await axios.get(`${apiUrl}api/tables/getcombinedweekly/daily`,
           { params: { weekStart } }
         );
 
