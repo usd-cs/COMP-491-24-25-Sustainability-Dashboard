@@ -1,3 +1,10 @@
+/**
+ * @file FileUpload.cy.js
+ * @description
+ * End-to-end (E2E) Cypress tests for the file import flow.
+ * Covers source selection, navigation to upload page, file upload (CSV and Excel), and success page navigation.
+ * Tests both Athena and Bloom data sources, as well as cancel navigation.
+ */
 describe('File Import Flow', () => {
     beforeEach(() => {
       cy.visit('/select');
