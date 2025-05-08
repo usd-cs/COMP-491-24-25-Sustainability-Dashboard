@@ -40,9 +40,10 @@ const logOutOption = computed(() =>
 
 /**
  * Handle user logout.
- * Clears session and redirects the user to the login page.
+ * Clears session, removing JwtToken from storage and redirects the user to the login page.
  */
 const handleLogout = () => {
+  localStorage.removeItem('jwtToken');
   router.push('/');
 };
 </script>
