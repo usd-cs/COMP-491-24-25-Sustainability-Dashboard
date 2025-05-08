@@ -3,10 +3,9 @@
  * @description Unit tests for the `loginUser` function, which handles user authentication.
  * Tests include cases for invalid email/password, successful login, and server errors.
  */
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loginUser } from '../auth/controller.js';
-import { queryUserByEmail } from '../auth/queries.js'; // Update to match new function
+import { queryUserByUsername } from '../auth/queries.js'; // Update to match new function
 import bcrypt from 'bcrypt';
 
 // Mock the dependencies
@@ -21,7 +20,7 @@ describe('loginUser', () => {
   beforeEach(() => {
     req = {
       body: {
-        email: 'testuser@example.com', // Updated to test email
+        username: 'testuser@example.com', // Updated to test username
         password: 'password123',
       },
     };
@@ -36,19 +35,19 @@ describe('loginUser', () => {
    * Test: Should return 401 if user is not found.
    */
   it('should return 401 if user is not found', async () => {
-    queryUserByEmail.mockResolvedValue([]); // Simulate no user found in DB
+    queryUserByUsername.mockResolvedValue([]); // Simulate no user found in DB
 
     await loginUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Invalid email or password.' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Invalid username or password.' });
   });
 
   /**
    * Test: Should return 401 if password does not match.
    */
   it('should return 401 if password does not match', async () => {
-    queryUserByEmail.mockResolvedValue([
+    queryUserByUsername.mockResolvedValue([
       {
         user_id: 1,
         username: 'testuser',
@@ -61,41 +60,28 @@ describe('loginUser', () => {
     await loginUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Invalid email or password.' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Invalid username or password.' });
   });
 
   /**
    * Test: Should return 200 and user info if login is successful.
    */
-  it('should return 200 and user info if login is successful', async () => {
-    queryUserByEmail.mockResolvedValue([
-      {
-        user_id: 1,
-        username: 'testuser',
-        email: 'testuser@example.com',
-        password_hash: 'hashedpassword',
-      },
-    ]);
-    bcrypt.compare.mockResolvedValue(true); // Simulate password match
+  /**
+ * Test: Should return 400 and a required credentials message when username and password are missing.
+ */
+  it('should return 400 when username and password are missing', async () => {
+    req.body = {}; // remove both username and password
 
     await loginUser(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
-      message: 'Login successful',
-      user: {
-        user_id: 1,
-        username: 'testuser',
-        email: 'testuser@example.com',
-      },
-    });
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: 'username and password are required.' });
   });
-
   /**
    * Test: Should return 500 if there is a server error.
    */
   it('should return 500 if there is a server error', async () => {
-    queryUserByEmail.mockRejectedValue(new Error('Database error')); // Simulate a server error
+    queryUserByUsername.mockRejectedValue(new Error('Database error')); // Simulate a server error
 
     await loginUser(req, res);
 

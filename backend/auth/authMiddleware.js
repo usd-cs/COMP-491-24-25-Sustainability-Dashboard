@@ -1,44 +1,31 @@
-import { queryUserByUsername } from './queries.js';
 /**
- * @description Middleware function to authenticate a user by username. This middleware verifies
- * the existence of a user in the database and attaches the user's information to the request object 
- * if authentication is successful.
- * 
- * Features:
- * - Validates the presence of the `username` field in the request body.
- * - Queries the database for a user with the provided username.
- * - Attaches the user information to the `req.user` object for downstream handlers.
- * - Returns appropriate HTTP status codes and error messages for different scenarios.
- * 
- * @function isAuthenticated
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {Function} next - Express middleware function to call the next handler.
- * 
- * @returns {Object} Response with appropriate HTTP status code:
- * - `400 Bad Request`: If the `username` field is missing.
- * - `401 Unauthorized`: If no user is found with the provided username.
- * - `500 Internal Server Error`: If an error occurs during the database query.
- **/
+ * @file authMiddleware.js
+ * @description Middleware for verifying JSON Web Tokens (JWT) in incoming requests.
+ * The token must be provided in the Authorization header in the format "Bearer <token>".
+ * If the token is missing or invalid, the middleware returns an appropriate HTTP error response.
+ * If the token is valid, the decoded token payload is attached to the request object (req.user)
+ * and the request is passed on to the next middleware/controller.
+ */
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
-export const isAuthenticated = async (req, res, next) => {
-  const { username } = req.body;
+export const verifyToken = (req, res, next) => {
+    // Expect the token in the Authorization header formatted as "Bearer <token>"
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
-  if (!username) {
-    return res.status(400).json({ message: 'Username is required.' });
-  }
-
-  try {
-    const user = await queryUserByUsername(username);
-
-    if (user.length === 0) {
-      return res.status(401).json({ message: 'Unauthorized: User not found.' });
+    if (!token) {
+        return res.status(403).json({ message: 'Token missing.' });
     }
 
-    req.user = user[0]; // Attach user info to the request object
-    next();
-  } catch (error) {
-    console.error('Authentication error:', error);
-    return res.status(500).json({ message: 'Server error during authentication.' });
-  }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            console.error('JWT verification error:', err);
+            return res.status(401).json({ message: 'Invalid token.' });
+        }
+        // Attach decoded info to the request
+        req.user = decoded;
+        next();
+    });
 };

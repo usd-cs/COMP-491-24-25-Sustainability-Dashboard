@@ -22,8 +22,8 @@ import bcrypt from 'bcrypt';
 (async () => {
   try {
     // Email to test
-    const emailToTest = process.env.TEST_USER_EMAIL || 'johnalejandro@sandiego.edu';
-    const plainPassword = process.env.TEST_USER_PASSWORD || 'pw123';
+    const emailToTest = process.env.ADMIN_USER_EMAIL;
+    const plainPassword = process.env.ADMIN_USER_PASSWORD;
 
     console.log(`Testing query for email: ${emailToTest}`);
 

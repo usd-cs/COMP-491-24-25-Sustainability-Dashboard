@@ -83,7 +83,9 @@ describe('UploadData.vue', () => {
       `${apiUrl}/api/auth/${endpoint}`,
       expect.any(FormData),
       {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer null'
+         }
       }
     );
   });

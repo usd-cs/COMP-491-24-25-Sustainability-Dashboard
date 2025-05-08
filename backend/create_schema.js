@@ -13,11 +13,11 @@ const { Pool } = pkg; // Destructure `Pool` from the imported package
 
 // Initialize the database connection pool
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-  host: process.env.DB_HOST || 'database', // Change 'localhost' to 'database'
-  port: process.env.DB_PORT || 5432,       // PostgreSQL default port
-  database: process.env.DB_NAME || 'postgres',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
 });
 
 /**

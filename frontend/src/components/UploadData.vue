@@ -123,6 +123,7 @@ const handleUpload = async (_event) => {
     const response = await axios.post(endpoint, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}` // Include JWT token for authentication
       },
     });
 

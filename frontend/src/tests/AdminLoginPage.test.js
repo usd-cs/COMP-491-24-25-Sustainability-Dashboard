@@ -44,9 +44,9 @@ describe('AdminLoginPage', () => {
   });
 
   /**
-   * @description Tests if the email and password input fields are present.
+   * @description Tests if the username and password input fields are present.
    */
-  it('has email and password inputs', () => {
+  it('has username and password inputs', () => {
     const wrapper = mount(AdminLoginPage, {
       global: {
         stubs: {
@@ -57,7 +57,7 @@ describe('AdminLoginPage', () => {
         }
       }
     });
-    expect(wrapper.find('#email').exists()).toBe(true); // Check for email input
+    expect(wrapper.find('#username').exists()).toBe(true); // Check for username input
     expect(wrapper.find('#password').exists()).toBe(true); // Check for password input
   });
 
@@ -76,10 +76,10 @@ describe('AdminLoginPage', () => {
       }
     });
 
-    // Test email input
-    const emailInput = wrapper.find('#email');
-    await emailInput.setValue('test@example.com');
-    expect(emailInput.element.value).toBe('test@example.com'); // Verify email input value
+    // Test username input
+    const usernameInput = wrapper.find('#username');
+    await usernameInput.setValue('testUser38');
+    expect(usernameInput.element.value).toBe('testUser38'); // Verify username input value
 
     // Test password input
     const passwordInput = wrapper.find('#password');
@@ -88,9 +88,9 @@ describe('AdminLoginPage', () => {
   });
 
   /**
-   * @description Tests if the form submits correctly with email and password values.
+   * @description Tests if the form submits correctly with username and password values.
    */
-  it('submits form with email and password', async () => {
+  it('submits form with username and password', async () => {
     const wrapper = mount(AdminLoginPage, {
       global: {
         stubs: {
@@ -103,9 +103,9 @@ describe('AdminLoginPage', () => {
     });
 
     // Simulate input values
-    const emailInput = wrapper.find('#email');
+    const usernameInput = wrapper.find('#username');
     const passwordInput = wrapper.find('#password');
-    await emailInput.setValue('test@example.com');
+    await usernameInput.setValue('testUser38');
     await passwordInput.setValue('password123');
 
     // Simulate form submission
@@ -113,7 +113,7 @@ describe('AdminLoginPage', () => {
     await form.trigger('submit.prevent');
 
     // Check if the form submission captured the correct values
-    expect(wrapper.vm.email).toBe('test@example.com'); // Verify email value
+    expect(wrapper.vm.username).toBe('testUser38'); // Verify username value
     expect(wrapper.vm.password).toBe('password123'); // Verify password value
   });
 

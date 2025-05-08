@@ -25,11 +25,11 @@ import bcrypt from 'bcrypt'; // Library for hashing passwords
 const { Pool } = pkg;
 
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-  host: process.env.DB_HOST || 'database',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'postgres',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
 });
 
 const addUser = async (username, email, password) => {
@@ -67,9 +67,9 @@ const addUser = async (username, email, password) => {
 
 // Add user
 addUser(
-  process.env.TEST_USER_NAME || 'mockuser_1',
-  process.env.TEST_USER_EMAIL|| 'mockuser_1@sandiego.edu',
-  process.env.TEST_USER_PASSWORD || 'pw123'
+  process.env.ADMIN_USER_NAME,
+  process.env.ADMIN_USER_EMAIL,
+  process.env.ADMIN_USER_PASSWORD
 )
   .then(() => {
     console.log("User creation process complete!");

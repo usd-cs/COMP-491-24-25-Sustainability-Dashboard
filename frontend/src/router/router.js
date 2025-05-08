@@ -44,10 +44,10 @@ const routes = [
   { path: "/", component: MainPage },
 
   /* data ingestion */
-  { path: "/login", component: LoginPage },
-  { path: "/select", component: FileImport },
-  { path: "/upload", component: UploadData },
-  { path: "/upload-success", component: UploadSuccess },
+  { path: "/login", name: 'Login',component: LoginPage },
+  { path: "/select", component: FileImport, meta: { requiresAuth: true }},
+  { path: "/upload", component: UploadData, meta: { requiresAuth: true }},
+  { path: "/upload-success", component: UploadSuccess, meta: { requiresAuth: true }},
 
   /* expanded charts */
   { path: "/bar-chart", component: BarChartExpand },
@@ -73,4 +73,12 @@ const router = createRouter({
   routes
 });
 
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('jwtToken');
+  if (to.meta.requiresAuth && !token) {
+    next({ name: 'Login' });
+  } else {
+    next();
+  }
+});
 export default router;
