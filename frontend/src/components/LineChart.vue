@@ -41,7 +41,7 @@ const selectedPeriod = ref("1 year"); // Changed default from "1 month" to "1 ye
 
 // Chart instance and energy values
 let chart = null;
-let isMounted = true;
+
 let lifetimeEnergy = 0;
 let periodEnergy = 0;
 
@@ -181,36 +181,18 @@ function updateChart() {
   }
 }
 
-function handleResize() {
-  if (chart && chart.getDom()) {
-    chart.resize();
-  }
-}
-
 onMounted(async () => {
-  isMounted = true;
   await fetchData();
   //window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  isMounted = false;
   //window.removeEventListener('resize', handleResize);
   if (chart) {
     chart.dispose();
   }
 });
 
-const props = defineProps({
-    chartData: {
-        type: Object,
-        required: true
-    },
-    chartOptions: {
-        type: Object,
-        required: true
-    }
-});
 </script>
 
 <style scoped>

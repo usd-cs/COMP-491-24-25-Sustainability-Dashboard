@@ -45,7 +45,6 @@ describe('BubbleChartExpand.vue', () => {
     ]);
 
     // regression
-    const gas = [10,20], out = [20,30], n = 2;
     const meanX = (10+20)/2, meanY = (20+30)/2;
     const num = (10-meanX)*(20-meanY) + (20-meanX)*(30-meanY);
     const den = (10-meanX)**2 + (20-meanX)**2;

@@ -50,12 +50,6 @@
 
 <script setup>
 
-import { ref } from 'vue';
-
-const isExpanded = ref(false); // State to track if the footer is expanded
-const toggleFooter = () => {
-  isExpanded.value = !isExpanded.value; // Toggle the expanded state
-};
 </script>
 
 <style>
