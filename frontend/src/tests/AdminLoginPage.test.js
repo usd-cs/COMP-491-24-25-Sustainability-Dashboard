@@ -4,7 +4,6 @@
  */
 
 import { mount } from '@vue/test-utils';
-import { createRouter, createWebHistory } from 'vue-router';
 import { describe, it, expect } from 'vitest';
 import AdminLoginPage from '../components/LoginPage.vue';
 
@@ -14,11 +13,6 @@ vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
   height: '100vh',
 }));
 
-// Mock Vue Router
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [],
-});
 
 /**
  * @description Test suite for the `AdminLoginPage` component.

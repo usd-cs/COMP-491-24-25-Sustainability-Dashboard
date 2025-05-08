@@ -6,7 +6,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import SourcesGraph from '../components/SourcesGraph.vue';
 import axios from 'axios';
-import * as echarts from 'echarts';
 
 // Mock vue-router
 vi.mock('vue-router', () => ({
